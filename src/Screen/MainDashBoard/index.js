@@ -1,0 +1,223 @@
+import React from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  TouchableOpacity,
+  StatusBar,
+  ScrollView,
+} from 'react-native';
+import FastImage from 'react-native-fast-image';
+import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
+import Color from '../../Common/Color';
+import ImpactSection from '../../Components/ImpactSection';
+import {impactData} from '../../utils/StaticJson';
+import AirDropCard from '../../Components/AirDropCard';
+
+const {width, height} = Dimensions.get('window');
+const scale = size => (width / 375) * size;
+
+const MainDashBoard = ({navigation}) => {
+  const insets = useSafeAreaInsets();
+
+  return (
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <StatusBar barStyle="dark-content" backgroundColor={Color.WHITE} />
+      <View style={styles.topContainer}>
+        <View style={styles.topRow}>
+          <TouchableOpacity
+            style={styles.menuBtn}
+            onPress={() => navigation.toggleDrawer()}>
+            <FastImage
+              source={require('../../assets/images/menu.png')}
+              style={styles.menuIcon}
+              resizeMode={FastImage.resizeMode.contain}
+            />
+          </TouchableOpacity>
+
+          <View style={styles.pointsBox}>
+            <FastImage
+              source={require('../../assets/images/creation.png')}
+              style={styles.starIcon}
+              resizeMode={FastImage.resizeMode.contain}
+            />
+            <View>
+              <Text style={styles.pointsText}>1,247.06</Text>
+              <Text style={styles.pointsLabel}>GET Points</Text>
+            </View>
+          </View>
+
+          <View style={styles.rateBox}>
+            <Text style={styles.rateTitle}>Mining Rate</Text>
+            <Text style={styles.rateValue}>12.06 pts/hr</Text>
+          </View>
+        </View>
+      </View>
+
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContainer}>
+        <View style={styles.card}>
+          <View style={styles.badge}>
+            <FastImage
+              source={require('../../assets/images/star.png')}
+              style={styles.badgeIcon}
+              resizeMode={FastImage.resizeMode.contain}
+            />
+            <Text style={styles.badgeText}>Green Token Earth</Text>
+          </View>
+
+          <Text style={styles.cardTitle}>
+            Tap. Earn.{' '}
+            <Text style={{color: Color.GREEN}}>Regenerate Earth.</Text>
+          </Text>
+
+          <Text style={styles.cardSubtitle}>
+            Every action creates ripples of positive change for our planet's
+            future.
+          </Text>
+        </View>
+
+        <AirDropCard currentPoints={250} totalPoints={1500} />
+
+        <ImpactSection title="Your Environmental Impact" data={impactData} />
+      </ScrollView>
+    </SafeAreaView>
+  );
+};
+
+export default MainDashBoard;
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: Color.WHITE,
+  },
+
+  topContainer: {
+    backgroundColor: Color.WHITE,
+    paddingHorizontal: scale(16),
+    paddingTop: scale(10),
+    paddingBottom: scale(8),
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
+  },
+
+  topRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+
+  menuBtn: {
+    width: scale(48),
+    height: scale(48),
+    borderRadius: scale(10),
+    backgroundColor: '#ECEFF3',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  menuIcon: {
+    width: scale(18),
+    height: scale(18),
+  },
+
+  pointsBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Color.GREEN,
+    paddingVertical: scale(8),
+    paddingHorizontal: scale(16),
+    borderRadius: scale(12),
+  },
+
+  starIcon: {
+    width: scale(20),
+    height: scale(20),
+    marginRight: scale(8),
+  },
+
+  pointsText: {
+    color: Color.WHITE,
+    fontSize: scale(16),
+    fontWeight: '700',
+  },
+
+  pointsLabel: {
+    color: Color.WHITE,
+    fontSize: scale(12),
+    marginTop: -2,
+  },
+
+  rateBox: {
+    alignItems: 'flex-start',
+  },
+
+  rateTitle: {
+    fontSize: scale(12),
+    color: '#6B7280',
+  },
+
+  rateValue: {
+    fontSize: scale(15),
+    fontWeight: '600',
+    color: Color.BLACK,
+  },
+
+  scrollContainer: {
+    paddingHorizontal: scale(16),
+    paddingBottom: scale(30),
+  },
+
+  card: {
+    backgroundColor: Color.WHITE,
+    borderRadius: scale(16),
+    padding: scale(18),
+    borderWidth: 1,
+    borderColor: Color.boredrColor,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: scale(16),
+  },
+
+  badge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#E8F5E9',
+    paddingHorizontal: scale(12),
+    paddingVertical: scale(6),
+    borderRadius: scale(10),
+    marginBottom: scale(12),
+    borderWidth: 1,
+    borderColor: '#01C75614',
+  },
+
+  badgeIcon: {
+    width: scale(14),
+    height: scale(14),
+    marginRight: scale(6),
+  },
+
+  badgeText: {
+    fontSize: scale(12),
+    color: Color.GREEN,
+    fontWeight: '500',
+  },
+
+  cardTitle: {
+    fontSize: scale(16),
+    fontWeight: '700',
+    color: Color.BLACK,
+    marginBottom: scale(6),
+    textAlign: 'center',
+  },
+
+  cardSubtitle: {
+    fontSize: scale(13),
+    color: '#6B7280',
+    lineHeight: scale(18),
+    textAlign: 'center',
+  },
+});
