@@ -1,10 +1,6 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-//http://67.207.90.56:3000/api
-//https://api.greenearthtoken.com/api
-//http://192.168.1.20:3000/api
-
 const apiClient = axios.create({
   baseURL: 'https://api.greenearthtoken.com/api',
   headers: {
@@ -17,8 +13,6 @@ apiClient.interceptors.request.use(
     try {
       const token = await AsyncStorage.getItem('authToken');
       const deviceId = await AsyncStorage.getItem('deviceId');
-
-      // console.log('apiClient page deviceId', deviceId, token);
 
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;

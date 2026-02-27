@@ -9,7 +9,6 @@ const {height} = Dimensions.get('window');
 
 const AuthModal = ({visible, onClose}) => {
   const [screen, setScreen] = useState('signin');
-  // signin | signup | forgot
 
   return (
     <Modal visible={visible} transparent animationType="slide">

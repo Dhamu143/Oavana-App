@@ -10,234 +10,252 @@ import {
   Platform,
   ScrollView,
   StatusBar,
+  ActivityIndicator,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Color from '../../Common/Color';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {SkipLogin} from '../../Redux/Action/action';
 import {useDispatch} from 'react-redux';
-import CountryPicker from 'react-native-country-picker-modal';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import {Formik} from 'formik';
+import * as Yup from 'yup';
+import AlertModal from '../../Modal/AlertModal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import apiClient from '../../utils/ApiClient';
 
 const {width} = Dimensions.get('window');
 
+const SignUpSchema = Yup.object().shape({
+  email: Yup.string().email('Enter valid email').required('Email is required'),
+
+  password: Yup.string()
+    .min(6, 'Password must be at least 6 characters')
+    .required('Password is required'),
+});
+
 const SignUpScreen = ({navigation}) => {
   const dispatch = useDispatch();
-
   const [secure, setSecure] = useState(true);
-
-  const [date, setDate] = useState(null);
-  const [showDatePicker, setShowDatePicker] = useState(false);
-
-  const [countryCode, setCountryCode] = useState('IN');
-  const [visibleCountry, setVisibleCountry] = useState(false);
-  const [callingCode, setCallingCode] = useState('+91');
-  const [countryName, setCountryName] = useState('India');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalSuccess, setModalSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handelSkipLogin = () => {
     dispatch(SkipLogin(true));
     navigation.replace('MaindashboardDrawer');
   };
 
-  const onSelectCountry = country => {
-    setCountryCode(country.cca2);
-    setCountryName(country.name);
-
-    if (country.callingCode?.length > 0) {
-      setCallingCode('+' + country.callingCode[0]);
-    }
-  };
-
-  const onChangeDate = (event, selectedDate) => {
-    setShowDatePicker(false);
-
-    if (selectedDate) {
-      setDate(selectedDate);
-    }
-  };
-
-  const formatDate = date => {
-    if (!date) return '';
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-  };
-
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: Color.GREEN}}>
-      <StatusBar backgroundColor={Color.GREEN} barStyle="light-content" />
-      <View style={{flex: 1, backgroundColor: Color.WHITE}}>
-        <KeyboardAvoidingView
-          style={{flex: 1}}
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-          <ScrollView
-            contentContainerStyle={{flexGrow: 1}}
-            showsVerticalScrollIndicator={false}>
-            <View style={styles.greenHeader}>
-              <TouchableOpacity
-                style={styles.backBtn}
-                onPress={() => {
-                  navigation.goBack();
-                }}>
-                <FastImage
-                  source={require('../../assets/images/leftArrow.png')}
-                  style={styles.icon22}
-                  resizeMode={FastImage.resizeMode.contain}
-                  tintColor={Color.WHITE}
-                />
-              </TouchableOpacity>
+    <Formik
+      initialValues={{email: '', password: ''}}
+      validationSchema={SignUpSchema}
+      onSubmit={async (values, {resetForm}) => {
+        try {
+          setLoading(true);
 
-              <TouchableOpacity
-                style={styles.skipBtn}
-                onPress={handelSkipLogin}>
-                <Text style={styles.skipText}>Skip</Text>
-              </TouchableOpacity>
+          const deviceId = await AsyncStorage.getItem('deviceId');
 
-              <Text style={styles.title}>Sign Up</Text>
+          const response = await apiClient.post('/auth/register', {
+            email: values?.email.toLowerCase(),
+            password: values?.password,
+            deviceid: deviceId,
+          });
 
-              <Text style={styles.subtitle}>
-                Already have an account?{' '}
-                <Text
-                  style={styles.loginLink}
-                  onPress={() => {
-                    navigation.goBack();
-                  }}>
-                  Log In
-                </Text>
-              </Text>
-            </View>
+          const message = response?.data?.message || 'Success';
+          const success = response?.data?.success || false;
 
-            <View style={styles.card}>
-              <View style={styles.row}>
-                <TextInput
-                  placeholder="Lois"
-                  placeholderTextColor={Color.Placeholder}
-                  style={[styles.input, styles.halfInput, {marginRight: 10}]}
-                />
-                <TextInput
-                  placeholder="Becket"
-                  placeholderTextColor={Color.Placeholder}
-                  style={[styles.input, styles.halfInput]}
-                />
-              </View>
+          setModalMessage(message);
+          setModalSuccess(success);
+          setModalVisible(true);
 
-              <TextInput
-                placeholder="Loisbecket@gmail.com"
-                placeholderTextColor={Color.Placeholder}
-                style={[styles.input, {marginBottom: 15}]}
-              />
+          if (success) {
+            resetForm();
+          }
+        } catch (error) {
+          const message =
+            error?.response?.data?.message || 'Something went wrong';
 
-              <TouchableOpacity
-                style={styles.iconInput}
-                onPress={() => setShowDatePicker(true)}>
-                <Text
-                  style={{flex: 1, color: date ? '#000' : Color.Placeholder}}>
-                  {date ? formatDate(date) : 'Select Date'}
-                </Text>
+          setModalMessage(message);
+          setModalSuccess(false);
+          setModalVisible(true);
+        } finally {
+          setLoading(false);
+        }
+      }}>
+      {({handleChange, handleBlur, handleSubmit, values, errors, touched}) => (
+        <SafeAreaView style={{flex: 1, backgroundColor: Color.GREEN}}>
+          <StatusBar backgroundColor={Color.GREEN} barStyle="light-content" />
 
-                <FastImage
-                  source={require('../../assets/images/calender.png')}
-                  style={styles.icon20}
-                  resizeMode={FastImage.resizeMode.contain}
-                  tintColor={Color.Placeholder}
-                />
-              </TouchableOpacity>
+          <View style={{flex: 1, backgroundColor: Color.WHITE}}>
+            <KeyboardAvoidingView
+              style={{flex: 1}}
+              behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+              <ScrollView
+                contentContainerStyle={{flexGrow: 1}}
+                showsVerticalScrollIndicator={false}>
+                <View style={styles.greenHeader}>
+                  <TouchableOpacity
+                    style={styles.backBtn}
+                    onPress={() => navigation.goBack()}>
+                    <FastImage
+                      source={require('../../assets/images/leftArrow.png')}
+                      style={styles.icon22}
+                      resizeMode={FastImage.resizeMode.contain}
+                      tintColor={Color.WHITE}
+                    />
+                  </TouchableOpacity>
 
-              {showDatePicker && (
-                <DateTimePicker
-                  value={date || new Date()}
-                  mode="date"
-                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                  onChange={onChangeDate}
-                  maximumDate={new Date()}
-                />
-              )}
+                  <TouchableOpacity
+                    style={styles.skipBtn}
+                    onPress={handelSkipLogin}>
+                    <Text style={styles.skipText}>Skip</Text>
+                  </TouchableOpacity>
 
-              <View style={styles.iconInput}>
-                <TouchableOpacity
-                  onPress={() => setVisibleCountry(true)}
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    marginRight: 10,
-                  }}>
-                  <CountryPicker
-                    countryCode={countryCode}
-                    withFilter
-                    withFlag
-                    withCallingCode
-                    withAlphaFilter
-                    withCallingCodeButton
-                    visible={visibleCountry}
-                    onSelect={onSelectCountry}
-                    onClose={() => setVisibleCountry(false)}
+                  <Text style={styles.title}>Sign Up</Text>
+
+                  <Text style={styles.subtitle}>
+                    Already have an account?{' '}
+                    <Text
+                      style={styles.loginLink}
+                      onPress={() => navigation.goBack()}>
+                      Log In
+                    </Text>
+                  </Text>
+                </View>
+
+                <View style={styles.card}>
+                  <TextInput
+                    placeholder="Loisbecket@gmail.com"
+                    placeholderTextColor={Color.Placeholder}
+                    value={values.email}
+                    onChangeText={handleChange('email')}
+                    onBlur={handleBlur('email')}
+                    style={[
+                      styles.input,
+                      {
+                        borderColor:
+                          touched.email && errors.email
+                            ? 'red'
+                            : Color.boredrColor,
+                      },
+                    ]}
                   />
 
-                  {/* <Text style={{marginLeft: 5}}>{callingCode}</Text> */}
-                </TouchableOpacity>
+                  {touched.email && errors.email && (
+                    <Text style={styles.errorText}>{errors.email}</Text>
+                  )}
 
-                <TextInput
-                  placeholder="Enter phone number"
-                  placeholderTextColor={Color.Placeholder}
-                  keyboardType="phone-pad"
-                  style={{flex: 1}}
-                />
-              </View>
+                  <View
+                    style={[
+                      styles.iconInput,
+                      {
+                        borderColor:
+                          touched.password && errors.password
+                            ? 'red'
+                            : Color.boredrColor,
+                        marginTop: 20,
+                      },
+                    ]}>
+                    <TextInput
+                      placeholder="*******"
+                      placeholderTextColor={Color.Placeholder}
+                      secureTextEntry={secure}
+                      style={{flex: 1}}
+                      value={values.password}
+                      onChangeText={handleChange('password')}
+                      onBlur={handleBlur('password')}
+                    />
 
-              <View style={styles.iconInput}>
-                <TextInput
-                  placeholder="*******"
-                  placeholderTextColor={Color.Placeholder}
-                  secureTextEntry={secure}
-                  style={{flex: 1}}
-                />
-                <TouchableOpacity onPress={() => setSecure(!secure)}>
-                  <FastImage
-                    source={
-                      secure
-                        ? require('../../assets/images/hide.png')
-                        : require('../../assets/images/open.png')
-                    }
-                    style={styles.icon22}
-                    resizeMode={FastImage.resizeMode.contain}
-                    tintColor={Color.Placeholder}
-                  />
-                </TouchableOpacity>
-              </View>
+                    <TouchableOpacity onPress={() => setSecure(!secure)}>
+                      <FastImage
+                        source={
+                          secure
+                            ? require('../../assets/images/hide.png')
+                            : require('../../assets/images/open.png')
+                        }
+                        style={styles.icon22}
+                        resizeMode={FastImage.resizeMode.contain}
+                        tintColor={Color.Placeholder}
+                      />
+                    </TouchableOpacity>
+                  </View>
 
-              <TouchableOpacity style={styles.signupBtn}>
-                <Text style={styles.signupBtnText}>Sign Up</Text>
-              </TouchableOpacity>
+                  {touched.password && errors.password && (
+                    <Text style={styles.errorText}>{errors.password}</Text>
+                  )}
 
-              <View style={styles.dividerRow}>
-                <View style={styles.line} />
-                <Text style={styles.orText}>Or</Text>
-                <View style={styles.line} />
-              </View>
+                  <TouchableOpacity
+                    style={[styles.signupBtn, {opacity: loading ? 0.7 : 1}]}
+                    onPress={handleSubmit}
+                    disabled={loading}>
+                    {loading ? (
+                      <ActivityIndicator color={Color.WHITE} size="small" />
+                    ) : (
+                      <Text style={styles.signupBtnText}>Sign Up</Text>
+                    )}
+                  </TouchableOpacity>
 
-              <TouchableOpacity style={styles.googleBtn}>
-                <FastImage
-                  source={require('../../assets/images/google.png')}
-                  style={styles.icon20}
-                  resizeMode={FastImage.resizeMode.contain}
-                />
-                <Text style={styles.googleText}>Sign up with Google</Text>
-              </TouchableOpacity>
-            </View>
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </View>
-    </SafeAreaView>
+                  <View style={styles.dividerRow}>
+                    <View style={styles.line} />
+                    <Text style={styles.orText}>Or</Text>
+                    <View style={styles.line} />
+                  </View>
+
+                  <TouchableOpacity style={styles.googleBtn}>
+                    <FastImage
+                      source={require('../../assets/images/google.png')}
+                      style={styles.icon20}
+                      resizeMode={FastImage.resizeMode.contain}
+                    />
+                    <Text style={styles.googleText}>Sign up with Google</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity style={[styles.googleBtn, {marginTop: 15}]}>
+                    <FastImage
+                      source={require('../../assets/images/whatsapp.png')}
+                      style={styles.icon20}
+                      resizeMode={FastImage.resizeMode.contain}
+                    />
+                    <Text style={styles.googleText}>Sign up with whatsapp</Text>
+                  </TouchableOpacity>
+                </View>
+              </ScrollView>
+            </KeyboardAvoidingView>
+          </View>
+          <AlertModal
+            visible={modalVisible}
+            message={modalMessage}
+            isSuccess={modalSuccess}
+            isError={!modalSuccess}
+            onClose={() => setModalVisible(false)}
+            onClick={() => {
+              setModalVisible(false);
+
+              if (modalSuccess) {
+                navigation.goBack();
+              }
+            }}
+          />
+        </SafeAreaView>
+      )}
+    </Formik>
   );
 };
 
 export default SignUpScreen;
 
 const styles = StyleSheet.create({
+  errorText: {
+    color: 'red',
+    fontSize: 12,
+    marginBottom: 10,
+    marginTop: 5,
+  },
+
   greenHeader: {
     backgroundColor: Color.GREEN,
-    paddingTop: 30,
+    paddingTop: 60,
     paddingBottom: 260,
     alignItems: 'center',
   },
@@ -288,15 +306,6 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
 
-  row: {
-    flexDirection: 'row',
-    marginBottom: 15,
-  },
-
-  halfInput: {
-    flex: 1,
-  },
-
   input: {
     height: 55,
     borderRadius: 12,
@@ -314,12 +323,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: Color.boredrColor,
-  },
-
-  phoneLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginRight: 10,
   },
 
   signupBtn: {
@@ -377,7 +380,7 @@ const styles = StyleSheet.create({
   },
 
   icon20: {
-    width: 20,
-    height: 20,
+    width: 25,
+    height: 25,
   },
 });

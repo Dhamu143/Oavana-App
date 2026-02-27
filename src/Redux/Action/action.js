@@ -8,3 +8,8 @@ export const SkipLogin = skiplogin => ({
   type: 'ADD_SKIP_LOGIN',
   skiplogin: skiplogin,
 });
+
+export const LoginSuceess = userLogin => ({
+  type: 'ADD_USER_LOGIN',
+  userLogin: userLogin,
+});

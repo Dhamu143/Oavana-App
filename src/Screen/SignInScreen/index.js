@@ -10,20 +10,43 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Color from '../../Common/Color';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useDispatch} from 'react-redux';
-import {SkipLogin} from '../../Redux/Action/action';
+import {LoginSuceess, SkipLogin} from '../../Redux/Action/action';
+import {Formik} from 'formik';
+import * as Yup from 'yup';
+import AlertModal from '../../Modal/AlertModal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import apiClient from '../../utils/ApiClient';
 
-const {width, height} = Dimensions.get('window');
+const {width} = Dimensions.get('window');
+
+const SignInSchema = Yup.object().shape({
+  email: Yup.string().email('Enter valid email').required('Email is required'),
+
+  password: Yup.string()
+    .min(6, 'Password must be at least 6 characters')
+    .required('Password is required'),
+});
 
 const SignInScreen = ({navigation}) => {
   const dispatch = useDispatch();
 
-  const [remember, setRemember] = useState(false);
   const [secure, setSecure] = useState(true);
+  const [loading, setLoading] = useState(false);
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalSuccess, setModalSuccess] = useState(false);
+
+  const handelSkipLogin = () => {
+    dispatch(SkipLogin(true));
+    navigation.replace('MaindashboardDrawer');
+  };
 
   const socialIcons =
     Platform.OS === 'ios'
@@ -39,128 +62,208 @@ const SignInScreen = ({navigation}) => {
           {icon: require('../../assets/images/whatsapp.png')},
         ];
 
-  const handelSkipLogin = () => {
-    dispatch(SkipLogin(true));
-    navigation.replace('MaindashboardDrawer');
-  };
-
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: Color.GREEN}}>
-      <StatusBar backgroundColor={Color.GREEN} barStyle="light-content" />
-      <View style={{flex: 1, backgroundColor: Color.WHITE}}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          style={{flex: 1}}>
-          <ScrollView
-            contentContainerStyle={{flexGrow: 1}}
-            showsVerticalScrollIndicator={false}>
-            <View style={styles.greenHeader}>
-              <TouchableOpacity
-                style={styles.skipBtn}
-                onPress={handelSkipLogin}>
-                <Text style={styles.skipText}>Skip</Text>
-              </TouchableOpacity>
+    <Formik
+      initialValues={{email: '', password: ''}}
+      validationSchema={SignInSchema}
+      onSubmit={async (values, {resetForm}) => {
+        try {
+          setLoading(true);
 
-              <FastImage
-                source={require('../../assets/images/Logo.png')}
-                style={styles.logo}
-                resizeMode={FastImage.resizeMode.contain}
-              />
+          const deviceId = await AsyncStorage.getItem('deviceId');
 
-              <Text style={styles.title}>
-                Sign in to your{'\n'}
-                <Text style={{fontWeight: '700'}}>Account</Text>
-              </Text>
+          const response = await apiClient.post('/auth/signin', {
+            email: values.email.toLowerCase(),
+            password: values.password,
+            deviceid: deviceId,
+          });
 
-              <Text style={styles.subtitle}>
-                Enter your email and password to log in
-              </Text>
-            </View>
+          const message = response?.data?.message || 'Login success';
+          const success = response?.data?.success || false;
 
-            <View style={styles.card}>
-              <View style={styles.socialRow}>
-                {socialIcons.map((item, index) => (
-                  <TouchableOpacity key={index} style={styles.socialBtn}>
-                    <FastImage
-                      source={item.icon}
-                      style={styles.socialIcon}
-                      resizeMode={FastImage.resizeMode.contain}
-                      tintColor={item.tint || null}
-                    />
+          // console.log('response', response);
+
+          if (success) {
+            await AsyncStorage.setItem(
+              'authToken',
+              response?.data?.data?.token,
+            );
+            dispatch(LoginSuceess(true));
+            setModalMessage(message);
+            setModalSuccess(success);
+            setModalVisible(true);
+            resetForm();
+          }
+        } catch (error) {
+          const message = error?.response?.data?.message || 'Login failed';
+
+          setModalMessage(message);
+          setModalSuccess(false);
+          setModalVisible(true);
+        } finally {
+          setLoading(false);
+        }
+      }}>
+      {({handleChange, handleBlur, handleSubmit, values, errors, touched}) => (
+        <SafeAreaView style={{flex: 1, backgroundColor: Color.GREEN}}>
+          <StatusBar backgroundColor={Color.GREEN} barStyle="light-content" />
+
+          <View style={{flex: 1, backgroundColor: Color.WHITE}}>
+            <KeyboardAvoidingView
+              behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+              style={{flex: 1}}>
+              <ScrollView
+                contentContainerStyle={{flexGrow: 1}}
+                showsVerticalScrollIndicator={false}>
+                <View style={styles.greenHeader}>
+                  <TouchableOpacity
+                    style={styles.skipBtn}
+                    onPress={handelSkipLogin}>
+                    <Text style={styles.skipText}>Skip</Text>
                   </TouchableOpacity>
-                ))}
-              </View>
 
-              <View style={styles.dividerRow}>
-                <View style={styles.line} />
-                <Text style={styles.orText}>Or login with</Text>
-                <View style={styles.line} />
-              </View>
-
-              <TextInput
-                placeholder="Loisbecket@gmail.com"
-                style={styles.input}
-                placeholderTextColor={Color.Placeholder}
-              />
-
-              <View style={styles.passwordWrapper}>
-                <TextInput
-                  placeholder="*******"
-                  secureTextEntry={secure}
-                  style={styles.passwordInput}
-                  placeholderTextColor={Color.Placeholder}
-                />
-                <TouchableOpacity onPress={() => setSecure(!secure)}>
                   <FastImage
-                    source={
-                      secure
-                        ? require('../../assets/images/hide.png')
-                        : require('../../assets/images/open.png')
-                    }
-                    style={styles.eyeIcon}
+                    source={require('../../assets/images/Logo_icon.png')}
+                    style={styles.logo}
                     resizeMode={FastImage.resizeMode.contain}
-                    tintColor={Color.Placeholder}
                   />
-                </TouchableOpacity>
-              </View>
 
-              <View style={styles.optionsRow}>
-                <TouchableOpacity
-                  style={styles.rememberRow}
-                  onPress={() => setRemember(!remember)}>
+                  <Text style={styles.title}>
+                    Sign in to your{'\n'}
+                    <Text style={{fontWeight: '700'}}>Account</Text>
+                  </Text>
+
+                  <Text style={styles.subtitle}>
+                    Enter your email and password to log in
+                  </Text>
+                </View>
+
+                <View style={styles.card}>
+                  <View style={styles.socialRow}>
+                    {socialIcons.map((item, index) => (
+                      <TouchableOpacity key={index} style={styles.socialBtn}>
+                        <FastImage
+                          source={item.icon}
+                          style={styles.socialIcon}
+                          tintColor={item.tint || null}
+                        />
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+
+                  <View style={styles.dividerRow}>
+                    <View style={styles.line} />
+                    <Text style={styles.orText}>Or login with</Text>
+                    <View style={styles.line} />
+                  </View>
+
+                  <TextInput
+                    placeholder="Loisbecket@gmail.com"
+                    style={[
+                      styles.input,
+                      {
+                        borderColor:
+                          touched.email && errors.email
+                            ? 'red'
+                            : Color.boredrColor,
+                      },
+                    ]}
+                    placeholderTextColor={Color.Placeholder}
+                    value={values.email}
+                    onChangeText={handleChange('email')}
+                    onBlur={handleBlur('email')}
+                  />
+
+                  {touched.email && errors.email && (
+                    <Text style={[styles.errorText, {marginTop: 0}]}>
+                      {errors.email}
+                    </Text>
+                  )}
+
                   <View
-                    style={[styles.checkbox, remember && styles.checkedBox]}
-                  />
-                  <Text style={styles.rememberText}>Remember me</Text>
-                </TouchableOpacity>
+                    style={[
+                      styles.passwordWrapper,
+                      {
+                        borderColor:
+                          touched.password && errors.password
+                            ? 'red'
+                            : Color.boredrColor,
+                      },
+                    ]}>
+                    <TextInput
+                      placeholder="*******"
+                      secureTextEntry={secure}
+                      style={styles.passwordInput}
+                      placeholderTextColor={Color.Placeholder}
+                      value={values.password}
+                      onChangeText={handleChange('password')}
+                      onBlur={handleBlur('password')}
+                    />
 
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('ForgotPasswordScreen')}>
-                  <Text style={styles.forgotText}>Forgot Password ?</Text>
-                </TouchableOpacity>
-              </View>
+                    <TouchableOpacity onPress={() => setSecure(!secure)}>
+                      <FastImage
+                        source={
+                          secure
+                            ? require('../../assets/images/hide.png')
+                            : require('../../assets/images/open.png')
+                        }
+                        style={styles.eyeIcon}
+                        tintColor={Color.Placeholder}
+                      />
+                    </TouchableOpacity>
+                  </View>
 
-              <TouchableOpacity style={styles.loginBtn}>
-                <Text style={styles.loginText}>Log In</Text>
-              </TouchableOpacity>
+                  {touched.password && errors.password && (
+                    <Text style={styles.errorText}>{errors.password}</Text>
+                  )}
 
-              <View style={styles.signupRow}>
-                <Text style={styles.signupText}>Don’t have an account? </Text>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('SignUpScreen')}>
-                  <Text style={styles.signupLink}>Sign Up</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </View>
-    </SafeAreaView>
+                  <TouchableOpacity
+                    style={[styles.loginBtn, {opacity: loading ? 0.7 : 1}]}
+                    onPress={handleSubmit}
+                    disabled={loading}>
+                    {loading ? (
+                      <ActivityIndicator color={Color.WHITE} />
+                    ) : (
+                      <Text style={styles.loginText}>Log In</Text>
+                    )}
+                  </TouchableOpacity>
+
+                  <View style={styles.signupRow}>
+                    <Text style={styles.signupText}>
+                      Don’t have an account?{' '}
+                    </Text>
+
+                    <TouchableOpacity
+                      onPress={() => navigation.navigate('SignUpScreen')}>
+                      <Text style={styles.signupLink}>Sign Up</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </ScrollView>
+            </KeyboardAvoidingView>
+          </View>
+
+          <AlertModal
+            visible={modalVisible}
+            message={modalMessage}
+            isSuccess={modalSuccess}
+            isError={!modalSuccess}
+            onClose={() => setModalVisible(false)}
+            onClick={() => {
+              setModalVisible(false);
+
+              if (modalSuccess) {
+                navigation.replace('MaindashboardDrawer');
+              }
+            }}
+          />
+        </SafeAreaView>
+      )}
+    </Formik>
   );
 };
 
 export default SignInScreen;
-
 const styles = StyleSheet.create({
   greenHeader: {
     backgroundColor: Color.GREEN,
@@ -317,10 +420,10 @@ const styles = StyleSheet.create({
   loginBtn: {
     height: 55,
     backgroundColor: Color.GREEN,
-    borderRadius: 14,
+    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 5,
+    marginTop: 20,
   },
 
   loginText: {
@@ -336,14 +439,21 @@ const styles = StyleSheet.create({
   },
 
   signupText: {
-    fontSize: 13,
+    fontSize: 14,
     color: '#777',
   },
 
   signupLink: {
-    fontSize: 13,
+    fontSize: 14,
     color: Color.GREEN,
     fontWeight: '600',
+  },
+
+  errorText: {
+    color: 'red',
+    fontSize: 12,
+    marginBottom: 8,
+    marginTop: 4,
   },
 
   eyeIcon: {

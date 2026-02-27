@@ -14,11 +14,13 @@ import Color from '../../Common/Color';
 import ImpactSection from '../../Components/ImpactSection';
 import {impactData} from '../../utils/StaticJson';
 import AirDropCard from '../../Components/AirDropCard';
+import {useSelector} from 'react-redux';
 
 const {width, height} = Dimensions.get('window');
 const scale = size => (width / 375) * size;
 
 const MainDashBoard = ({navigation}) => {
+  const {skiplogin, userLogin} = useSelector(reducer => reducer.allReducer);
   const insets = useSafeAreaInsets();
 
   return (

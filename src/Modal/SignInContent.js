@@ -6,110 +6,238 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
+  Platform,
+  ActivityIndicator,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Color from '../Common/Color';
+import {Formik} from 'formik';
+import * as Yup from 'yup';
+import AlertModal from '../Modal/AlertModal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import apiClient from '../utils/ApiClient';
+import {useDispatch} from 'react-redux';
+import {LoginSuceess} from '../Redux/Action/action';
 
-const {width, height} = Dimensions.get('window');
+const SignInSchema = Yup.object().shape({
+  email: Yup.string().email('Enter valid email').required('Email is required'),
 
-const SignInContent = ({onSwitch, onClose, onForgot}) => {
-  const [remember, setRemember] = useState(false);
+  password: Yup.string()
+    .min(6, 'Password must be at least 6 characters')
+    .required('Password is required'),
+});
+
+const SignInContent = ({onSwitch, onClose}) => {
+  const dispatch = useDispatch();
+
   const [secure, setSecure] = useState(true);
+  const [loading, setLoading] = useState(false);
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalSuccess, setModalSuccess] = useState(false);
+
+  const socialIcons =
+    Platform.OS === 'ios'
+      ? [
+          {
+            icon: require('../assets/images/apple.png'),
+            tint: Color.Placeholder,
+          },
+          {
+            icon: require('../assets/images/whatsapp.png'),
+          },
+        ]
+      : [
+          {
+            icon: require('../assets/images/google.png'),
+          },
+          {
+            icon: require('../assets/images/whatsapp.png'),
+          },
+        ];
+
+  const handleLogin = async (values, resetForm) => {
+    try {
+      setLoading(true);
+
+      const deviceId = await AsyncStorage.getItem('deviceId');
+
+      const response = await apiClient.post('/auth/signin', {
+        email: values.email.toLowerCase(),
+        password: values.password,
+        deviceid: deviceId,
+      });
+
+      const success = response?.data?.success || false;
+      const message = response?.data?.message || 'Login success';
+
+      if (success) {
+        await AsyncStorage.setItem('authToken', response?.data?.data?.token);
+
+        dispatch(LoginSuceess(true));
+
+        setModalMessage(message);
+        setModalSuccess(true);
+        setModalVisible(true);
+
+        resetForm();
+      } else {
+        setModalMessage(message);
+        setModalSuccess(false);
+        setModalVisible(true);
+      }
+    } catch (error) {
+      const message = error?.response?.data?.message || 'Login failed';
+
+      setModalMessage(message);
+      setModalSuccess(false);
+      setModalVisible(true);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
-        <Text style={styles.closeText}>✕</Text>
-      </TouchableOpacity>
-
-      <FastImage
-        source={require('../assets/images/Logo1.png')}
-        style={styles.logo}
-        resizeMode={FastImage.resizeMode.contain}
-      />
-
-      <Text style={styles.title}>
-        Sign in to your{'\n'}
-        <Text style={{fontWeight: '700'}}>Account</Text>
-      </Text>
-
-      <Text style={styles.subtitle}>
-        Enter your email and password to log in
-      </Text>
-
-      <View style={styles.socialRow}>
-        {[
-          require('../assets/images/google.png'),
-          require('../assets/images/apple.png'),
-          require('../assets/images/whatsapp.png'),
-        ].map((icon, index) => (
-          <TouchableOpacity key={index} style={styles.socialBtn}>
-            <FastImage source={icon} style={styles.socialIcon} />
+    <Formik
+      initialValues={{email: '', password: ''}}
+      validationSchema={SignInSchema}
+      onSubmit={(values, {resetForm}) => handleLogin(values, resetForm)}>
+      {({handleChange, handleBlur, handleSubmit, values, errors, touched}) => (
+        <View style={styles.container}>
+          <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
+            <Text style={styles.closeText}>✕</Text>
           </TouchableOpacity>
-        ))}
-      </View>
 
-      <View style={styles.dividerRow}>
-        <View style={styles.line} />
-        <Text style={styles.orText}>Or login with</Text>
-        <View style={styles.line} />
-      </View>
-
-      <TextInput
-        placeholder="Loisbecket@gmail.com"
-        style={styles.input}
-        placeholderTextColor={Color.Placeholder}
-      />
-
-      <View style={styles.passwordWrapper}>
-        <TextInput
-          placeholder="*******"
-          secureTextEntry={secure}
-          style={styles.passwordInput}
-          placeholderTextColor={Color.Placeholder}
-        />
-        <TouchableOpacity onPress={() => setSecure(!secure)}>
           <FastImage
-            source={
-              secure
-                ? require('../assets/images/hide.png')
-                : require('../assets/images/open.png')
-            }
-            style={styles.eyeIcon}
-            tintColor={Color.Placeholder}
+            source={require('../assets/images/Logo1.png')}
+            style={styles.logo}
+            resizeMode={FastImage.resizeMode.contain}
           />
-        </TouchableOpacity>
-      </View>
 
-      <View style={styles.optionsRow}>
-        <TouchableOpacity
-          style={styles.rememberRow}
-          onPress={() => setRemember(!remember)}>
-          <View style={[styles.checkbox, remember && styles.checkedBox]} />
-          <Text style={styles.rememberText}>Remember me</Text>
-        </TouchableOpacity>
+          <Text style={styles.title}>
+            Sign in to your{'\n'}
+            <Text style={{fontWeight: '700'}}>Account</Text>
+          </Text>
 
-        <TouchableOpacity onPress={onForgot}>
-          <Text style={styles.forgotText}>Forgot Password ?</Text>
-        </TouchableOpacity>
-      </View>
+          <Text style={styles.subtitle}>
+            Enter your email and password to log in
+          </Text>
 
-      <TouchableOpacity style={styles.loginBtn}>
-        <Text style={styles.loginText}>Log In</Text>
-      </TouchableOpacity>
+          <View style={styles.socialRow}>
+            {socialIcons.map((item, index) => (
+              <TouchableOpacity key={index} style={styles.socialBtn}>
+                <FastImage
+                  source={item.icon}
+                  style={styles.socialIcon}
+                  tintColor={item.tint || null}
+                />
+              </TouchableOpacity>
+            ))}
+          </View>
 
-      <View style={styles.signupRow}>
-        <Text style={styles.signupText}>Don’t have an account? </Text>
-        <TouchableOpacity onPress={onSwitch}>
-          <Text style={styles.signupLink}>Sign Up</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+          <View style={styles.dividerRow}>
+            <View style={styles.line} />
+            <Text style={styles.orText}>Or login with</Text>
+            <View style={styles.line} />
+          </View>
+
+          <TextInput
+            placeholder="Enter email"
+            placeholderTextColor={Color.Placeholder}
+            value={values.email}
+            onChangeText={handleChange('email')}
+            onBlur={handleBlur('email')}
+            style={[
+              styles.input,
+              {
+                borderColor:
+                  touched.email && errors.email ? 'red' : Color.boredrColor,
+              },
+            ]}
+          />
+
+          {touched.email && errors.email && (
+            <Text style={styles.errorText}>{errors.email}</Text>
+          )}
+
+          <View
+            style={[
+              styles.passwordWrapper,
+              {
+                borderColor:
+                  touched.password && errors.password
+                    ? 'red'
+                    : Color.boredrColor,
+              },
+            ]}>
+            <TextInput
+              placeholder="Enter password"
+              placeholderTextColor={Color.Placeholder}
+              secureTextEntry={secure}
+              value={values.password}
+              onChangeText={handleChange('password')}
+              onBlur={handleBlur('password')}
+              style={styles.passwordInput}
+            />
+
+            <TouchableOpacity onPress={() => setSecure(!secure)}>
+              <FastImage
+                source={
+                  secure
+                    ? require('../assets/images/hide.png')
+                    : require('../assets/images/open.png')
+                }
+                style={styles.eyeIcon}
+                tintColor={Color.Placeholder}
+              />
+            </TouchableOpacity>
+          </View>
+
+          {touched.password && errors.password && (
+            <Text style={styles.errorText}>{errors.password}</Text>
+          )}
+
+          <TouchableOpacity
+            style={[styles.loginBtn, {opacity: loading ? 0.7 : 1}]}
+            onPress={handleSubmit}
+            disabled={loading}>
+            {loading ? (
+              <ActivityIndicator color={Color.WHITE} />
+            ) : (
+              <Text style={styles.loginText}>Log In</Text>
+            )}
+          </TouchableOpacity>
+
+          <View style={styles.signupRow}>
+            <Text style={styles.signupText}>Don’t have an account?</Text>
+
+            <TouchableOpacity onPress={onSwitch}>
+              <Text style={styles.signupLink}>Sign Up</Text>
+            </TouchableOpacity>
+          </View>
+
+          <AlertModal
+            visible={modalVisible}
+            message={modalMessage}
+            isSuccess={modalSuccess}
+            isError={!modalSuccess}
+            onClose={() => setModalVisible(false)}
+            onClick={() => {
+              setModalVisible(false);
+
+              if (modalSuccess) {
+                onClose();
+              }
+            }}
+          />
+        </View>
+      )}
+    </Formik>
   );
 };
 
 export default SignInContent;
-
 const styles = StyleSheet.create({
   container: {
     paddingBottom: 20,
@@ -135,10 +263,10 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 26,
+    fontSize: 30,
     textAlign: 'center',
     fontWeight: '600',
-    color: '#000',
+    color: Color.BLACK,
   },
 
   subtitle: {
@@ -154,17 +282,17 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 20,
   },
-
   socialBtn: {
-    width: (width - 100) / 3,
+    flex: 1,
     height: 55,
-    borderRadius: 14,
+    marginHorizontal: 5,
+    backgroundColor: Color.WHITE,
+    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#E5E5E5',
+    borderColor: Color.boredrColor,
   },
-
   socialIcon: {
     width: 24,
     height: 24,
@@ -190,22 +318,22 @@ const styles = StyleSheet.create({
 
   input: {
     height: 55,
-    borderRadius: 14,
+    borderRadius: 12,
     paddingHorizontal: 15,
     marginBottom: 15,
     borderWidth: 1,
-    borderColor: '#E5E5E5',
+    borderColor: Color.boredrColor,
   },
 
   passwordWrapper: {
     height: 55,
-    borderRadius: 14,
+    borderRadius: 12,
     paddingHorizontal: 15,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     borderWidth: 1,
-    borderColor: '#E5E5E5',
+    borderColor: Color.boredrColor,
   },
 
   passwordInput: {
@@ -254,6 +382,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 20,
   },
 
   loginText: {
@@ -269,12 +398,12 @@ const styles = StyleSheet.create({
   },
 
   signupText: {
-    fontSize: 13,
+    fontSize: 14,
     color: '#777',
   },
 
   signupLink: {
-    fontSize: 13,
+    fontSize: 14,
     color: Color.GREEN,
     fontWeight: '600',
   },
@@ -282,5 +411,12 @@ const styles = StyleSheet.create({
   eyeIcon: {
     width: 22,
     height: 22,
+  },
+
+  errorText: {
+    color: 'red',
+    fontSize: 12,
+    marginBottom: 8,
+    marginTop: 4,
   },
 });

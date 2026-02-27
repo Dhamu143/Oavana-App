@@ -11,152 +11,234 @@ import {
   ScrollView,
   TouchableWithoutFeedback,
   Keyboard,
+  ActivityIndicator,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Color from '../Common/Color';
+import {Formik} from 'formik';
+import * as Yup from 'yup';
+import AlertModal from '../Modal/AlertModal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import apiClient from '../utils/ApiClient';
 
-const {width, height} = Dimensions.get('window');
+const {width} = Dimensions.get('window');
+
+const SignUpSchema = Yup.object().shape({
+  email: Yup.string().email('Enter valid email').required('Email is required'),
+
+  password: Yup.string()
+    .min(6, 'Password must be at least 6 characters')
+    .required('Password is required'),
+});
 
 const SignUpContent = ({onSwitch, onClose}) => {
   const [secure, setSecure] = useState(true);
+  const [loading, setLoading] = useState(false);
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalSuccess, setModalSuccess] = useState(false);
+
+  const handleSignUp = async (values, resetForm) => {
+    try {
+      setLoading(true);
+
+      const deviceId = await AsyncStorage.getItem('deviceId');
+
+      const response = await apiClient.post('/auth/register', {
+        email: values.email.toLowerCase(),
+        password: values.password,
+        deviceid: deviceId,
+      });
+
+      const message = response?.data?.message || 'Success';
+      const success = response?.data?.success || false;
+
+      setModalMessage(message);
+      setModalSuccess(success);
+      setModalVisible(true);
+
+      if (success) {
+        resetForm();
+      }
+    } catch (error) {
+      const message = error?.response?.data?.message || 'Something went wrong';
+
+      setModalMessage(message);
+      setModalSuccess(false);
+      setModalVisible(true);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={{width: '100%'}}>
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-          contentContainerStyle={{paddingBottom: 30}}>
-          <TouchableOpacity style={styles.backBtn} onPress={onSwitch}>
-            <FastImage
-              source={require('../assets/images/leftArrow.png')}
-              style={styles.backIcon}
-              resizeMode={FastImage.resizeMode.contain}
-            />
-          </TouchableOpacity>
+    <Formik
+      initialValues={{email: '', password: ''}}
+      validationSchema={SignUpSchema}
+      onSubmit={(values, {resetForm}) => handleSignUp(values, resetForm)}>
+      {({handleChange, handleBlur, handleSubmit, values, errors, touched}) => (
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={{width: '100%'}}>
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
+              contentContainerStyle={{paddingBottom: 30}}>
+              <TouchableOpacity style={styles.backBtn} onPress={onSwitch}>
+                <FastImage
+                  source={require('../assets/images/leftArrow.png')}
+                  style={styles.backIcon}
+                />
+              </TouchableOpacity>
 
-          <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
-            <Text style={styles.headerIcon}>✕</Text>
-          </TouchableOpacity>
+              <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
+                <Text style={styles.headerIcon}>✕</Text>
+              </TouchableOpacity>
 
-          <FastImage
-            source={require('../assets/images/Logo1.png')}
-            style={styles.logo}
-            resizeMode={FastImage.resizeMode.contain}
-          />
-
-          <Text style={styles.title}>Sign Up</Text>
-
-          <Text style={styles.subtitle}>
-            Already have an account?{' '}
-            <Text style={styles.loginLink} onPress={onSwitch}>
-              Log In
-            </Text>
-          </Text>
-
-          <View style={styles.row}>
-            <TextInput
-              placeholder="Lois"
-              style={[styles.input, styles.halfInput]}
-              placeholderTextColor={Color.Placeholder}
-            />
-            <TextInput
-              placeholder="Becket"
-              style={[styles.input, styles.halfInput]}
-              placeholderTextColor={Color.Placeholder}
-            />
-          </View>
-
-          <TextInput
-            placeholder="Loisbecket@gmail.com"
-            style={styles.input}
-            placeholderTextColor={Color.Placeholder}
-          />
-
-          <View style={styles.iconInput}>
-            <TextInput
-              placeholder="18/03/2024"
-              style={styles.flexInput}
-              placeholderTextColor={Color.Placeholder}
-            />
-            <FastImage
-              source={require('../assets/images/calender.png')}
-              style={styles.smallIcon}
-              tintColor={Color.Placeholder}
-            />
-          </View>
-
-          <View style={styles.iconInput}>
-            <View style={styles.countryCode}>
-              <Text>🇩🇰</Text>
-              <Text style={{marginLeft: 5}}>+</Text>
-            </View>
-            <TextInput
-              placeholder="(454) 726-0592"
-              style={styles.flexInput}
-              placeholderTextColor={Color.Placeholder}
-              keyboardType="phone-pad"
-            />
-          </View>
-
-          <View style={styles.iconInput}>
-            <TextInput
-              placeholder="*******"
-              secureTextEntry={secure}
-              style={styles.flexInput}
-              placeholderTextColor={Color.Placeholder}
-            />
-            <TouchableOpacity onPress={() => setSecure(!secure)}>
               <FastImage
-                source={
-                  secure
-                    ? require('../assets/images/hide.png')
-                    : require('../assets/images/open.png')
-                }
-                style={styles.smallIcon}
-                tintColor={Color.Placeholder}
+                source={require('../assets/images/Logo1.png')}
+                style={styles.logo}
+                resizeMode={FastImage.resizeMode.contain}
               />
-            </TouchableOpacity>
-          </View>
 
-          <TouchableOpacity style={styles.primaryBtn}>
-            <Text style={styles.primaryText}>Sign Up</Text>
-          </TouchableOpacity>
+              <Text style={styles.title}>Sign Up</Text>
 
-          <View style={styles.dividerRow}>
-            <View style={styles.line} />
-            <Text style={styles.orText}>Or</Text>
-            <View style={styles.line} />
-          </View>
+              <Text style={styles.subtitle}>
+                Already have an account?{' '}
+                <Text style={styles.loginLink} onPress={onSwitch}>
+                  Log In
+                </Text>
+              </Text>
 
-          <TouchableOpacity style={styles.googleBtn}>
-            <FastImage
-              source={require('../assets/images/google.png')}
-              style={styles.googleIcon}
+              <TextInput
+                placeholder="Enter email"
+                placeholderTextColor={Color.Placeholder}
+                style={[
+                  styles.input,
+                  {
+                    borderColor:
+                      touched.email && errors.email ? 'red' : Color.boredrColor,
+                  },
+                ]}
+                value={values.email}
+                onChangeText={handleChange('email')}
+                onBlur={handleBlur('email')}
+              />
+
+              {touched.email && errors.email && (
+                <Text style={styles.errorText}>{errors.email}</Text>
+              )}
+
+              <View
+                style={[
+                  styles.iconInput,
+                  {
+                    borderColor:
+                      touched.password && errors.password
+                        ? 'red'
+                        : Color.boredrColor,
+                  },
+                ]}>
+                <TextInput
+                  placeholder="Enter password"
+                  placeholderTextColor={Color.Placeholder}
+                  secureTextEntry={secure}
+                  style={styles.flexInput}
+                  value={values.password}
+                  onChangeText={handleChange('password')}
+                  onBlur={handleBlur('password')}
+                />
+
+                <TouchableOpacity onPress={() => setSecure(!secure)}>
+                  <FastImage
+                    source={
+                      secure
+                        ? require('../assets/images/hide.png')
+                        : require('../assets/images/open.png')
+                    }
+                    style={styles.smallIcon}
+                    tintColor={Color.Placeholder}
+                  />
+                </TouchableOpacity>
+              </View>
+
+              {touched.password && errors.password && (
+                <Text style={styles.errorText}>{errors.password}</Text>
+              )}
+
+              <TouchableOpacity
+                style={[styles.primaryBtn, {opacity: loading ? 0.7 : 1}]}
+                onPress={handleSubmit}
+                disabled={loading}>
+                {loading ? (
+                  <ActivityIndicator color={Color.WHITE} size="small" />
+                ) : (
+                  <Text style={styles.primaryText}>Sign Up</Text>
+                )}
+              </TouchableOpacity>
+
+              <View style={styles.dividerRow}>
+                <View style={styles.line} />
+                <Text style={styles.orText}>Or</Text>
+                <View style={styles.line} />
+              </View>
+
+              <TouchableOpacity style={styles.googleBtn}>
+                <FastImage
+                  source={require('../assets/images/google.png')}
+                  style={styles.googleIcon}
+                  resizeMode={FastImage.resizeMode.contain}
+                />
+                <Text style={styles.googleText}>Sign up with Google</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.googleBtn, {marginTop: 15}]}>
+                <FastImage
+                  source={require('../assets/images/whatsapp.png')}
+                  style={styles.googleIcon}
+                  resizeMode={FastImage.resizeMode.contain}
+                />
+                <Text style={styles.googleText}>Sign up with whatsapp</Text>
+              </TouchableOpacity>
+            </ScrollView>
+
+            <AlertModal
+              visible={modalVisible}
+              message={modalMessage}
+              isSuccess={modalSuccess}
+              isError={!modalSuccess}
+              onClose={() => setModalVisible(false)}
+              onClick={() => {
+                setModalVisible(false);
+
+                if (modalSuccess) {
+                  onSwitch();
+                }
+              }}
             />
-            <Text style={styles.googleText}>Sign up with Google</Text>
-          </TouchableOpacity>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </TouchableWithoutFeedback>
+          </KeyboardAvoidingView>
+        </TouchableWithoutFeedback>
+      )}
+    </Formik>
   );
 };
 
 export default SignUpContent;
 
 const styles = StyleSheet.create({
+  errorText: {
+    color: 'red',
+    fontSize: 12,
+    marginBottom: 10,
+    marginTop: 5,
+  },
+
   backBtn: {
     position: 'absolute',
     left: 10,
     top: 0,
     zIndex: 10,
-  },
-
-  backIcon: {
-    width: 22,
-    height: 22,
   },
 
   closeBtn: {
@@ -166,16 +248,21 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
 
-  logo: {
-    width: 42,
-    height: 42,
-    marginTop: 20,
-    alignSelf: 'center',
+  backIcon: {
+    width: 22,
+    height: 22,
   },
 
   headerIcon: {
     fontSize: 18,
     color: '#333',
+  },
+
+  logo: {
+    width: 42,
+    height: 42,
+    marginTop: 20,
+    alignSelf: 'center',
   },
 
   title: {
@@ -198,33 +285,22 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-
   input: {
     height: 55,
     borderRadius: 14,
     paddingHorizontal: 15,
     marginBottom: 15,
     borderWidth: 1,
-    borderColor: Color.boredrColor,
-  },
-
-  halfInput: {
-    width: (width - 70) / 2,
   },
 
   iconInput: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: Color.boredrColor,
     borderRadius: 14,
     paddingHorizontal: 15,
     height: 55,
-    marginBottom: 15,
+    marginBottom: 5,
   },
 
   flexInput: {
@@ -234,12 +310,6 @@ const styles = StyleSheet.create({
   smallIcon: {
     width: 20,
     height: 20,
-  },
-
-  countryCode: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginRight: 10,
   },
 
   primaryBtn: {
@@ -285,8 +355,8 @@ const styles = StyleSheet.create({
   },
 
   googleIcon: {
-    width: 20,
-    height: 20,
+    width: 25,
+    height: 25,
     marginRight: 10,
   },
 

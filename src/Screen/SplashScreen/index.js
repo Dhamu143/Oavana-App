@@ -4,10 +4,12 @@ import Color from '../../Common/Color';
 import {useSelector} from 'react-redux';
 
 const SplashScreen = ({navigation}) => {
-  const {skiplogin} = useSelector(reducer => reducer.allReducer);
+  const {skiplogin, userLogin} = useSelector(reducer => reducer.allReducer);
+
+  console.log('skiplogin && userLogin', skiplogin, userLogin);
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (skiplogin) {
+      if (skiplogin || userLogin) {
         navigation.replace('MaindashboardDrawer');
       } else {
         navigation.replace('SignInScreen');

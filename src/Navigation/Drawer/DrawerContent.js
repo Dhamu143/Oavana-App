@@ -1,13 +1,30 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import {DrawerContentScrollView} from '@react-navigation/drawer';
 import FastImage from 'react-native-fast-image';
 import Color from '../../Common/Color';
 import DrawerItem from '../../Components/MenuItem';
 import {useNavigation} from '@react-navigation/native';
+import {useSelector} from 'react-redux';
+import AuthModal from '../../Modal/AuthModal';
+import AlertModal from '../../Modal/AlertModal';
 
 const DrawerContent = props => {
+  const {skiplogin, userLogin} = useSelector(reducer => reducer.allReducer);
   const navigation = useNavigation();
+  const [showModal, setShowModal] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+
+  const checkLoginAndNavigate = screen => {
+    if (userLogin) {
+      navigation.navigate(screen);
+    } else {
+      setModalMessage('You need to login first to access this feature.');
+      setModalVisible(true);
+    }
+  };
+
   return (
     <DrawerContentScrollView
       {...props}
@@ -35,15 +52,13 @@ const DrawerContent = props => {
           <DrawerItem
             title="Home"
             icon={require('../../assets/images/home.png')}
-            onPress={() => {}}
+            onPress={() => props.navigation.closeDrawer()}
           />
 
           <DrawerItem
             title="My Profile"
             icon={require('../../assets/images/user.png')}
-            onPress={() => {
-              navigation.navigate('UserProfileScreen');
-            }}
+            onPress={() => checkLoginAndNavigate('UserProfileScreen')}
           />
 
           <DrawerItem
@@ -55,25 +70,19 @@ const DrawerContent = props => {
           <DrawerItem
             title="Invite"
             icon={require('../../assets/images/invite.png')}
-            onPress={() => {
-              navigation.navigate('InviteScreen');
-            }}
+            onPress={() => checkLoginAndNavigate('InviteScreen')}
           />
 
           <DrawerItem
             title="Courses"
             icon={require('../../assets/images/book.png')}
-            onPress={() => {
-              navigation.navigate('SustainabilityCoursesScreen');
-            }}
+            onPress={() => checkLoginAndNavigate('SustainabilityCoursesScreen')}
           />
 
           <DrawerItem
             title="Campaigns"
             icon={require('../../assets/images/targeting.png')}
-            onPress={() => {
-              navigation.navigate('CampaignsScreen');
-            }}
+            onPress={() => checkLoginAndNavigate('CampaignsScreen')}
           />
 
           <DrawerItem
@@ -122,6 +131,20 @@ const DrawerContent = props => {
           />
         </View>
       </View>
+      {showModal && (
+        <AuthModal visible={showModal} onClose={() => setShowModal(false)} />
+      )}
+      {modalVisible && (
+        <AlertModal
+          visible={modalVisible}
+          message={modalMessage}
+          onClose={() => setModalVisible(false)}
+          onClick={() => {
+            setModalVisible(false);
+            setShowModal(true);
+          }}
+        />
+      )}
     </DrawerContentScrollView>
   );
 };
