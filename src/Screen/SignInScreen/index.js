@@ -14,12 +14,35 @@ import {
 import FastImage from 'react-native-fast-image';
 import Color from '../../Common/Color';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {useDispatch} from 'react-redux';
+import {SkipLogin} from '../../Redux/Action/action';
 
 const {width, height} = Dimensions.get('window');
 
 const SignInScreen = ({navigation}) => {
+  const dispatch = useDispatch();
+
   const [remember, setRemember] = useState(false);
   const [secure, setSecure] = useState(true);
+
+  const socialIcons =
+    Platform.OS === 'ios'
+      ? [
+          {
+            icon: require('../../assets/images/apple.png'),
+            tint: Color.Placeholder,
+          },
+          {icon: require('../../assets/images/whatsapp.png')},
+        ]
+      : [
+          {icon: require('../../assets/images/google.png')},
+          {icon: require('../../assets/images/whatsapp.png')},
+        ];
+
+  const handelSkipLogin = () => {
+    dispatch(SkipLogin(true));
+    navigation.replace('MaindashboardDrawer');
+  };
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: Color.GREEN}}>
@@ -32,7 +55,9 @@ const SignInScreen = ({navigation}) => {
             contentContainerStyle={{flexGrow: 1}}
             showsVerticalScrollIndicator={false}>
             <View style={styles.greenHeader}>
-              <TouchableOpacity style={styles.skipBtn}>
+              <TouchableOpacity
+                style={styles.skipBtn}
+                onPress={handelSkipLogin}>
                 <Text style={styles.skipText}>Skip</Text>
               </TouchableOpacity>
 
@@ -54,16 +79,13 @@ const SignInScreen = ({navigation}) => {
 
             <View style={styles.card}>
               <View style={styles.socialRow}>
-                {[
-                  require('../../assets/images/google.png'),
-                  require('../../assets/images/apple.png'),
-                  require('../../assets/images/whatsapp.png'),
-                ].map((icon, index) => (
+                {socialIcons.map((item, index) => (
                   <TouchableOpacity key={index} style={styles.socialBtn}>
                     <FastImage
-                      source={icon}
+                      source={item.icon}
                       style={styles.socialIcon}
                       resizeMode={FastImage.resizeMode.contain}
+                      tintColor={item.tint || null}
                     />
                   </TouchableOpacity>
                 ))}
@@ -118,11 +140,7 @@ const SignInScreen = ({navigation}) => {
                 </TouchableOpacity>
               </View>
 
-              <TouchableOpacity
-                style={styles.loginBtn}
-                onPress={() => {
-                  navigation.navigate('MaindashboardDrawer');
-                }}>
+              <TouchableOpacity style={styles.loginBtn}>
                 <Text style={styles.loginText}>Log In</Text>
               </TouchableOpacity>
 
@@ -154,12 +172,13 @@ const styles = StyleSheet.create({
   skipBtn: {
     position: 'absolute',
     right: 20,
-    top: 10,
+    top: 15,
   },
 
   skipText: {
     color: Color.WHITE,
     fontSize: 14,
+    fontWeight: '400',
   },
 
   logo: {

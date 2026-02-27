@@ -3,3 +3,8 @@ export const RESET_APP = 'RESET_APP';
 export const resetApp = () => ({
   type: RESET_APP,
 });
+
+export const SkipLogin = skiplogin => ({
+  type: 'ADD_SKIP_LOGIN',
+  skiplogin: skiplogin,
+});

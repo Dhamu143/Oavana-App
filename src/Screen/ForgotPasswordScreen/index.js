@@ -13,13 +13,13 @@ import {
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Color from '../../Common/Color';
-import AuthModal from '../../Modal/AuthModal';
+// import AuthModal from '../../Modal/AuthModal';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
 const {width} = Dimensions.get('window');
 
 const ForgotPasswordScreen = ({navigation}) => {
-  const [showModal, setShowModal] = useState(false);
+  // const [showModal, setShowModal] = useState(false);
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: Color.GREEN}}>
@@ -60,9 +60,7 @@ const ForgotPasswordScreen = ({navigation}) => {
                 style={styles.input}
               />
 
-              <TouchableOpacity
-                style={styles.button}
-                onPress={() => setShowModal(true)}>
+              <TouchableOpacity style={styles.button}>
                 <Text style={styles.buttonText}>Send Email</Text>
               </TouchableOpacity>
             </View>
@@ -70,7 +68,7 @@ const ForgotPasswordScreen = ({navigation}) => {
         </KeyboardAvoidingView>
       </View>
 
-      <AuthModal visible={showModal} onClose={() => setShowModal(false)} />
+      {/* <AuthModal visible={showModal} onClose={() => setShowModal(false)} /> */}
     </SafeAreaView>
   );
 };

@@ -13,14 +13,22 @@ import InviteScreen from '../Screen/InviteScreen';
 import ContactScreen from '../Screen/ContactScreen';
 import SustainabilityCoursesScreen from '../Screen/SustainabilityCoursesScreen';
 import CampaignsScreen from '../Screen/CampaignsScreen';
+import SplashScreen from '../Screen/SplashScreen';
 
 const Stack = createNativeStackNavigator();
 
 function MyStack() {
   return (
     <Stack.Navigator
-      initialRouteName="SignInScreen"
+      initialRouteName="SplashScreen"
       screenOptions={{headerShown: false}}>
+      <Stack.Screen
+        name="SplashScreen"
+        component={SplashScreen}
+        options={{
+          animation: 'slide_from_right',
+        }}
+      />
       <Stack.Screen
         name="SignInScreen"
         component={SignInScreen}

@@ -14,11 +14,55 @@ import {
 import FastImage from 'react-native-fast-image';
 import Color from '../../Common/Color';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {SkipLogin} from '../../Redux/Action/action';
+import {useDispatch} from 'react-redux';
+import CountryPicker from 'react-native-country-picker-modal';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const {width} = Dimensions.get('window');
 
 const SignUpScreen = ({navigation}) => {
+  const dispatch = useDispatch();
+
   const [secure, setSecure] = useState(true);
+
+  const [date, setDate] = useState(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const [countryCode, setCountryCode] = useState('IN');
+  const [visibleCountry, setVisibleCountry] = useState(false);
+  const [callingCode, setCallingCode] = useState('+91');
+  const [countryName, setCountryName] = useState('India');
+
+  const handelSkipLogin = () => {
+    dispatch(SkipLogin(true));
+    navigation.replace('MaindashboardDrawer');
+  };
+
+  const onSelectCountry = country => {
+    setCountryCode(country.cca2);
+    setCountryName(country.name);
+
+    if (country.callingCode?.length > 0) {
+      setCallingCode('+' + country.callingCode[0]);
+    }
+  };
+
+  const onChangeDate = (event, selectedDate) => {
+    setShowDatePicker(false);
+
+    if (selectedDate) {
+      setDate(selectedDate);
+    }
+  };
+
+  const formatDate = date => {
+    if (!date) return '';
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: Color.GREEN}}>
@@ -44,7 +88,9 @@ const SignUpScreen = ({navigation}) => {
                 />
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.skipBtn}>
+              <TouchableOpacity
+                style={styles.skipBtn}
+                onPress={handelSkipLogin}>
                 <Text style={styles.skipText}>Skip</Text>
               </TouchableOpacity>
 
@@ -52,7 +98,13 @@ const SignUpScreen = ({navigation}) => {
 
               <Text style={styles.subtitle}>
                 Already have an account?{' '}
-                <Text style={styles.loginLink}>Log In</Text>
+                <Text
+                  style={styles.loginLink}
+                  onPress={() => {
+                    navigation.goBack();
+                  }}>
+                  Log In
+                </Text>
               </Text>
             </View>
 
@@ -76,28 +128,59 @@ const SignUpScreen = ({navigation}) => {
                 style={[styles.input, {marginBottom: 15}]}
               />
 
-              <View style={styles.iconInput}>
-                <TextInput
-                  placeholder="18/03/2024"
-                  placeholderTextColor={Color.Placeholder}
-                  style={{flex: 1}}
-                />
+              <TouchableOpacity
+                style={styles.iconInput}
+                onPress={() => setShowDatePicker(true)}>
+                <Text
+                  style={{flex: 1, color: date ? '#000' : Color.Placeholder}}>
+                  {date ? formatDate(date) : 'Select Date'}
+                </Text>
+
                 <FastImage
                   source={require('../../assets/images/calender.png')}
                   style={styles.icon20}
                   resizeMode={FastImage.resizeMode.contain}
                   tintColor={Color.Placeholder}
                 />
-              </View>
+              </TouchableOpacity>
+
+              {showDatePicker && (
+                <DateTimePicker
+                  value={date || new Date()}
+                  mode="date"
+                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                  onChange={onChangeDate}
+                  maximumDate={new Date()}
+                />
+              )}
 
               <View style={styles.iconInput}>
-                <View style={styles.phoneLeft}>
-                  <Text style={{fontSize: 18}}>🇩🇰</Text>
-                  <Text style={{marginLeft: 6}}>▼</Text>
-                </View>
+                <TouchableOpacity
+                  onPress={() => setVisibleCountry(true)}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginRight: 10,
+                  }}>
+                  <CountryPicker
+                    countryCode={countryCode}
+                    withFilter
+                    withFlag
+                    withCallingCode
+                    withAlphaFilter
+                    withCallingCodeButton
+                    visible={visibleCountry}
+                    onSelect={onSelectCountry}
+                    onClose={() => setVisibleCountry(false)}
+                  />
+
+                  {/* <Text style={{marginLeft: 5}}>{callingCode}</Text> */}
+                </TouchableOpacity>
+
                 <TextInput
-                  placeholder="(454) 726-0592"
+                  placeholder="Enter phone number"
                   placeholderTextColor={Color.Placeholder}
+                  keyboardType="phone-pad"
                   style={{flex: 1}}
                 />
               </View>
@@ -162,13 +245,13 @@ const styles = StyleSheet.create({
   backBtn: {
     position: 'absolute',
     left: 20,
-    top: 10,
+    top: 30,
   },
 
   skipBtn: {
     position: 'absolute',
     right: 20,
-    top: 10,
+    top: 30,
   },
 
   skipText: {
@@ -190,6 +273,7 @@ const styles = StyleSheet.create({
   loginLink: {
     textDecorationLine: 'underline',
     color: Color.WHITE,
+    fontWeight: '500',
   },
 
   card: {
