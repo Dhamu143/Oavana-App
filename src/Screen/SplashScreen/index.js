@@ -1,31 +1,31 @@
 import React, {useEffect} from 'react';
-import {SafeAreaView, StatusBar, StyleSheet, Image} from 'react-native';
+import {SafeAreaView, StatusBar, StyleSheet} from 'react-native';
 import Color from '../../Common/Color';
 import {useSelector} from 'react-redux';
+import SafeFastImage from '../../utils/SafeFastImage';
 
 const SplashScreen = ({navigation}) => {
   const {skiplogin, userLogin} = useSelector(reducer => reducer.allReducer);
 
-  console.log('skiplogin && userLogin', skiplogin, userLogin);
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (skiplogin || userLogin) {
-        navigation.replace('MaindashboardDrawer');
-      } else {
-        navigation.replace('SignInScreen');
-      }
-    }, 1200);
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     if (skiplogin || userLogin) {
+  //       navigation.replace('MaindashboardDrawer');
+  //     } else {
+  //       navigation.replace('SignInScreen');
+  //     }
+  //   }, 1200);
 
-    return () => clearTimeout(timer);
-  }, []);
+  //   return () => clearTimeout(timer);
+  // }, []);
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={Color.WHITE} />
-      <Image
+
+      <SafeFastImage
         source={require('../../assets/images/Logo1.png')}
         style={styles.logo}
-        resizeMode="contain"
       />
     </SafeAreaView>
   );
