@@ -6,29 +6,27 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import Color from '../Common/Color';
+import SafeFastImage from '../utils/SafeFastImage';
 
 const ForgotPasswordContent = ({onBack, onClose}) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.backBtn} onPress={onBack}>
-        <FastImage
-          source={require('../assets/images/leftArrow.png')}
-          style={styles.backIcon}
-          resizeMode={FastImage.resizeMode.contain}
-        />
+       <SafeFastImage
+  source={require('../assets/images/leftArrow.png')}
+  style={styles.backIcon}
+/>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
         <Text style={styles.closeText}>✕</Text>
       </TouchableOpacity>
 
-      <FastImage
-        source={require('../assets/images/Logo1.png')}
-        style={styles.logo}
-        resizeMode={FastImage.resizeMode.contain}
-      />
+     <SafeFastImage
+  source={require('../assets/images/Logo1.png')}
+  style={styles.logo}
+/>
 
       <Text style={styles.title}>Forgot password</Text>
 

@@ -8,16 +8,18 @@ import {
   StatusBar,
   ScrollView,
 } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import Color from '../../Common/Color';
 import ImpactSection from '../../Components/ImpactSection';
 import {impactData} from '../../utils/StaticJson';
 import AirDropCard from '../../Components/AirDropCard';
 import {useSelector} from 'react-redux';
+import SafeFastImage from '../../utils/SafeFastImage';
 
-const {width, height} = Dimensions.get('window');
-const scale = size => (width / 375) * size;
+const scale = size => {
+  const {width} = Dimensions.get('window');
+  return (width / 375) * size;
+};
 
 const MainDashBoard = ({navigation}) => {
   const {skiplogin, userLogin} = useSelector(reducer => reducer.allReducer);
@@ -31,19 +33,17 @@ const MainDashBoard = ({navigation}) => {
           <TouchableOpacity
             style={styles.menuBtn}
             onPress={() => navigation.toggleDrawer()}>
-            <FastImage
-              source={require('../../assets/images/menu.png')}
-              style={styles.menuIcon}
-              resizeMode={FastImage.resizeMode.contain}
-            />
+          <SafeFastImage
+  source={require('../../assets/images/menu.png')}
+  style={styles.menuIcon}
+/>
           </TouchableOpacity>
 
           <View style={styles.pointsBox}>
-            <FastImage
-              source={require('../../assets/images/creation.png')}
-              style={styles.starIcon}
-              resizeMode={FastImage.resizeMode.contain}
-            />
+           <SafeFastImage
+  source={require('../../assets/images/creation.png')}
+  style={styles.starIcon}
+/>
             <View>
               <Text style={styles.pointsText}>1,247.06</Text>
               <Text style={styles.pointsLabel}>GET Points</Text>
@@ -62,11 +62,10 @@ const MainDashBoard = ({navigation}) => {
         contentContainerStyle={styles.scrollContainer}>
         <View style={styles.card}>
           <View style={styles.badge}>
-            <FastImage
-              source={require('../../assets/images/star.png')}
-              style={styles.badgeIcon}
-              resizeMode={FastImage.resizeMode.contain}
-            />
+            <SafeFastImage
+  source={require('../../assets/images/star.png')}
+  style={styles.badgeIcon}
+/>
             <Text style={styles.badgeText}>Green Token Earth</Text>
           </View>
 

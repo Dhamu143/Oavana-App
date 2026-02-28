@@ -8,9 +8,9 @@ import {
   TextInput,
   Dimensions,
 } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import Color from '../../Common/Color';
+import SafeFastImage from '../../utils/SafeFastImage';
 
 const {width} = Dimensions.get('window');
 
@@ -23,10 +23,10 @@ const ReferralCodeScreen = () => {
       <StatusBar barStyle="dark-content" backgroundColor={Color.WHITE} />
 
       <View style={styles.content}>
-        <FastImage
+        <SafeFastImage
           source={require('../../assets/images/handshake.png')}
           style={styles.image}
-          resizeMode={FastImage.resizeMode.contain}
+         
         />
 
         <Text style={styles.title}>Welcome to Green Earth Token</Text>

@@ -12,7 +12,6 @@ import {
   ScrollView,
   ActivityIndicator,
 } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import Color from '../../Common/Color';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useDispatch} from 'react-redux';
@@ -22,6 +21,7 @@ import * as Yup from 'yup';
 import AlertModal from '../../Modal/AlertModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import apiClient from '../../utils/ApiClient';
+import SafeFastImage from '../../utils/SafeFastImage';
 
 const {width} = Dimensions.get('window');
 
@@ -122,11 +122,10 @@ const SignInScreen = ({navigation}) => {
                     <Text style={styles.skipText}>Skip</Text>
                   </TouchableOpacity>
 
-                  <FastImage
-                    source={require('../../assets/images/Logo_icon.png')}
-                    style={styles.logo}
-                    resizeMode={FastImage.resizeMode.contain}
-                  />
+                <SafeFastImage
+  source={require('../../assets/images/Logo_icon.png')}
+  style={styles.logo}
+/>
 
                   <Text style={styles.title}>
                     Sign in to your{'\n'}
@@ -142,11 +141,11 @@ const SignInScreen = ({navigation}) => {
                   <View style={styles.socialRow}>
                     {socialIcons.map((item, index) => (
                       <TouchableOpacity key={index} style={styles.socialBtn}>
-                        <FastImage
-                          source={item.icon}
-                          style={styles.socialIcon}
-                          tintColor={item.tint || null}
-                        />
+                     <SafeFastImage
+  source={item.icon}
+  style={styles.socialIcon}
+  tintColor={item.tint}
+/>
                       </TouchableOpacity>
                     ))}
                   </View>
@@ -201,15 +200,15 @@ const SignInScreen = ({navigation}) => {
                     />
 
                     <TouchableOpacity onPress={() => setSecure(!secure)}>
-                      <FastImage
-                        source={
-                          secure
-                            ? require('../../assets/images/hide.png')
-                            : require('../../assets/images/open.png')
-                        }
-                        style={styles.eyeIcon}
-                        tintColor={Color.Placeholder}
-                      />
+                      <SafeFastImage
+  source={
+    secure
+      ? require('../../assets/images/hide.png')
+      : require('../../assets/images/open.png')
+  }
+  style={styles.eyeIcon}
+  tintColor={Color.Placeholder}
+/>
                     </TouchableOpacity>
                   </View>
 

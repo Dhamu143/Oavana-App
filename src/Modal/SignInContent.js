@@ -5,11 +5,10 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Dimensions,
   Platform,
   ActivityIndicator,
 } from 'react-native';
-import FastImage from 'react-native-fast-image';
+
 import Color from '../Common/Color';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
@@ -18,6 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import apiClient from '../utils/ApiClient';
 import {useDispatch} from 'react-redux';
 import {LoginSuceess} from '../Redux/Action/action';
+import SafeFastImage from '../utils/SafeFastImage';
 
 const SignInSchema = Yup.object().shape({
   email: Yup.string().email('Enter valid email').required('Email is required'),
@@ -109,10 +109,9 @@ const SignInContent = ({onSwitch, onClose}) => {
             <Text style={styles.closeText}>✕</Text>
           </TouchableOpacity>
 
-          <FastImage
+            <SafeFastImage
             source={require('../assets/images/Logo1.png')}
             style={styles.logo}
-            resizeMode={FastImage.resizeMode.contain}
           />
 
           <Text style={styles.title}>
@@ -127,11 +126,12 @@ const SignInContent = ({onSwitch, onClose}) => {
           <View style={styles.socialRow}>
             {socialIcons.map((item, index) => (
               <TouchableOpacity key={index} style={styles.socialBtn}>
-                <FastImage
+               <SafeFastImage
                   source={item.icon}
                   style={styles.socialIcon}
-                  tintColor={item.tint || null}
+                  tintColor={item.tint}
                 />
+
               </TouchableOpacity>
             ))}
           </View>
@@ -182,7 +182,7 @@ const SignInContent = ({onSwitch, onClose}) => {
             />
 
             <TouchableOpacity onPress={() => setSecure(!secure)}>
-              <FastImage
+             <SafeFastImage
                 source={
                   secure
                     ? require('../assets/images/hide.png')

@@ -1,10 +1,10 @@
 import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import FastImage from 'react-native-fast-image';
 import Color from '../../Common/Color';
 import ProfileTab from '../../Tabs/ProfileTab';
 import AccountTab from '../../Tabs/AccountTab';
+import SafeFastImage from '../../utils/SafeFastImage';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -16,10 +16,10 @@ const UserProfileScreen = ({navigation}) => {
           onPress={() => {
             navigation.goBack();
           }}>
-          <FastImage
+          <SafeFastImage
             source={require('../../assets/images/back.png')}
             style={styles.menuIcon}
-            resizeMode={FastImage.resizeMode.contain}
+          
           />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>My Profile</Text>
@@ -28,12 +28,12 @@ const UserProfileScreen = ({navigation}) => {
 
       <View style={styles.profileSection}>
         <View style={styles.imageWrapper}>
-          <FastImage
+          <SafeFastImage
             source={require('../../assets/images/userProfile.png')}
             style={styles.profileImage}
           />
           <TouchableOpacity style={styles.cameraIcon}>
-            <FastImage
+            <SafeFastImage
               source={require('../../assets/images/camera.png')}
               style={styles.cameraImage}
               tintColor={Color.WHITE}

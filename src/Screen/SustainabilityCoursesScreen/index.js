@@ -11,9 +11,9 @@ import {
   Platform,
 } from 'react-native';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
-import FastImage from 'react-native-fast-image';
 import Color from '../../Common/Color';
 import FilterModal from '../../Modal/FilterModal';
+import SafeFastImage from '../../utils/SafeFastImage';
 
 const courses = [
   {
@@ -39,11 +39,11 @@ const courses = [
 const CourseCard = memo(({item}) => {
   return (
     <TouchableOpacity activeOpacity={0.8} style={styles.card}>
-      <FastImage
+       <SafeFastImage
         source={item.image}
         style={styles.cardImage}
-        resizeMode={FastImage.resizeMode.cover}
       />
+
 
       <View style={styles.cardContent}>
         <Text
@@ -58,7 +58,7 @@ const CourseCard = memo(({item}) => {
         </Text>
 
         <View style={styles.row}>
-          <FastImage
+           <SafeFastImage
             source={require('../../assets/images/level.png')}
             style={styles.icon}
             tintColor="#777"
@@ -67,8 +67,7 @@ const CourseCard = memo(({item}) => {
           <Text style={styles.rowText} allowFontScaling={false}>
             Beginner
           </Text>
-
-          <FastImage
+<SafeFastImage
             source={require('../../assets/images/Time.png')}
             style={[styles.icon, {marginLeft: 10}]}
             tintColor="#777"
@@ -84,7 +83,7 @@ const CourseCard = memo(({item}) => {
         </Text>
 
         <View style={styles.row}>
-          <FastImage
+          <SafeFastImage
             source={require('../../assets/images/onlineCertificate.png')}
             style={styles.icon}
             tintColor="#777"
@@ -94,7 +93,7 @@ const CourseCard = memo(({item}) => {
             Certificate :
           </Text>
 
-          <FastImage
+         <SafeFastImage
             source={require('../../assets/images/check.png')}
             style={[styles.icon, {marginLeft: 5}]}
           />
@@ -130,18 +129,17 @@ const SustainabilityCoursesScreen = ({navigation}) => {
             style={styles.menuBtn}
             activeOpacity={0.7}
             onPress={() => navigation?.goBack()}>
-            <FastImage
-              source={require('../../assets/images/back.png')}
-              style={styles.menuIcon}
-              tintColor="#777"
-            />
+           <SafeFastImage
+      source={require('../../assets/images/back.png')}
+      style={styles.menuIcon}
+      tintColor="#777"
+    />
           </TouchableOpacity>
 
-          <FastImage
-            source={require('../../assets/images/Logo1.png')}
-            style={styles.logo}
-            resizeMode={FastImage.resizeMode.contain}
-          />
+         <SafeFastImage
+    source={require('../../assets/images/Logo1.png')}
+    style={styles.logo}
+  />
         </View>
 
         <Text style={styles.title} allowFontScaling={false}>
@@ -154,11 +152,11 @@ const SustainabilityCoursesScreen = ({navigation}) => {
 
         <View style={styles.searchRow}>
           <View style={styles.searchBox}>
-            <FastImage
-              source={require('../../assets/images/search.png')}
-              style={styles.searchIcon}
-              tintColor="#777"
-            />
+            <SafeFastImage
+    source={require('../../assets/images/search.png')}
+    style={styles.searchIcon}
+    tintColor="#777"
+  />
 
             <TextInput
               placeholder="Search courses"
@@ -173,10 +171,10 @@ const SustainabilityCoursesScreen = ({navigation}) => {
             activeOpacity={0.7}
             style={styles.filterBtn}
             onPress={() => setFilterVisible(true)}>
-            <FastImage
-              source={require('../../assets/images/filter.png')}
-              style={styles.filterIcon}
-            />
+           <SafeFastImage
+    source={require('../../assets/images/filter.png')}
+    style={styles.filterIcon}
+  />
           </TouchableOpacity>
         </View>
 

@@ -12,7 +12,6 @@ import {
   StatusBar,
   ActivityIndicator,
 } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import Color from '../../Common/Color';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {SkipLogin} from '../../Redux/Action/action';
@@ -22,6 +21,7 @@ import * as Yup from 'yup';
 import AlertModal from '../../Modal/AlertModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import apiClient from '../../utils/ApiClient';
+import SafeFastImage from '../../utils/SafeFastImage';
 
 const {width} = Dimensions.get('window');
 
@@ -98,12 +98,11 @@ const SignUpScreen = ({navigation}) => {
                   <TouchableOpacity
                     style={styles.backBtn}
                     onPress={() => navigation.goBack()}>
-                    <FastImage
-                      source={require('../../assets/images/leftArrow.png')}
-                      style={styles.icon22}
-                      resizeMode={FastImage.resizeMode.contain}
-                      tintColor={Color.WHITE}
-                    />
+                   <SafeFastImage
+  source={require('../../assets/images/leftArrow.png')}
+  style={styles.icon22}
+  tintColor={Color.WHITE}
+/>
                   </TouchableOpacity>
 
                   <TouchableOpacity
@@ -168,16 +167,15 @@ const SignUpScreen = ({navigation}) => {
                     />
 
                     <TouchableOpacity onPress={() => setSecure(!secure)}>
-                      <FastImage
-                        source={
-                          secure
-                            ? require('../../assets/images/hide.png')
-                            : require('../../assets/images/open.png')
-                        }
-                        style={styles.icon22}
-                        resizeMode={FastImage.resizeMode.contain}
-                        tintColor={Color.Placeholder}
-                      />
+                      <SafeFastImage
+  source={
+    secure
+      ? require('../../assets/images/hide.png')
+      : require('../../assets/images/open.png')
+  }
+  style={styles.icon22}
+  tintColor={Color.Placeholder}
+/>
                     </TouchableOpacity>
                   </View>
 
@@ -203,20 +201,18 @@ const SignUpScreen = ({navigation}) => {
                   </View>
 
                   <TouchableOpacity style={styles.googleBtn}>
-                    <FastImage
-                      source={require('../../assets/images/google.png')}
-                      style={styles.icon20}
-                      resizeMode={FastImage.resizeMode.contain}
-                    />
+                    <SafeFastImage
+  source={require('../../assets/images/google.png')}
+  style={styles.icon20}
+/>
                     <Text style={styles.googleText}>Sign up with Google</Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity style={[styles.googleBtn, {marginTop: 15}]}>
-                    <FastImage
-                      source={require('../../assets/images/whatsapp.png')}
-                      style={styles.icon20}
-                      resizeMode={FastImage.resizeMode.contain}
-                    />
+                    <SafeFastImage
+  source={require('../../assets/images/whatsapp.png')}
+  style={styles.icon20}
+/>
                     <Text style={styles.googleText}>Sign up with whatsapp</Text>
                   </TouchableOpacity>
                 </View>

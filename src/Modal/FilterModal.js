@@ -10,11 +10,11 @@ import {
   Platform,
 } from 'react-native';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
-import FastImage from 'react-native-fast-image';
 import Color from '../Common/Color';
 import RadioItem from '../Components/RadioItem';
 import TypeButton from '../Components/TypeButton';
 import RangeSlider from 'rn-range-slider';
+import SafeFastImage from '../utils/SafeFastImage';
 
 const FilterModal = ({visible, onClose}) => {
   const insets = useSafeAreaInsets();
@@ -53,20 +53,18 @@ const FilterModal = ({visible, onClose}) => {
         />
 
         <View style={styles.header}>
-          <FastImage
-            source={require('../assets/images/Logo1.png')}
-            style={styles.logo}
-            resizeMode={FastImage.resizeMode.contain}
-          />
-
+          <SafeFastImage
+  source={require('../assets/images/Logo1.png')}
+  style={styles.logo}
+/>
           <TouchableOpacity
             activeOpacity={0.7}
             style={styles.closeBtn}
             onPress={onClose}>
-            <FastImage
-              source={require('../assets/images/close.png')}
-              style={styles.closeIcon}
-            />
+          <SafeFastImage
+  source={require('../assets/images/close.png')}
+  style={styles.closeIcon}
+/>
           </TouchableOpacity>
         </View>
 

@@ -1,8 +1,8 @@
 import React from 'react';
 import {Modal, View, Text, TouchableOpacity, StyleSheet} from 'react-native';
-import FastImage from 'react-native-fast-image';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Color from '../Common/Color';
+import SafeFastImage from '../utils/SafeFastImage';
 
 const AlertModal = ({
   visible,
@@ -42,20 +42,17 @@ const AlertModal = ({
               style={styles.closeBtn}
               onPress={onClose}
               activeOpacity={0.7}>
-              <FastImage
-                source={require('../assets/images/cross.png')}
-                style={styles.closeIcon}
-                resizeMode={FastImage.resizeMode.contain}
-                tintColor="#4ca564"
-              />
+            <SafeFastImage
+  source={require('../assets/images/cross.png')}
+  style={styles.closeIcon}
+  tintColor="#4ca564"
+/>
             </TouchableOpacity>
 
-            <FastImage
-              source={getImageSource()}
-              style={styles.infoImage}
-              resizeMode={FastImage.resizeMode.contain}
-            />
-
+           <SafeFastImage
+  source={getImageSource()}
+  style={styles.infoImage}
+/>
             <Text style={[styles.messageText, messageStyle]}>{message}</Text>
 
             <TouchableOpacity

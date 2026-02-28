@@ -7,9 +7,9 @@ import {
   Animated,
   Dimensions,
 } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import Color from '../Common/Color';
 import PledgeModal from '../Modal/PledgeModal';
+import SafeFastImage from '../utils/SafeFastImage';
 
 const {width} = Dimensions.get('window');
 const scale = size => (width / 375) * size;
@@ -38,11 +38,10 @@ const AirDropCard = ({currentPoints = 250, totalPoints = 1500}) => {
       <View style={styles.card}>
         <View style={styles.topSection}>
           <View style={styles.quoteRow}>
-            <FastImage
-              source={require('../assets/images/Bus.png')}
-              style={styles.busImage}
-              resizeMode={FastImage.resizeMode.contain}
-            />
+            <SafeFastImage
+  source={require('../assets/images/Bus.png')}
+  style={styles.busImage}
+/>
 
             <View style={{flex: 1}}>
               <Text style={styles.quoteText}>
@@ -59,21 +58,19 @@ const AirDropCard = ({currentPoints = 250, totalPoints = 1500}) => {
           style={styles.earthSection}
           onPress={() => setModalVisible(true)}>
           <View style={styles.button}>
-            <FastImage
-              source={require('../assets/images/tap.png')}
-              style={styles.tapIcon}
-              resizeMode={FastImage.resizeMode.contain}
-            />
+            <SafeFastImage
+  source={require('../assets/images/tap.png')}
+  style={styles.tapIcon}
+/>
             <Text style={styles.buttonText}>
               Tap Earth to Pledge. Act for the Planet
             </Text>
           </View>
 
-          <FastImage
-            source={require('../assets/images/earth.png')}
-            style={styles.earthBg}
-            resizeMode={FastImage.resizeMode.contain}
-          />
+         <SafeFastImage
+  source={require('../assets/images/earth.png')}
+  style={styles.earthBg}
+/>
         </TouchableOpacity>
 
         <View style={styles.progressSection}>

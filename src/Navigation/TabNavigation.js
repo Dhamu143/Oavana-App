@@ -2,9 +2,9 @@ import React from 'react';
 import {View, Text, StyleSheet, Dimensions, Platform} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
-import FastImage from 'react-native-fast-image';
 import MainDashBoard from '../Screen/MainDashBoard';
 import Color from '../Common/Color';
+import SafeFastImage from '../utils/SafeFastImage';
 
 const Tab = createBottomTabNavigator();
 const {width} = Dimensions.get('window');
@@ -15,12 +15,11 @@ const CustomIcon = ({icon, color, title, subtitle}) => {
   return (
     <View style={styles.tabItem}>
       <View style={[styles.iconContainer, {backgroundColor: color}]}>
-        <FastImage
-          source={icon}
-          style={styles.icon}
-          tintColor={Color.WHITE}
-          resizeMode={FastImage.resizeMode.contain}
-        />
+       <SafeFastImage
+  source={icon}
+  style={styles.icon}
+  tintColor={Color.WHITE}
+/>
       </View>
 
       <Text style={styles.title} numberOfLines={1}>

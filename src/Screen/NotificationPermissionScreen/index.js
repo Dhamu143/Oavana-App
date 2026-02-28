@@ -7,9 +7,9 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import {useSafeAreaInsets, SafeAreaView} from 'react-native-safe-area-context';
 import Color from '../../Common/Color';
+import SafeFastImage from '../../utils/SafeFastImage';
 
 const {width} = Dimensions.get('window');
 
@@ -21,12 +21,11 @@ const NotificationPermissionScreen = () => {
       <StatusBar barStyle="dark-content" backgroundColor={Color.WHITE} />
 
       <View style={styles.content}>
-        <FastImage
-          source={require('../../assets/images/PushNotification.png')}
-          style={styles.image}
-          resizeMode={FastImage.resizeMode.contain}
-        />
-
+       <SafeFastImage
+  source={require('../../assets/images/PushNotification.png')}
+  style={styles.image}
+ 
+/>
         <Text style={styles.title}>Get updates on your mining status!</Text>
 
         <Text style={styles.subtitle}>

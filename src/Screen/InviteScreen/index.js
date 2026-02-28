@@ -9,8 +9,8 @@ import {
   StatusBar,
 } from 'react-native';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
-import FastImage from 'react-native-fast-image';
 import Color from '../../Common/Color';
+import SafeFastImage from '../../utils/SafeFastImage';
 
 const contactsData = [
   {
@@ -80,7 +80,10 @@ const InviteScreen = ({navigation}) => {
 
   const renderItem = ({item}) => (
     <View style={styles.contactRow}>
-      <FastImage source={item.image} style={styles.avatar} />
+      <SafeFastImage
+  source={item.image}
+  style={styles.avatar}
+/>
       <View style={styles.contactInfo}>
         <Text style={styles.contactName}>{item.name}</Text>
         <Text style={styles.contactEmail}>{item.email}</Text>
@@ -97,18 +100,17 @@ const InviteScreen = ({navigation}) => {
           <TouchableOpacity
             style={styles.menuBtn}
             onPress={() => navigation.goBack()}>
-            <FastImage
-              source={require('../../assets/images/leftArrow.png')}
-              style={styles.menuIcon}
-            />
+           <SafeFastImage
+  source={require('../../assets/images/leftArrow.png')}
+  style={styles.menuIcon}
+/>
           </TouchableOpacity>
 
           <View style={styles.logoContainer}>
-            <FastImage
-              source={require('../../assets/images/Logo1.png')}
-              style={styles.logoIcon}
-              resizeMode="contain"
-            />
+            <SafeFastImage
+  source={require('../../assets/images/Logo1.png')}
+  style={styles.logoIcon}
+/>
           </View>
         </View>
 
@@ -126,11 +128,11 @@ const InviteScreen = ({navigation}) => {
             style={styles.input}
           />
           <TouchableOpacity style={styles.copyBtn}>
-            <FastImage
-              source={require('../../assets/images/copy.png')}
-              style={styles.copyIcon}
-              tintColor={Color.WHITE}
-            />
+           <SafeFastImage
+  source={require('../../assets/images/copy.png')}
+  style={styles.copyIcon}
+  tintColor={Color.WHITE}
+/>
           </TouchableOpacity>
         </View>
 

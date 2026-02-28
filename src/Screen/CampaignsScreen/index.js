@@ -4,16 +4,15 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  TextInput,
   ScrollView,
   FlatList,
   StatusBar,
   Platform,
 } from 'react-native';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
-import FastImage from 'react-native-fast-image';
 import Color from '../../Common/Color';
 import FilterModal from '../../Modal/FilterModal';
+import SafeFastImage from '../../utils/SafeFastImage';
 
 const courses = [
   {
@@ -42,10 +41,9 @@ const courses = [
 const CourseCard = memo(({item}) => {
   return (
     <TouchableOpacity activeOpacity={0.8} style={styles.card}>
-      <FastImage
+    <SafeFastImage
         source={item.image}
         style={styles.cardImage}
-        resizeMode={FastImage.resizeMode.cover}
       />
 
       <View style={styles.cardContent}>
@@ -61,11 +59,12 @@ const CourseCard = memo(({item}) => {
         </Text>
 
         <View style={styles.row}>
-          <FastImage
+         <SafeFastImage
             source={require('../../assets/images/Time.png')}
             style={styles.icon}
             tintColor="#777"
           />
+
 
           <Text style={styles.rowText} allowFontScaling={false}>
             3 Weeks
@@ -102,18 +101,17 @@ const CampaignsScreen = ({navigation}) => {
             style={styles.menuBtn}
             activeOpacity={0.7}
             onPress={() => navigation?.goBack()}>
-            <FastImage
-              source={require('../../assets/images/back.png')}
-              style={styles.menuIcon}
-              tintColor="#777"
-            />
+          <SafeFastImage
+  source={require('../../assets/images/back.png')}
+  style={styles.menuIcon}
+  tintColor="#777"
+/>
           </TouchableOpacity>
 
-          <FastImage
-            source={require('../../assets/images/Logo1.png')}
-            style={styles.logo}
-            resizeMode={FastImage.resizeMode.contain}
-          />
+         <SafeFastImage
+  source={require('../../assets/images/Logo1.png')}
+  style={styles.logo}
+/>
         </View>
 
         <Text style={styles.title} allowFontScaling={false}>

@@ -1,8 +1,8 @@
 import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Platform} from 'react-native';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
-import FastImage from 'react-native-fast-image';
 import Color from '../../Common/Color';
+import SafeFastImage from '../../utils/SafeFastImage';
 
 const EmailConfirmationScreen = ({navigation}) => {
   const insets = useSafeAreaInsets();
@@ -12,28 +12,23 @@ const EmailConfirmationScreen = ({navigation}) => {
       <View style={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <FastImage
-              source={require('../../assets/images/back.png')}
-              style={styles.backIcon}
-              resizeMode={FastImage.resizeMode.contain}
-            />
+            <SafeFastImage
+      source={require('../../assets/images/back.png')}
+      style={styles.backIcon}
+    />
           </TouchableOpacity>
 
-          <FastImage
-            source={require('../../assets/images/Logo1.png')}
-            style={styles.logo}
-            resizeMode={FastImage.resizeMode.contain}
-          />
-
+           <SafeFastImage
+    source={require('../../assets/images/Logo1.png')}
+    style={styles.logo}
+  />
           <View style={{width: 22}} />
         </View>
 
-        <FastImage
-          source={require('../../assets/images/EmailConformation.png')}
-          style={styles.illustration}
-          resizeMode={FastImage.resizeMode.contain}
-        />
-
+        <SafeFastImage
+  source={require('../../assets/images/EmailConformation.png')}
+  style={styles.illustration}
+/>
         <View style={styles.textContainer}>
           <Text style={styles.title}>Check your email for confirmation</Text>
 

@@ -9,8 +9,8 @@ import {
   Platform,
 } from 'react-native';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
-import FastImage from 'react-native-fast-image';
 import Color from '../../Common/Color';
+import SafeFastImage from '../../utils/SafeFastImage';
 
 const EditEmailScreen = ({navigation}) => {
   const [email, setEmail] = useState('');
@@ -23,17 +23,15 @@ const EditEmailScreen = ({navigation}) => {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <FastImage
+            <SafeFastImage
               source={require('../../assets/images/back.png')}
               style={styles.backIcon}
-              resizeMode={FastImage.resizeMode.contain}
             />
           </TouchableOpacity>
 
-          <FastImage
+         <SafeFastImage
             source={require('../../assets/images/Logo1.png')}
             style={styles.logo}
-            resizeMode={FastImage.resizeMode.contain}
           />
 
           <View style={{width: 22}} />

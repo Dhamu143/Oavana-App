@@ -6,8 +6,8 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import Color from '../Common/Color';
+import SafeFastImage from '../utils/SafeFastImage';
 
 const ResetPasswordContent = ({onClose}) => {
   const [secure1, setSecure1] = useState(true);
@@ -19,11 +19,10 @@ const ResetPasswordContent = ({onClose}) => {
         <Text style={styles.closeText}>✕</Text>
       </TouchableOpacity>
 
-      <FastImage
-        source={require('../assets/images/logo1.png')}
-        style={styles.logo}
-        resizeMode={FastImage.resizeMode.contain}
-      />
+<SafeFastImage
+  source={require('../assets/images/logo1.png')}
+  style={styles.logo}
+/>
 
       <Text style={styles.title}>Reset password</Text>
 
@@ -37,15 +36,15 @@ const ResetPasswordContent = ({onClose}) => {
           placeholderTextColor={Color.Placeholder}
         />
         <TouchableOpacity onPress={() => setSecure1(!secure1)}>
-          <FastImage
-            source={
-              secure1
-                ? require('../assets/images/hide.png')
-                : require('../assets/images/open.png')
-            }
-            style={styles.eyeIcon}
-            tintColor={Color.Placeholder}
-          />
+       <SafeFastImage
+  source={
+    secure1
+      ? require('../assets/images/hide.png')
+      : require('../assets/images/open.png')
+  }
+  style={styles.eyeIcon}
+  tintColor={Color.Placeholder}
+/>
         </TouchableOpacity>
       </View>
 
@@ -57,15 +56,15 @@ const ResetPasswordContent = ({onClose}) => {
           placeholderTextColor={Color.Placeholder}
         />
         <TouchableOpacity onPress={() => setSecure2(!secure2)}>
-          <FastImage
-            source={
-              secure2
-                ? require('../assets/images/hide.png')
-                : require('../assets/images/open.png')
-            }
-            style={styles.eyeIcon}
-            tintColor={Color.Placeholder}
-          />
+         <SafeFastImage
+  source={
+    secure2
+      ? require('../assets/images/hide.png')
+      : require('../assets/images/open.png')
+  }
+  style={styles.eyeIcon}
+  tintColor={Color.Placeholder}
+/>
         </TouchableOpacity>
       </View>
 

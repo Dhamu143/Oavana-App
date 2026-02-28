@@ -11,8 +11,8 @@ import {
   Platform,
 } from 'react-native';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
-import FastImage from 'react-native-fast-image';
 import Color from '../../Common/Color';
+import SafeFastImage from '../../utils/SafeFastImage';
 
 const ContactScreen = ({navigation}) => {
   const insets = useSafeAreaInsets();
@@ -45,17 +45,17 @@ const ContactScreen = ({navigation}) => {
             <TouchableOpacity
               style={styles.menuBtn}
               onPress={() => navigation.goBack()}>
-              <FastImage
-                source={require('../../assets/images/leftArrow.png')}
-                style={styles.menuIcon}
-              />
+              <SafeFastImage
+      source={require('../../assets/images/leftArrow.png')}
+      style={styles.menuIcon}
+    />
+
             </TouchableOpacity>
 
-            <FastImage
-              source={require('../../assets/images/Logo1.png')}
-              style={styles.logoIcon}
-              resizeMode="contain"
-            />
+        <SafeFastImage
+    source={require('../../assets/images/Logo1.png')}
+    style={styles.logoIcon}
+  />
           </View>
 
           <View style={styles.formContainer}>
@@ -150,23 +150,28 @@ const ContactScreen = ({navigation}) => {
             <Text style={styles.connectText}>Let’s Connect</Text>
 
             <View style={styles.iconRow}>
-              <FastImage
-                source={require('../../assets/images/facebook.png')}
-                style={styles.socialIcon}
-              />
-              <FastImage
-                source={require('../../assets/images/instagram.png')}
-                style={styles.socialIcon}
-              />
-              <FastImage
-                source={require('../../assets/images/linkedin.png')}
-                style={styles.socialIcon}
-              />
-              <FastImage
-                source={require('../../assets/images/twitter.png')}
-                style={styles.socialIcon}
-              />
-            </View>
+
+  <SafeFastImage
+    source={require('../../assets/images/facebook.png')}
+    style={styles.socialIcon}
+  />
+
+  <SafeFastImage
+    source={require('../../assets/images/instagram.png')}
+    style={styles.socialIcon}
+  />
+
+  <SafeFastImage
+    source={require('../../assets/images/linkedin.png')}
+    style={styles.socialIcon}
+  />
+
+  <SafeFastImage
+    source={require('../../assets/images/twitter.png')}
+    style={styles.socialIcon}
+  />
+
+</View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

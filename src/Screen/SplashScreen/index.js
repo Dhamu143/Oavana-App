@@ -7,17 +7,17 @@ import SafeFastImage from '../../utils/SafeFastImage';
 const SplashScreen = ({navigation}) => {
   const {skiplogin, userLogin} = useSelector(reducer => reducer.allReducer);
 
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     if (skiplogin || userLogin) {
-  //       navigation.replace('MaindashboardDrawer');
-  //     } else {
-  //       navigation.replace('SignInScreen');
-  //     }
-  //   }, 1200);
+ useEffect(() => {
+  const timer = setTimeout(() => {
+    navigation.replace(
+      skiplogin || userLogin
+        ? 'MaindashboardDrawer'
+        : 'SignInScreen'
+    );
+  }, 1200);
 
-  //   return () => clearTimeout(timer);
-  // }, []);
+  return () => clearTimeout(timer);
+}, []);
 
   return (
     <SafeAreaView style={styles.container}>

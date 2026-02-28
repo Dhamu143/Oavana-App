@@ -7,9 +7,9 @@ import {
   Text,
   Dimensions,
 } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import Color from '../Common/Color';
+import SafeFastImage from '../utils/SafeFastImage';
 
 const {width} = Dimensions.get('window');
 const scale = size => (width / 375) * size;
@@ -34,12 +34,10 @@ const PledgeModal = ({visible, onClose}) => {
             <Text style={styles.closeText}>✕</Text>
           </TouchableOpacity>
 
-          <FastImage
-            source={require('../assets/images/shower.png')}
-            style={styles.image}
-            resizeMode={FastImage.resizeMode.contain}
-          />
-
+        <SafeFastImage
+  source={require('../assets/images/shower.png')}
+  style={styles.image}
+/>
           <Text style={styles.title}>
             I’ll take shorter showers to save water.
           </Text>

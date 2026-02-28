@@ -13,13 +13,13 @@ import {
   Keyboard,
   ActivityIndicator,
 } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import Color from '../Common/Color';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
 import AlertModal from '../Modal/AlertModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import apiClient from '../utils/ApiClient';
+import SafeFastImage from '../utils/SafeFastImage';
 
 const {width} = Dimensions.get('window');
 
@@ -87,20 +87,20 @@ const SignUpContent = ({onSwitch, onClose}) => {
               keyboardShouldPersistTaps="handled"
               contentContainerStyle={{paddingBottom: 30}}>
               <TouchableOpacity style={styles.backBtn} onPress={onSwitch}>
-                <FastImage
+                <SafeFastImage
                   source={require('../assets/images/leftArrow.png')}
                   style={styles.backIcon}
                 />
+
               </TouchableOpacity>
 
               <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
                 <Text style={styles.headerIcon}>✕</Text>
               </TouchableOpacity>
 
-              <FastImage
+           <SafeFastImage
                 source={require('../assets/images/Logo1.png')}
                 style={styles.logo}
-                resizeMode={FastImage.resizeMode.contain}
               />
 
               <Text style={styles.title}>Sign Up</Text>
@@ -152,7 +152,7 @@ const SignUpContent = ({onSwitch, onClose}) => {
                 />
 
                 <TouchableOpacity onPress={() => setSecure(!secure)}>
-                  <FastImage
+                    <SafeFastImage
                     source={
                       secure
                         ? require('../assets/images/hide.png')
@@ -186,18 +186,16 @@ const SignUpContent = ({onSwitch, onClose}) => {
               </View>
 
               <TouchableOpacity style={styles.googleBtn}>
-                <FastImage
+              <SafeFastImage
                   source={require('../assets/images/google.png')}
                   style={styles.googleIcon}
-                  resizeMode={FastImage.resizeMode.contain}
                 />
                 <Text style={styles.googleText}>Sign up with Google</Text>
               </TouchableOpacity>
               <TouchableOpacity style={[styles.googleBtn, {marginTop: 15}]}>
-                <FastImage
+                 <SafeFastImage
                   source={require('../assets/images/whatsapp.png')}
                   style={styles.googleIcon}
-                  resizeMode={FastImage.resizeMode.contain}
                 />
                 <Text style={styles.googleText}>Sign up with whatsapp</Text>
               </TouchableOpacity>

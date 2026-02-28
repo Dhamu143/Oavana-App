@@ -11,15 +11,14 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import Color from '../../Common/Color';
-// import AuthModal from '../../Modal/AuthModal';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import SafeFastImage from '../../utils/SafeFastImage';
 
 const {width} = Dimensions.get('window');
 
 const ForgotPasswordScreen = ({navigation}) => {
-  // const [showModal, setShowModal] = useState(false);
+
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: Color.GREEN}}>
@@ -35,19 +34,17 @@ const ForgotPasswordScreen = ({navigation}) => {
               <TouchableOpacity
                 style={styles.backBtn}
                 onPress={() => navigation.goBack()}>
-                <FastImage
-                  source={require('../../assets/images/leftArrow.png')}
-                  style={styles.backIcon}
-                  resizeMode={FastImage.resizeMode.contain}
-                  tintColor={Color.WHITE}
-                />
+                <SafeFastImage
+  source={require('../../assets/images/leftArrow.png')}
+  style={styles.backIcon}
+  tintColor={Color.WHITE}
+/>
               </TouchableOpacity>
 
-              <FastImage
-                source={require('../../assets/images/Logo.png')}
-                style={styles.logo}
-                resizeMode={FastImage.resizeMode.contain}
-              />
+             <SafeFastImage
+  source={require('../../assets/images/Logo.png')}
+  style={styles.logo}
+/>
 
               <Text style={styles.title}>Forgot password</Text>
               <Text style={styles.subtitle}>Reset your password.</Text>
@@ -68,7 +65,7 @@ const ForgotPasswordScreen = ({navigation}) => {
         </KeyboardAvoidingView>
       </View>
 
-      {/* <AuthModal visible={showModal} onClose={() => setShowModal(false)} /> */}
+
     </SafeAreaView>
   );
 };

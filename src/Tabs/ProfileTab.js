@@ -4,6 +4,7 @@ import FastImage from 'react-native-fast-image';
 import Color from '../Common/Color';
 import ImpactSection from '../Components/ImpactSection';
 import {impactData} from '../utils/StaticJson';
+import SafeFastImage from '../utils/SafeFastImage';
 
 const ProfileTab = () => {
   return (
@@ -30,10 +31,10 @@ const ProfileTab = () => {
       <View style={styles.pledgeCard}>
         <Text style={styles.pledgeTitle}>Your Pledge History</Text>
 
-        <FastImage
+        <SafeFastImage
           source={require('../assets/images/shower.png')}
           style={styles.pledgeImage}
-          resizeMode={FastImage.resizeMode.contain}
+        
         />
 
         <Text style={styles.pledgeDescription}>

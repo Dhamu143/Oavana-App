@@ -1,10 +1,14 @@
 import React from 'react';
 import {View, Text, StyleSheet, Dimensions} from 'react-native';
-import FastImage from 'react-native-fast-image';
+import SafeFastImage from '../utils/SafeFastImage'; 
 import Color from '../Common/Color';
 
 const {width} = Dimensions.get('window');
-const scale = size => (width / 375) * size;
+
+const scale = size => {
+  const {width} = Dimensions.get('window');
+  return (width / 375) * size;
+};
 
 const ImpactSection = ({title, data}) => {
   return (
@@ -16,18 +20,22 @@ const ImpactSection = ({title, data}) => {
           <View
             key={index}
             style={[styles.impactCard, {backgroundColor: item.cardBg}]}>
+            
             <View style={[styles.iconCircle, {backgroundColor: item.iconBg}]}>
-              <FastImage
+              
+             
+              <SafeFastImage
                 source={item.icon}
                 style={styles.impactIcon}
-                resizeMode={FastImage.resizeMode.contain}
               />
+
             </View>
 
             <View>
               <Text style={styles.impactValue}>{item?.value}</Text>
               <Text style={styles.impactLabel}>{item?.label}</Text>
             </View>
+
           </View>
         ))}
       </View>

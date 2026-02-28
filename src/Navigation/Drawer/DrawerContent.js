@@ -1,13 +1,13 @@
 import React, {useState} from 'react';
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import {DrawerContentScrollView} from '@react-navigation/drawer';
-import FastImage from 'react-native-fast-image';
 import Color from '../../Common/Color';
 import DrawerItem from '../../Components/MenuItem';
 import {useNavigation} from '@react-navigation/native';
 import {useSelector} from 'react-redux';
 import AuthModal from '../../Modal/AuthModal';
 import AlertModal from '../../Modal/AlertModal';
+import SafeFastImage from '../../utils/SafeFastImage';
 
 const DrawerContent = props => {
   const {skiplogin, userLogin} = useSelector(reducer => reducer.allReducer);
@@ -31,18 +31,17 @@ const DrawerContent = props => {
       contentContainerStyle={styles.container}>
       <View>
         <View style={styles.headerRow}>
-          <FastImage
-            source={require('../../assets/images/Logo_icon.png')}
-            style={styles.logo}
-            resizeMode={FastImage.resizeMode.contain}
-          />
+         <SafeFastImage
+  source={require('../../assets/images/Logo_icon.png')}
+  style={styles.logo}
+/>
 
           <TouchableOpacity onPress={() => props.navigation.closeDrawer()}>
-            <FastImage
-              source={require('../../assets/images/close.png')}
-              style={styles.closeIcon}
-              tintColor={Color.WHITE}
-            />
+           <SafeFastImage
+  source={require('../../assets/images/close.png')}
+  style={styles.closeIcon}
+  tintColor={Color.WHITE}
+/>
           </TouchableOpacity>
         </View>
 
@@ -117,18 +116,20 @@ const DrawerContent = props => {
         <Text style={styles.connectText}>Let's Connect</Text>
 
         <View style={styles.socialRow}>
-          <FastImage
-            source={require('../../assets/images/facebook.png')}
-            style={styles.socialIcon}
-          />
-          <FastImage
-            source={require('../../assets/images/instagram.png')}
-            style={styles.socialIcon}
-          />
-          <FastImage
-            source={require('../../assets/images/linkedin.png')}
-            style={styles.socialIcon}
-          />
+          <SafeFastImage
+  source={require('../../assets/images/facebook.png')}
+  style={styles.socialIcon}
+/>
+
+<SafeFastImage
+  source={require('../../assets/images/instagram.png')}
+  style={styles.socialIcon}
+/>
+
+<SafeFastImage
+  source={require('../../assets/images/linkedin.png')}
+  style={styles.socialIcon}
+/>
         </View>
       </View>
       {showModal && (
