@@ -22,6 +22,10 @@ import AlertModal from '../../Modal/AlertModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import apiClient from '../../utils/ApiClient';
 import SafeFastImage from '../../utils/SafeFastImage';
+import appleAuth, {
+  AppleButton,
+  AppleAuthCredentialState,
+} from '@invertase/react-native-apple-authentication';
 
 const { width } = Dimensions.get('window');
 
@@ -51,17 +55,46 @@ const SignInScreen = ({ navigation }) => {
   const socialIcons =
     Platform.OS === 'ios'
       ? [
-        { icon: require('../../assets/images/google.png') },
+        { type: 'google', icon: require('../../assets/images/google.png') },
         {
+          type: 'apple',
           icon: require('../../assets/images/apple.png'),
           tint: Color.Placeholder,
         },
-        { icon: require('../../assets/images/whatsapp.png') },
       ]
       : [
-        { icon: require('../../assets/images/google.png') },
-        { icon: require('../../assets/images/whatsapp.png') },
+        { type: 'google', icon: require('../../assets/images/google.png') },
+        { type: 'whatsapp', icon: require('../../assets/images/whatsapp.png') },
       ];
+
+const handleAppleLogin = async () => {
+  try {
+    const appleAuthRequestResponse = await appleAuth.performRequest({
+      requestedOperation: appleAuth.Operation.LOGIN,
+      requestedScopes: [
+        appleAuth.Scope.EMAIL,
+        appleAuth.Scope.FULL_NAME,
+      ],
+    });
+
+    if (!appleAuthRequestResponse.identityToken) {
+      console.log('Apple Sign-In failed - no identity token returned');
+      return;
+    }
+
+    const credentialState = await appleAuth.getCredentialStateForUser(
+      appleAuthRequestResponse.user,
+    );
+
+    if (credentialState === AppleAuthCredentialState.AUTHORIZED) {
+      console.log('User is authorized');
+    }
+
+  } catch (err) {
+    console.log('Apple login failed:', err);
+  }
+};
+
 
   return (
     <Formik
@@ -141,7 +174,18 @@ const SignInScreen = ({ navigation }) => {
                 <View style={styles.card}>
                   <View style={styles.socialRow}>
                     {socialIcons.map((item, index) => (
-                      <TouchableOpacity key={index} style={styles.socialBtn}>
+                      <TouchableOpacity
+                        key={index}
+                        style={styles.socialBtn}
+                        onPress={() => {
+                          if (item.type === 'apple') {
+                            handleAppleLogin();
+                          } else if (item.type === 'google') {
+                            console.log('Google login');
+                          } else if (item.type === 'whatsapp') {
+                            console.log('Whatsapp login');
+                          }
+                        }}>
                         <SafeFastImage
                           source={item.icon}
                           style={styles.socialIcon}

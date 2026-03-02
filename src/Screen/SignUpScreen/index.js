@@ -206,19 +206,30 @@ const SignUpScreen = ({ navigation }) => {
                         style={styles.iconOnly}
                       />
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.iconOnlyBtn}>
-                      <SafeFastImage
-                        source={require('../../assets/images/apple.png')}
-                        style={styles.iconOnly}
-                      />
-                    </TouchableOpacity>
+                    {
+                      Platform.OS === 'ios' && (
+                        <TouchableOpacity style={styles.iconOnlyBtn}>
+                          <SafeFastImage
+                            source={require('../../assets/images/apple.png')}
+                            style={styles.iconOnly}
+                          />
+                        </TouchableOpacity>
+                      )
+                    }
 
-                    <TouchableOpacity style={styles.iconOnlyBtn}>
-                      <SafeFastImage
-                        source={require('../../assets/images/whatsapp.png')}
-                        style={styles.iconOnly}
-                      />
-                    </TouchableOpacity>
+
+                    {
+                      Platform.OS === "android" && (
+                        <TouchableOpacity style={styles.iconOnlyBtn}>
+                          <SafeFastImage
+                            source={require('../../assets/images/whatsapp.png')}
+                            style={styles.iconOnly}
+                          />
+                        </TouchableOpacity>
+                      )
+                    }
+
+
                   </View>
 
                 </View>

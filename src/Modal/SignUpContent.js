@@ -20,6 +20,12 @@ import AlertModal from '../Modal/AlertModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import apiClient from '../utils/ApiClient';
 import SafeFastImage from '../utils/SafeFastImage';
+import appleAuth, {
+  AppleButton,
+  AppleAuthRequestOperation,
+  AppleAuthRequestScope,
+  AppleAuthCredentialState,
+} from '@invertase/react-native-apple-authentication';
 
 const { width } = Dimensions.get('window');
 
@@ -69,6 +75,58 @@ const SignUpContent = ({ onSwitch, onClose }) => {
       setModalVisible(true);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAppleLogin = async () => {
+    try {
+      const appleAuthRequestResponse = await appleAuth.performRequest({
+        requestedOperation: AppleAuthRequestOperation.LOGIN,
+        requestedScopes: [
+          AppleAuthRequestScope.EMAIL,
+          AppleAuthRequestScope.FULL_NAME,
+        ],
+      });
+
+      console.log('token123', appleAuthRequestResponse);
+
+      if (appleAuthRequestResponse && appleAuthRequestResponse.identityToken) {
+        console.log('Getting token', appleAuthRequestResponse.identityToken);
+
+        // try {
+        //   const deviceId = await AsyncStorage.getItem('deviceId');
+        //   const apiResponse = await apiClient.post('/auth/applesignin', {
+        //     identityToken: appleAuthRequestResponse?.identityToken,
+        //     deviceid: deviceId,
+        //   });
+        //   console.log('Apple apiResponse', apiResponse);
+        //   if (apiResponse?.data?.success) {
+        //     await AsyncStorage.setItem(
+        //       'authToken',
+        //       apiResponse?.data?.data?.token,
+        //     );
+        //   }
+        //   dispatch(LoginSuceess(true));
+
+
+
+        // } catch (error) {
+        //   console.log('API call failed:', error?.response || error);
+        // }
+      } else {
+        console.log("Error", error)
+      }
+
+      const credentialState = await appleAuth.getCredentialStateForUser(
+        appleAuthRequestResponse.user,
+      );
+
+      if (credentialState === AppleAuthCredentialState.AUTHORIZED) {
+        console.log('User is authorized');
+      } else {
+      }
+    } catch (err) {
+      console.log('Apple login failed:', err);
     }
   };
 
@@ -192,19 +250,29 @@ const SignUpContent = ({ onSwitch, onClose }) => {
                     style={styles.iconOnly}
                   />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.iconOnlyBtn}>
-                  <SafeFastImage
-                    source={require('../assets/images/apple.png')}
-                    style={styles.iconOnly}
-                  />
-                </TouchableOpacity>
+                {
+                  Platform.OS === "ios" && (
+                    <TouchableOpacity style={styles.iconOnlyBtn}>
+                      <SafeFastImage
+                        source={require('../assets/images/apple.png')}
+                        style={styles.iconOnly}
+                      />
+                    </TouchableOpacity>
+                  )
+                }
 
-                <TouchableOpacity style={styles.iconOnlyBtn}>
-                  <SafeFastImage
-                    source={require('../assets/images/whatsapp.png')}
-                    style={styles.iconOnly}
-                  />
-                </TouchableOpacity>
+                {
+                  Platform.OS === "android" && (
+
+                    <TouchableOpacity style={styles.iconOnlyBtn}>
+                      <SafeFastImage
+                        source={require('../assets/images/whatsapp.png')}
+                        style={styles.iconOnly}
+                      />
+                    </TouchableOpacity>
+                  )
+                }
+
               </View>
             </ScrollView>
 

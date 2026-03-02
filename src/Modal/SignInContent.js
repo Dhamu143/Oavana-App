@@ -46,10 +46,6 @@ const SignInContent = ({ onSwitch, onClose }) => {
           icon: require('../assets/images/apple.png'),
           tint: Color.Placeholder,
         },
-
-        {
-          icon: require('../assets/images/whatsapp.png'),
-        },
       ]
       : [
         {
