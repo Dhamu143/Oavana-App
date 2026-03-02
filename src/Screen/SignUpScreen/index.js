@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -13,17 +13,17 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import Color from '../../Common/Color';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {SkipLogin} from '../../Redux/Action/action';
-import {useDispatch} from 'react-redux';
-import {Formik} from 'formik';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { SkipLogin } from '../../Redux/Action/action';
+import { useDispatch } from 'react-redux';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
 import AlertModal from '../../Modal/AlertModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import apiClient from '../../utils/ApiClient';
 import SafeFastImage from '../../utils/SafeFastImage';
 
-const {width} = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 const SignUpSchema = Yup.object().shape({
   email: Yup.string().email('Enter valid email').required('Email is required'),
@@ -33,7 +33,7 @@ const SignUpSchema = Yup.object().shape({
     .required('Password is required'),
 });
 
-const SignUpScreen = ({navigation}) => {
+const SignUpScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const [secure, setSecure] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
@@ -48,9 +48,9 @@ const SignUpScreen = ({navigation}) => {
 
   return (
     <Formik
-      initialValues={{email: '', password: ''}}
+      initialValues={{ email: '', password: '' }}
       validationSchema={SignUpSchema}
-      onSubmit={async (values, {resetForm}) => {
+      onSubmit={async (values, { resetForm }) => {
         try {
           setLoading(true);
 
@@ -83,26 +83,26 @@ const SignUpScreen = ({navigation}) => {
           setLoading(false);
         }
       }}>
-      {({handleChange, handleBlur, handleSubmit, values, errors, touched}) => (
-        <SafeAreaView style={{flex: 1, backgroundColor: Color.GREEN}}>
+      {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+        <SafeAreaView style={{ flex: 1, backgroundColor: Color.GREEN }}>
           <StatusBar backgroundColor={Color.GREEN} barStyle="light-content" />
 
-          <View style={{flex: 1, backgroundColor: Color.WHITE}}>
+          <View style={{ flex: 1, backgroundColor: Color.WHITE }}>
             <KeyboardAvoidingView
-              style={{flex: 1}}
+              style={{ flex: 1 }}
               behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
               <ScrollView
-                contentContainerStyle={{flexGrow: 1}}
+                contentContainerStyle={{ flexGrow: 1 }}
                 showsVerticalScrollIndicator={false}>
                 <View style={styles.greenHeader}>
                   <TouchableOpacity
                     style={styles.backBtn}
                     onPress={() => navigation.goBack()}>
-                   <SafeFastImage
-  source={require('../../assets/images/leftArrow.png')}
-  style={styles.icon22}
-  tintColor={Color.WHITE}
-/>
+                    <SafeFastImage
+                      source={require('../../assets/images/leftArrow.png')}
+                      style={styles.icon22}
+                      tintColor={Color.WHITE}
+                    />
                   </TouchableOpacity>
 
                   <TouchableOpacity
@@ -160,7 +160,7 @@ const SignUpScreen = ({navigation}) => {
                       placeholder="*******"
                       placeholderTextColor={Color.Placeholder}
                       secureTextEntry={secure}
-                      style={{flex: 1}}
+                      style={{ flex: 1 }}
                       value={values.password}
                       onChangeText={handleChange('password')}
                       onBlur={handleBlur('password')}
@@ -168,14 +168,14 @@ const SignUpScreen = ({navigation}) => {
 
                     <TouchableOpacity onPress={() => setSecure(!secure)}>
                       <SafeFastImage
-  source={
-    secure
-      ? require('../../assets/images/hide.png')
-      : require('../../assets/images/open.png')
-  }
-  style={styles.icon22}
-  tintColor={Color.Placeholder}
-/>
+                        source={
+                          secure
+                            ? require('../../assets/images/hide.png')
+                            : require('../../assets/images/open.png')
+                        }
+                        style={styles.icon22}
+                        tintColor={Color.Placeholder}
+                      />
                     </TouchableOpacity>
                   </View>
 
@@ -184,7 +184,7 @@ const SignUpScreen = ({navigation}) => {
                   )}
 
                   <TouchableOpacity
-                    style={[styles.signupBtn, {opacity: loading ? 0.7 : 1}]}
+                    style={[styles.signupBtn, { opacity: loading ? 0.7 : 1 }]}
                     onPress={handleSubmit}
                     disabled={loading}>
                     {loading ? (
@@ -199,22 +199,28 @@ const SignUpScreen = ({navigation}) => {
                     <Text style={styles.orText}>Or</Text>
                     <View style={styles.line} />
                   </View>
+                  <View style={styles.iconRow}>
+                    <TouchableOpacity style={styles.iconOnlyBtn}>
+                      <SafeFastImage
+                        source={require('../../assets/images/google.png')}
+                        style={styles.iconOnly}
+                      />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.iconOnlyBtn}>
+                      <SafeFastImage
+                        source={require('../../assets/images/apple.png')}
+                        style={styles.iconOnly}
+                      />
+                    </TouchableOpacity>
 
-                  <TouchableOpacity style={styles.googleBtn}>
-                    <SafeFastImage
-  source={require('../../assets/images/google.png')}
-  style={styles.icon20}
-/>
-                    <Text style={styles.googleText}>Sign up with Google</Text>
-                  </TouchableOpacity>
+                    <TouchableOpacity style={styles.iconOnlyBtn}>
+                      <SafeFastImage
+                        source={require('../../assets/images/whatsapp.png')}
+                        style={styles.iconOnly}
+                      />
+                    </TouchableOpacity>
+                  </View>
 
-                  <TouchableOpacity style={[styles.googleBtn, {marginTop: 15}]}>
-                    <SafeFastImage
-  source={require('../../assets/images/whatsapp.png')}
-  style={styles.icon20}
-/>
-                    <Text style={styles.googleText}>Sign up with whatsapp</Text>
-                  </TouchableOpacity>
                 </View>
               </ScrollView>
             </KeyboardAvoidingView>
@@ -354,20 +360,27 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
 
-  googleBtn: {
-    height: 55,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: Color.boredrColor,
+  iconRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 20,
   },
 
-  googleText: {
-    marginLeft: 10,
-    fontSize: 14,
-    color: '#333',
+  iconOnlyBtn: {
+    flex: 1,
+    height: 55,
+    marginHorizontal: 5,
+    backgroundColor: Color.WHITE,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: Color.boredrColor,
+  },
+
+  iconOnly: {
+    width: 24,
+    height: 24,
   },
 
   icon22: {
@@ -375,8 +388,5 @@ const styles = StyleSheet.create({
     height: 22,
   },
 
-  icon20: {
-    width: 25,
-    height: 25,
-  },
+
 });

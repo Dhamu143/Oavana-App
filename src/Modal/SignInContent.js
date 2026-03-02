@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -8,15 +8,14 @@ import {
   Platform,
   ActivityIndicator,
 } from 'react-native';
-
 import Color from '../Common/Color';
-import {Formik} from 'formik';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
 import AlertModal from '../Modal/AlertModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import apiClient from '../utils/ApiClient';
-import {useDispatch} from 'react-redux';
-import {LoginSuceess} from '../Redux/Action/action';
+import { useDispatch } from 'react-redux';
+import { LoginSuceess } from '../Redux/Action/action';
 import SafeFastImage from '../utils/SafeFastImage';
 
 const SignInSchema = Yup.object().shape({
@@ -27,7 +26,7 @@ const SignInSchema = Yup.object().shape({
     .required('Password is required'),
 });
 
-const SignInContent = ({onSwitch, onClose}) => {
+const SignInContent = ({ onSwitch, onClose }) => {
   const dispatch = useDispatch();
 
   const [secure, setSecure] = useState(true);
@@ -40,22 +39,26 @@ const SignInContent = ({onSwitch, onClose}) => {
   const socialIcons =
     Platform.OS === 'ios'
       ? [
-          {
-            icon: require('../assets/images/apple.png'),
-            tint: Color.Placeholder,
-          },
-          {
-            icon: require('../assets/images/whatsapp.png'),
-          },
-        ]
+        {
+          icon: require('../assets/images/google.png'),
+        },
+        {
+          icon: require('../assets/images/apple.png'),
+          tint: Color.Placeholder,
+        },
+
+        {
+          icon: require('../assets/images/whatsapp.png'),
+        },
+      ]
       : [
-          {
-            icon: require('../assets/images/google.png'),
-          },
-          {
-            icon: require('../assets/images/whatsapp.png'),
-          },
-        ];
+        {
+          icon: require('../assets/images/google.png'),
+        },
+        {
+          icon: require('../assets/images/whatsapp.png'),
+        },
+      ];
 
   const handleLogin = async (values, resetForm) => {
     try {
@@ -100,23 +103,23 @@ const SignInContent = ({onSwitch, onClose}) => {
 
   return (
     <Formik
-      initialValues={{email: '', password: ''}}
+      initialValues={{ email: '', password: '' }}
       validationSchema={SignInSchema}
-      onSubmit={(values, {resetForm}) => handleLogin(values, resetForm)}>
-      {({handleChange, handleBlur, handleSubmit, values, errors, touched}) => (
+      onSubmit={(values, { resetForm }) => handleLogin(values, resetForm)}>
+      {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
         <View style={styles.container}>
           <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
             <Text style={styles.closeText}>✕</Text>
           </TouchableOpacity>
 
-            <SafeFastImage
+          <SafeFastImage
             source={require('../assets/images/Logo1.png')}
             style={styles.logo}
           />
 
           <Text style={styles.title}>
             Sign in to your{'\n'}
-            <Text style={{fontWeight: '700'}}>Account</Text>
+            <Text style={{ fontWeight: '700' }}>Account</Text>
           </Text>
 
           <Text style={styles.subtitle}>
@@ -126,7 +129,7 @@ const SignInContent = ({onSwitch, onClose}) => {
           <View style={styles.socialRow}>
             {socialIcons.map((item, index) => (
               <TouchableOpacity key={index} style={styles.socialBtn}>
-               <SafeFastImage
+                <SafeFastImage
                   source={item.icon}
                   style={styles.socialIcon}
                   tintColor={item.tint}
@@ -182,7 +185,7 @@ const SignInContent = ({onSwitch, onClose}) => {
             />
 
             <TouchableOpacity onPress={() => setSecure(!secure)}>
-             <SafeFastImage
+              <SafeFastImage
                 source={
                   secure
                     ? require('../assets/images/hide.png')
@@ -199,7 +202,7 @@ const SignInContent = ({onSwitch, onClose}) => {
           )}
 
           <TouchableOpacity
-            style={[styles.loginBtn, {opacity: loading ? 0.7 : 1}]}
+            style={[styles.loginBtn, { opacity: loading ? 0.7 : 1 }]}
             onPress={handleSubmit}
             disabled={loading}>
             {loading ? (
