@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -9,172 +9,312 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Linking,
+  ActivityIndicator
 } from 'react-native';
-import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
 import Color from '../../Common/Color';
 import SafeFastImage from '../../utils/SafeFastImage';
+import apiClient from '../../utils/ApiClient';
+import AlertModal from '../../Modal/AlertModal';
 
-const ContactScreen = ({navigation}) => {
+const ContactSchema = Yup.object().shape({
+  username: Yup.string()
+    .min(2, 'Too short')
+    .required('User name is required'),
+
+  email: Yup.string()
+    .email('Invalid email')
+    .required('Email is required'),
+
+  subject: Yup.string()
+    .min(3, 'Too short')
+    .required('Subject is required'),
+
+  message: Yup.string()
+    .min(5, 'Description too short')
+    .required('Description is required'),
+});
+
+const ContactScreen = ({ navigation }) => {
   const insets = useSafeAreaInsets();
-
   const [focused, setFocused] = useState(null);
 
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [subject, setSubject] = useState('');
-  const [description, setDescription] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalSuccess, setModalSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = () => {
-    console.log({name, email, subject, description});
+
+  const handleSubmitForm = async (values, { resetForm }) => {
+    try {
+      setLoading(true);
+
+      const response = await apiClient.post('/contact', {
+        username: values?.username,
+        email: values?.email,
+        subject: values?.subject,
+        message: values?.message,
+      });
+
+      if (response?.status === 200 || response?.data?.success) {
+        resetForm();
+
+        setModalMessage('Your message has been sent successfully.');
+        setModalSuccess(true);
+        setModalVisible(true);
+      } else {
+        setModalMessage('Unable to send message. Please try again.');
+        setModalSuccess(false);
+        setModalVisible(true);
+      }
+    } catch (error) {
+      let errorMessage = 'Something went wrong. Please try again.';
+
+      if (error?.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+
+      setModalMessage(errorMessage);
+      setModalSuccess(false);
+      setModalVisible(true);
+    } finally {
+      setLoading(false);
+    }
   };
+
+
+  const handleLink = url => {
+    Linking.openURL(url).catch(err =>
+      console.log('Failed to open link:', err),
+    );
+  };
+
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor={Color.WHITE} />
 
       <KeyboardAvoidingView
-        style={{flex: 1}}
+        style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={[
             styles.scrollContainer,
-            {paddingBottom: insets.bottom + 20},
+            { paddingBottom: insets.bottom + 20 },
           ]}>
+
           <View style={styles.header}>
             <TouchableOpacity
               style={styles.menuBtn}
               onPress={() => navigation.goBack()}>
               <SafeFastImage
-      source={require('../../assets/images/leftArrow.png')}
-      style={styles.menuIcon}
-    />
-
+                source={require('../../assets/images/leftArrow.png')}
+                style={styles.menuIcon}
+              />
             </TouchableOpacity>
 
-        <SafeFastImage
-    source={require('../../assets/images/Logo1.png')}
-    style={styles.logoIcon}
-  />
+            <SafeFastImage
+              source={require('../../assets/images/Logo1.png')}
+              style={styles.logoIcon}
+            />
           </View>
 
-          <View style={styles.formContainer}>
-            <Text style={styles.title}>Contact Us</Text>
-            <Text style={styles.subtitle}>We love to hear from you.</Text>
+          <Formik
+            initialValues={{
+              username: '',
+              email: '',
+              subject: '',
+              message: '',
+            }}
+            validationSchema={ContactSchema}
+            onSubmit={handleSubmitForm}>
+            {({
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              values,
+              errors,
+              touched,
+            }) => (
+              <View style={styles.formContainer}>
 
-            <View style={styles.fieldContainer}>
-              <Text style={styles.label}>User Name</Text>
-              <TextInput
-                value={name}
-                onChangeText={setName}
-                placeholder="User Name"
-                placeholderTextColor="#9E9E9E"
-                style={[
-                  styles.input,
-                  {
-                    borderBottomColor:
-                      focused === 'name' ? Color.GREEN : '#CFCFCF',
-                  },
-                ]}
-                onFocus={() => setFocused('name')}
-                onBlur={() => setFocused(null)}
-              />
-            </View>
+                <Text style={styles.title}>Contact Us</Text>
+                <Text style={styles.subtitle}>We love to hear from you.</Text>
 
-            <View style={styles.fieldContainer}>
-              <Text style={styles.label}>Email Address</Text>
-              <TextInput
-                value={email}
-                onChangeText={setEmail}
-                placeholder="Email Address"
-                placeholderTextColor="#9E9E9E"
-                keyboardType="email-address"
-                style={[
-                  styles.input,
-                  {
-                    borderBottomColor:
-                      focused === 'email' ? Color.GREEN : '#CFCFCF',
-                  },
-                ]}
-                onFocus={() => setFocused('email')}
-                onBlur={() => setFocused(null)}
-              />
-            </View>
 
-            <View style={styles.fieldContainer}>
-              <Text style={styles.label}>Subject</Text>
-              <TextInput
-                value={subject}
-                onChangeText={setSubject}
-                placeholder="Subject"
-                placeholderTextColor="#9E9E9E"
-                style={[
-                  styles.input,
-                  {
-                    borderBottomColor:
-                      focused === 'subject' ? Color.GREEN : '#CFCFCF',
-                  },
-                ]}
-                onFocus={() => setFocused('subject')}
-                onBlur={() => setFocused(null)}
-              />
-            </View>
+                <View style={styles.fieldContainer}>
+                  <Text style={styles.label}>User Name</Text>
 
-            <View style={styles.fieldContainer}>
-              <Text style={styles.label}>Description</Text>
-              <TextInput
-                value={description}
-                onChangeText={setDescription}
-                placeholder="Description"
-                placeholderTextColor="#9E9E9E"
-                multiline
-                style={[
-                  styles.input,
-                  styles.textArea,
-                  {
-                    borderBottomColor:
-                      focused === 'description' ? Color.GREEN : '#CFCFCF',
-                  },
-                ]}
-                onFocus={() => setFocused('description')}
-                onBlur={() => setFocused(null)}
-              />
-            </View>
+                  <TextInput
+                    value={values.username}
+                    onChangeText={handleChange('username')}
+                    onBlur={handleBlur('username')}
+                    placeholder="User Name"
+                    placeholderTextColor="#9E9E9E"
+                    style={[
+                      styles.input,
+                      {
+                        borderBottomColor:
+                          focused === 'name' ? Color.GREEN : '#ababab',
+                      },
+                    ]}
+                    onFocus={() => setFocused('name')}
+                  />
 
-            <TouchableOpacity style={styles.sendBtn} onPress={handleSubmit}>
-              <Text style={styles.sendText}>Send Message</Text>
-            </TouchableOpacity>
-          </View>
+                  {touched.username && errors.username && (
+                    <Text style={styles.errorText}>{errors.username}</Text>
+                  )}
+                </View>
+
+
+                <View style={styles.fieldContainer}>
+                  <Text style={styles.label}>Email Address</Text>
+
+                  <TextInput
+                    value={values.email}
+                    onChangeText={handleChange('email')}
+                    onBlur={handleBlur('email')}
+                    placeholder="Email Address"
+                    placeholderTextColor="#9E9E9E"
+                    keyboardType="email-address"
+                    style={[
+                      styles.input,
+                      {
+                        borderBottomColor:
+                          focused === 'email' ? Color.GREEN : '#ababab',
+                      },
+                    ]}
+                    onFocus={() => setFocused('email')}
+                  />
+
+                  {touched.email && errors.email && (
+                    <Text style={styles.errorText}>{errors.email}</Text>
+                  )}
+                </View>
+
+
+                <View style={styles.fieldContainer}>
+                  <Text style={styles.label}>Subject</Text>
+
+                  <TextInput
+                    value={values.subject}
+                    onChangeText={handleChange('subject')}
+                    onBlur={handleBlur('subject')}
+                    placeholder="Subject"
+                    placeholderTextColor="#9E9E9E"
+                    style={[
+                      styles.input,
+                      {
+                        borderBottomColor:
+                          focused === 'subject' ? Color.GREEN : '#ababab',
+                      },
+                    ]}
+                    onFocus={() => setFocused('subject')}
+                  />
+
+                  {touched.subject && errors.subject && (
+                    <Text style={styles.errorText}>{errors.subject}</Text>
+                  )}
+                </View>
+
+
+                <View style={styles.fieldContainer}>
+                  <Text style={styles.label}>Description</Text>
+
+                  <TextInput
+                    value={values.message}
+                    onChangeText={handleChange('message')}
+                    onBlur={handleBlur('message')}
+                    placeholder="Description"
+                    placeholderTextColor="#9E9E9E"
+                    multiline
+                    style={[
+                      styles.input,
+                      styles.textArea,
+                      {
+                        borderBottomColor:
+                          focused === 'description'
+                            ? Color.GREEN
+                            : '#ababab',
+                      },
+                    ]}
+                    onFocus={() => setFocused('description')}
+                  />
+
+                  {touched.message && errors.message && (
+                    <Text style={styles.errorText}>{errors.message}</Text>
+                  )}
+                </View>
+
+
+                <TouchableOpacity
+                  style={styles.sendBtn}
+                  onPress={handleSubmit}
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <ActivityIndicator size="small" color={Color.WHITE} />
+                  ) : (
+                    <Text style={styles.sendText}>Send Message</Text>
+                  )}
+                </TouchableOpacity>
+
+              </View>
+            )}
+          </Formik>
+
 
           <View style={styles.socialSection}>
             <Text style={styles.connectText}>Let’s Connect</Text>
 
             <View style={styles.iconRow}>
+              <TouchableOpacity onPress={() => handleLink('https://www.facebook.com/greenearthtoken')}>
+                <SafeFastImage
+                  source={require('../../assets/images/facebook.png')}
+                  style={styles.socialIcon}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => handleLink('https://www.instagram.com/green.earth.token')}>
+                <SafeFastImage
+                  source={require('../../assets/images/instagram.png')}
+                  style={styles.socialIcon}
+                />
+              </TouchableOpacity>
 
-  <SafeFastImage
-    source={require('../../assets/images/facebook.png')}
-    style={styles.socialIcon}
-  />
+              <TouchableOpacity onPress={() => handleLink('https://www.linkedin.com/company/green-earth-token')}>
+                <SafeFastImage
+                  source={require('../../assets/images/linkedin.png')}
+                  style={styles.socialIcon}
+                />
+              </TouchableOpacity>
 
-  <SafeFastImage
-    source={require('../../assets/images/instagram.png')}
-    style={styles.socialIcon}
-  />
-
-  <SafeFastImage
-    source={require('../../assets/images/linkedin.png')}
-    style={styles.socialIcon}
-  />
-
-  <SafeFastImage
-    source={require('../../assets/images/twitter.png')}
-    style={styles.socialIcon}
-  />
-
-</View>
+              <TouchableOpacity onPress={() => handleLink('https://x.com/TokenEarth2025')}>
+                <SafeFastImage
+                  source={require('../../assets/images/twitter.png')}
+                  style={styles.socialIcon}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
+
         </ScrollView>
       </KeyboardAvoidingView>
+      <AlertModal
+        visible={modalVisible}
+        message={modalMessage}
+        isSuccess={modalSuccess}
+        isError={!modalSuccess}
+        onClose={() => setModalVisible(false)}
+        onClick={() => {
+          setModalVisible(false);
+        }}
+      />
     </SafeAreaView>
   );
 };
@@ -257,6 +397,12 @@ const styles = StyleSheet.create({
 
   textArea: {
     textAlignVertical: 'top',
+  },
+
+  errorText: {
+    color: 'red',
+    fontSize: 12,
+    marginTop: 4,
   },
 
   sendBtn: {

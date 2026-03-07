@@ -1,9 +1,8 @@
 import React from 'react';
-import {View, Text, StyleSheet, ScrollView} from 'react-native';
-import FastImage from 'react-native-fast-image';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import Color from '../Common/Color';
 import ImpactSection from '../Components/ImpactSection';
-import {impactData} from '../utils/StaticJson';
+import { impactData } from '../utils/StaticJson';
 import SafeFastImage from '../utils/SafeFastImage';
 
 const ProfileTab = () => {
@@ -11,7 +10,7 @@ const ProfileTab = () => {
     <ScrollView
       style={styles.container}
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{paddingBottom: 70}}>
+      contentContainerStyle={{ paddingBottom: 70 }}>
       <View style={styles.tokenCard}>
         <View>
           <Text style={styles.smallText}>Total Tokens Earned</Text>
@@ -34,7 +33,7 @@ const ProfileTab = () => {
         <SafeFastImage
           source={require('../assets/images/shower.png')}
           style={styles.pledgeImage}
-        
+
         />
 
         <Text style={styles.pledgeDescription}>

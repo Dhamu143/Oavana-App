@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -14,14 +14,20 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import Color from '../Common/Color';
-import {Formik} from 'formik';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
 import AlertModal from '../Modal/AlertModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import apiClient from '../utils/ApiClient';
 import SafeFastImage from '../utils/SafeFastImage';
+import appleAuth, {
+  AppleButton,
+  AppleAuthRequestOperation,
+  AppleAuthRequestScope,
+  AppleAuthCredentialState,
+} from '@invertase/react-native-apple-authentication';
 
-const {width} = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 const SignUpSchema = Yup.object().shape({
   email: Yup.string().email('Enter valid email').required('Email is required'),
@@ -31,7 +37,7 @@ const SignUpSchema = Yup.object().shape({
     .required('Password is required'),
 });
 
-const SignUpContent = ({onSwitch, onClose}) => {
+const SignUpContent = ({ onSwitch, onClose }) => {
   const [secure, setSecure] = useState(true);
   const [loading, setLoading] = useState(false);
 
@@ -72,20 +78,72 @@ const SignUpContent = ({onSwitch, onClose}) => {
     }
   };
 
+  const handleAppleLogin = async () => {
+    try {
+      const appleAuthRequestResponse = await appleAuth.performRequest({
+        requestedOperation: AppleAuthRequestOperation.LOGIN,
+        requestedScopes: [
+          AppleAuthRequestScope.EMAIL,
+          AppleAuthRequestScope.FULL_NAME,
+        ],
+      });
+
+      console.log('token123', appleAuthRequestResponse);
+
+      if (appleAuthRequestResponse && appleAuthRequestResponse.identityToken) {
+        console.log('Getting token', appleAuthRequestResponse.identityToken);
+
+        // try {
+        //   const deviceId = await AsyncStorage.getItem('deviceId');
+        //   const apiResponse = await apiClient.post('/auth/applesignin', {
+        //     identityToken: appleAuthRequestResponse?.identityToken,
+        //     deviceid: deviceId,
+        //   });
+        //   console.log('Apple apiResponse', apiResponse);
+        //   if (apiResponse?.data?.success) {
+        //     await AsyncStorage.setItem(
+        //       'authToken',
+        //       apiResponse?.data?.data?.token,
+        //     );
+        //   }
+        //   dispatch(LoginSuceess(true));
+
+
+
+        // } catch (error) {
+        //   console.log('API call failed:', error?.response || error);
+        // }
+      } else {
+        console.log("Error", error)
+      }
+
+      const credentialState = await appleAuth.getCredentialStateForUser(
+        appleAuthRequestResponse.user,
+      );
+
+      if (credentialState === AppleAuthCredentialState.AUTHORIZED) {
+        console.log('User is authorized');
+      } else {
+      }
+    } catch (err) {
+      console.log('Apple login failed:', err);
+    }
+  };
+
   return (
     <Formik
-      initialValues={{email: '', password: ''}}
+      initialValues={{ email: '', password: '' }}
       validationSchema={SignUpSchema}
-      onSubmit={(values, {resetForm}) => handleSignUp(values, resetForm)}>
-      {({handleChange, handleBlur, handleSubmit, values, errors, touched}) => (
+      onSubmit={(values, { resetForm }) => handleSignUp(values, resetForm)}>
+      {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            style={{width: '100%'}}>
+            style={{ width: '100%' }}>
             <ScrollView
               showsVerticalScrollIndicator={false}
               keyboardShouldPersistTaps="handled"
-              contentContainerStyle={{paddingBottom: 30}}>
+              contentContainerStyle={{ paddingBottom: 30 }}>
               <TouchableOpacity style={styles.backBtn} onPress={onSwitch}>
                 <SafeFastImage
                   source={require('../assets/images/leftArrow.png')}
@@ -98,7 +156,7 @@ const SignUpContent = ({onSwitch, onClose}) => {
                 <Text style={styles.headerIcon}>✕</Text>
               </TouchableOpacity>
 
-           <SafeFastImage
+              <SafeFastImage
                 source={require('../assets/images/Logo1.png')}
                 style={styles.logo}
               />
@@ -152,7 +210,7 @@ const SignUpContent = ({onSwitch, onClose}) => {
                 />
 
                 <TouchableOpacity onPress={() => setSecure(!secure)}>
-                    <SafeFastImage
+                  <SafeFastImage
                     source={
                       secure
                         ? require('../assets/images/hide.png')
@@ -169,7 +227,7 @@ const SignUpContent = ({onSwitch, onClose}) => {
               )}
 
               <TouchableOpacity
-                style={[styles.primaryBtn, {opacity: loading ? 0.7 : 1}]}
+                style={[styles.primaryBtn, { opacity: loading ? 0.7 : 1 }]}
                 onPress={handleSubmit}
                 disabled={loading}>
                 {loading ? (
@@ -185,20 +243,37 @@ const SignUpContent = ({onSwitch, onClose}) => {
                 <View style={styles.line} />
               </View>
 
-              <TouchableOpacity style={styles.googleBtn}>
-              <SafeFastImage
-                  source={require('../assets/images/google.png')}
-                  style={styles.googleIcon}
-                />
-                <Text style={styles.googleText}>Sign up with Google</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.googleBtn, {marginTop: 15}]}>
-                 <SafeFastImage
-                  source={require('../assets/images/whatsapp.png')}
-                  style={styles.googleIcon}
-                />
-                <Text style={styles.googleText}>Sign up with whatsapp</Text>
-              </TouchableOpacity>
+              <View style={styles.iconRow}>
+                <TouchableOpacity style={styles.iconOnlyBtn}>
+                  <SafeFastImage
+                    source={require('../assets/images/google.png')}
+                    style={styles.iconOnly}
+                  />
+                </TouchableOpacity>
+                {
+                  Platform.OS === "ios" && (
+                    <TouchableOpacity style={styles.iconOnlyBtn}>
+                      <SafeFastImage
+                        source={require('../assets/images/apple.png')}
+                        style={styles.iconOnly}
+                      />
+                    </TouchableOpacity>
+                  )
+                }
+
+                {
+                  Platform.OS === "android" && (
+
+                    <TouchableOpacity style={styles.iconOnlyBtn}>
+                      <SafeFastImage
+                        source={require('../assets/images/whatsapp.png')}
+                        style={styles.iconOnly}
+                      />
+                    </TouchableOpacity>
+                  )
+                }
+
+              </View>
             </ScrollView>
 
             <AlertModal
@@ -341,26 +416,26 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     color: '#888',
   },
+  iconRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
 
-  googleBtn: {
+  iconOnlyBtn: {
+    flex: 1,
     height: 55,
-    borderRadius: 14,
+    marginHorizontal: 5,
+    backgroundColor: Color.WHITE,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: Color.boredrColor,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 
-  googleIcon: {
-    width: 25,
-    height: 25,
-    marginRight: 10,
-  },
-
-  googleText: {
-    fontSize: 15,
-    fontWeight: '500',
-    color: Color.BLACK,
+  iconOnly: {
+    width: 24,
+    height: 24,
   },
 });

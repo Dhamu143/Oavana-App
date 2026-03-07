@@ -22,6 +22,10 @@ import AlertModal from '../../Modal/AlertModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import apiClient from '../../utils/ApiClient';
 import SafeFastImage from '../../utils/SafeFastImage';
+import appleAuth, {
+  AppleButton,
+  AppleAuthCredentialState,
+} from '@invertase/react-native-apple-authentication';
 
 const {width} = Dimensions.get('window');
 
@@ -51,16 +55,41 @@ const SignInScreen = ({navigation}) => {
   const socialIcons =
     Platform.OS === 'ios'
       ? [
+          {type: 'google', icon: require('../../assets/images/google.png')},
           {
+            type: 'apple',
             icon: require('../../assets/images/apple.png'),
             tint: Color.Placeholder,
           },
-          {icon: require('../../assets/images/whatsapp.png')},
         ]
       : [
-          {icon: require('../../assets/images/google.png')},
-          {icon: require('../../assets/images/whatsapp.png')},
+          {type: 'google', icon: require('../../assets/images/google.png')},
+          {type: 'whatsapp', icon: require('../../assets/images/whatsapp.png')},
         ];
+
+  const handleAppleLogin = async () => {
+    try {
+      const appleAuthRequestResponse = await appleAuth.performRequest({
+        requestedOperation: appleAuth.Operation.LOGIN,
+        requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
+      });
+
+      if (!appleAuthRequestResponse.identityToken) {
+        console.log('Apple Sign-In failed - no identity token returned');
+        return;
+      }
+
+      const credentialState = await appleAuth.getCredentialStateForUser(
+        appleAuthRequestResponse.user,
+      );
+
+      if (credentialState === AppleAuthCredentialState.AUTHORIZED) {
+        console.log('User is authorized');
+      }
+    } catch (err) {
+      console.log('Apple login failed:', err);
+    }
+  };
 
   return (
     <Formik
@@ -122,6 +151,10 @@ const SignInScreen = ({navigation}) => {
                     <Text style={styles.skipText}>Skip</Text>
                   </TouchableOpacity>
 
+                  <SafeFastImage
+                    source={require('../../assets/images/Logo_icon.png')}
+                    style={styles.logo}
+                  />
                   <SafeFastImage
                     source={require('../../assets/images/Logo_icon.png')}
                     style={styles.logo}

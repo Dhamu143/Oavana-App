@@ -1,16 +1,16 @@
-import React, {useState} from 'react';
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
-import {DrawerContentScrollView} from '@react-navigation/drawer';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Linking } from 'react-native';
+import { DrawerContentScrollView } from '@react-navigation/drawer';
 import Color from '../../Common/Color';
 import DrawerItem from '../../Components/MenuItem';
-import {useNavigation} from '@react-navigation/native';
-import {useSelector} from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
 import AuthModal from '../../Modal/AuthModal';
 import AlertModal from '../../Modal/AlertModal';
 import SafeFastImage from '../../utils/SafeFastImage';
 
 const DrawerContent = props => {
-  const {skiplogin, userLogin} = useSelector(reducer => reducer.allReducer);
+  const { skiplogin, userLogin } = useSelector(reducer => reducer.allReducer);
   const navigation = useNavigation();
   const [showModal, setShowModal] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -25,23 +25,30 @@ const DrawerContent = props => {
     }
   };
 
+  const handleLink = url => {
+    Linking.openURL(url).catch(err =>
+      console.log('Failed to open link:', err),
+    );
+  };
+
+
   return (
     <DrawerContentScrollView
       {...props}
       contentContainerStyle={styles.container}>
       <View>
         <View style={styles.headerRow}>
-         <SafeFastImage
-  source={require('../../assets/images/Logo_icon.png')}
-  style={styles.logo}
-/>
+          <SafeFastImage
+            source={require('../../assets/images/Logo_icon.png')}
+            style={styles.logo}
+          />
 
           <TouchableOpacity onPress={() => props.navigation.closeDrawer()}>
-           <SafeFastImage
-  source={require('../../assets/images/close.png')}
-  style={styles.closeIcon}
-  tintColor={Color.WHITE}
-/>
+            <SafeFastImage
+              source={require('../../assets/images/close.png')}
+              style={styles.closeIcon}
+              tintColor={Color.WHITE}
+            />
           </TouchableOpacity>
         </View>
 
@@ -63,7 +70,9 @@ const DrawerContent = props => {
           <DrawerItem
             title="FAQ's"
             icon={require('../../assets/images/help.png')}
-            onPress={() => {}}
+            onPress={() => {
+              navigation.navigate("FAQScreen")
+            }}
           />
 
           <DrawerItem
@@ -87,7 +96,7 @@ const DrawerContent = props => {
           <DrawerItem
             title="E-Commerce"
             icon={require('../../assets/images/shopping.png')}
-            onPress={() => {}}
+            onPress={() => { }}
           />
 
           <DrawerItem
@@ -103,11 +112,15 @@ const DrawerContent = props => {
       <View style={styles.bottomSection}>
         <View style={styles.divider} />
 
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => {
+          handleLink('https://greenearthtoken.com/terms-conditions')
+        }}>
           <Text style={styles.bottomText}>Terms & Conditions</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => {
+          handleLink('https://greenearthtoken.com/privacy-policy')
+        }}>
           <Text style={styles.bottomText}>Privacy Policy</Text>
         </TouchableOpacity>
 
@@ -116,20 +129,26 @@ const DrawerContent = props => {
         <Text style={styles.connectText}>Let's Connect</Text>
 
         <View style={styles.socialRow}>
-          <SafeFastImage
-  source={require('../../assets/images/facebook.png')}
-  style={styles.socialIcon}
-/>
-
-<SafeFastImage
-  source={require('../../assets/images/instagram.png')}
-  style={styles.socialIcon}
-/>
-
-<SafeFastImage
-  source={require('../../assets/images/linkedin.png')}
-  style={styles.socialIcon}
-/>
+          <TouchableOpacity onPress={() => {
+            handleLink('https://www.facebook.com/greenearthtoken')
+          }}>
+            <SafeFastImage
+              source={require('../../assets/images/facebook.png')}
+              style={styles.socialIcon}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => handleLink('https://www.instagram.com/green.earth.token')}>
+            <SafeFastImage
+              source={require('../../assets/images/instagram.png')}
+              style={styles.socialIcon}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => handleLink('https://www.linkedin.com/company/green-earth-token')}>
+            <SafeFastImage
+              source={require('../../assets/images/linkedin.png')}
+              style={styles.socialIcon}
+            />
+          </TouchableOpacity>
         </View>
       </View>
       {showModal && (

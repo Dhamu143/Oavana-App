@@ -14,6 +14,7 @@ import ContactScreen from '../Screen/ContactScreen';
 import SustainabilityCoursesScreen from '../Screen/SustainabilityCoursesScreen';
 import CampaignsScreen from '../Screen/CampaignsScreen';
 import SplashScreen from '../Screen/SplashScreen';
+import FAQScreen from '../Screen/FaqScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -122,6 +123,14 @@ function MyStack() {
           animation: 'slide_from_right',
         }}
       />
+         <Stack.Screen
+        name="FAQScreen"
+        component={FAQScreen}
+        options={{
+          animation: 'slide_from_right',
+        }}
+      />
+      
     </Stack.Navigator>
   );
 }
