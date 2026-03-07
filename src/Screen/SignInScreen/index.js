@@ -122,10 +122,10 @@ const SignInScreen = ({navigation}) => {
                     <Text style={styles.skipText}>Skip</Text>
                   </TouchableOpacity>
 
-                <SafeFastImage
-  source={require('../../assets/images/Logo_icon.png')}
-  style={styles.logo}
-/>
+                  <SafeFastImage
+                    source={require('../../assets/images/Logo_icon.png')}
+                    style={styles.logo}
+                  />
 
                   <Text style={styles.title}>
                     Sign in to your{'\n'}
@@ -141,11 +141,11 @@ const SignInScreen = ({navigation}) => {
                   <View style={styles.socialRow}>
                     {socialIcons.map((item, index) => (
                       <TouchableOpacity key={index} style={styles.socialBtn}>
-                     <SafeFastImage
-  source={item.icon}
-  style={styles.socialIcon}
-  tintColor={item.tint}
-/>
+                        <SafeFastImage
+                          source={item.icon}
+                          style={styles.socialIcon}
+                          tintColor={item.tint}
+                        />
                       </TouchableOpacity>
                     ))}
                   </View>
@@ -201,14 +201,14 @@ const SignInScreen = ({navigation}) => {
 
                     <TouchableOpacity onPress={() => setSecure(!secure)}>
                       <SafeFastImage
-  source={
-    secure
-      ? require('../../assets/images/hide.png')
-      : require('../../assets/images/open.png')
-  }
-  style={styles.eyeIcon}
-  tintColor={Color.Placeholder}
-/>
+                        source={
+                          secure
+                            ? require('../../assets/images/hide.png')
+                            : require('../../assets/images/open.png')
+                        }
+                        style={styles.eyeIcon}
+                        tintColor={Color.Placeholder}
+                      />
                     </TouchableOpacity>
                   </View>
 
