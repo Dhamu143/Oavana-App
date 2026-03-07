@@ -1,6 +1,7 @@
 const initialState = {
   skiplogin: false,
   userLogin: false,
+  refCode:''
 };
 export const allReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -16,6 +17,11 @@ export const allReducer = (state = initialState, action) => {
         ...state,
         userLogin: action.userLogin,
       };
+    case "ADD_REF_CODE" : 
+    return {
+      ...state,
+      refCode : action.refCode
+    }  
   }
   return state;
 };

@@ -8,21 +8,21 @@ import {
   StatusBar,
   ScrollView,
 } from 'react-native';
-import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Color from '../../Common/Color';
 import ImpactSection from '../../Components/ImpactSection';
-import {impactData} from '../../utils/StaticJson';
+import { impactData } from '../../utils/StaticJson';
 import AirDropCard from '../../Components/AirDropCard';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import SafeFastImage from '../../utils/SafeFastImage';
 
 const scale = size => {
-  const {width} = Dimensions.get('window');
+  const { width } = Dimensions.get('window');
   return (width / 375) * size;
 };
 
-const MainDashBoard = ({navigation}) => {
-  const {skiplogin, userLogin} = useSelector(reducer => reducer.allReducer);
+const MainDashBoard = ({ navigation }) => {
+  const { skiplogin, userLogin } = useSelector(reducer => reducer.allReducer);
   const insets = useSafeAreaInsets();
 
   return (
@@ -33,17 +33,17 @@ const MainDashBoard = ({navigation}) => {
           <TouchableOpacity
             style={styles.menuBtn}
             onPress={() => navigation.toggleDrawer()}>
-          <SafeFastImage
-  source={require('../../assets/images/menu.png')}
-  style={styles.menuIcon}
-/>
+            <SafeFastImage
+              source={require('../../assets/images/menu.png')}
+              style={styles.menuIcon}
+            />
           </TouchableOpacity>
 
           <View style={styles.pointsBox}>
-           <SafeFastImage
-  source={require('../../assets/images/creation.png')}
-  style={styles.starIcon}
-/>
+            <SafeFastImage
+              source={require('../../assets/images/creation.png')}
+              style={styles.starIcon}
+            />
             <View>
               <Text style={styles.pointsText}>1,247.06</Text>
               <Text style={styles.pointsLabel}>GET Points</Text>
@@ -63,15 +63,15 @@ const MainDashBoard = ({navigation}) => {
         <View style={styles.card}>
           <View style={styles.badge}>
             <SafeFastImage
-  source={require('../../assets/images/star.png')}
-  style={styles.badgeIcon}
-/>
+              source={require('../../assets/images/star.png')}
+              style={styles.badgeIcon}
+            />
             <Text style={styles.badgeText}>Green Token Earth</Text>
           </View>
 
           <Text style={styles.cardTitle}>
             Tap. Earn.{' '}
-            <Text style={{color: Color.GREEN}}>Regenerate Earth.</Text>
+            <Text style={{ color: Color.GREEN }}>Regenerate Earth.</Text>
           </Text>
 
           <Text style={styles.cardSubtitle}>

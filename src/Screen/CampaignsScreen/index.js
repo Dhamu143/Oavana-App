@@ -1,4 +1,4 @@
-import React, {memo, useState} from 'react';
+import React, { memo, useState } from 'react';
 import {
   View,
   Text,
@@ -9,7 +9,7 @@ import {
   StatusBar,
   Platform,
 } from 'react-native';
-import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Color from '../../Common/Color';
 import FilterModal from '../../Modal/FilterModal';
 import SafeFastImage from '../../utils/SafeFastImage';
@@ -38,10 +38,10 @@ const courses = [
   },
 ];
 
-const CourseCard = memo(({item}) => {
+const CourseCard = memo(({ item }) => {
   return (
     <TouchableOpacity activeOpacity={0.8} style={styles.card}>
-    <SafeFastImage
+      <SafeFastImage
         source={item.image}
         style={styles.cardImage}
       />
@@ -59,7 +59,7 @@ const CourseCard = memo(({item}) => {
         </Text>
 
         <View style={styles.row}>
-         <SafeFastImage
+          <SafeFastImage
             source={require('../../assets/images/Time.png')}
             style={styles.icon}
             tintColor="#777"
@@ -75,11 +75,11 @@ const CourseCard = memo(({item}) => {
   );
 });
 
-const CampaignsScreen = ({navigation}) => {
+const CampaignsScreen = ({ navigation }) => {
   const [filterVisible, setFilterVisible] = useState(false);
   const insets = useSafeAreaInsets();
 
-  const renderItem = ({item}) => <CourseCard item={item} />;
+  const renderItem = ({ item }) => <CourseCard item={item} />;
 
   return (
     <SafeAreaView edges={['top', 'left', 'right']} style={styles.container}>
@@ -101,17 +101,17 @@ const CampaignsScreen = ({navigation}) => {
             style={styles.menuBtn}
             activeOpacity={0.7}
             onPress={() => navigation?.goBack()}>
-          <SafeFastImage
-  source={require('../../assets/images/back.png')}
-  style={styles.menuIcon}
-  tintColor="#777"
-/>
+            <SafeFastImage
+              source={require('../../assets/images/back.png')}
+              style={styles.menuIcon}
+              tintColor="#777"
+            />
           </TouchableOpacity>
 
-         <SafeFastImage
-  source={require('../../assets/images/Logo1.png')}
-  style={styles.logo}
-/>
+          <SafeFastImage
+            source={require('../../assets/images/Logo1.png')}
+            style={styles.logo}
+          />
         </View>
 
         <Text style={styles.title} allowFontScaling={false}>
@@ -132,7 +132,7 @@ const CampaignsScreen = ({navigation}) => {
           renderItem={renderItem}
           keyExtractor={item => item.id}
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{paddingLeft: 20}}
+          contentContainerStyle={{ paddingLeft: 20 }}
           removeClippedSubviews={true}
           initialNumToRender={3}
           maxToRenderPerBatch={5}
@@ -140,7 +140,7 @@ const CampaignsScreen = ({navigation}) => {
         />
 
         <Text
-          style={[styles.sectionTitle, {marginTop: 10}]}
+          style={[styles.sectionTitle, { marginTop: 10 }]}
           allowFontScaling={false}>
           New Courses
         </Text>

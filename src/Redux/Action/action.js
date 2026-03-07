@@ -13,3 +13,8 @@ export const LoginSuceess = userLogin => ({
   type: 'ADD_USER_LOGIN',
   userLogin: userLogin,
 });
+
+export const AddRefCode = refCode => ({
+  type: 'ADD_REF_CODE',
+  refCode: refCode,
+});
