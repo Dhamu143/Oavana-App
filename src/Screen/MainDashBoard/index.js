@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -13,8 +13,10 @@ import Color from '../../Common/Color';
 import ImpactSection from '../../Components/ImpactSection';
 import { impactData } from '../../utils/StaticJson';
 import AirDropCard from '../../Components/AirDropCard';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import SafeFastImage from '../../utils/SafeFastImage';
+import apiClient from '../../utils/ApiClient';
+import { addTokenAndRate, IsPledgeActive } from '../../Redux/Action/action';
 
 const scale = size => {
   const { width } = Dimensions.get('window');
@@ -22,8 +24,36 @@ const scale = size => {
 };
 
 const MainDashBoard = ({ navigation }) => {
-  const { skiplogin, userLogin } = useSelector(reducer => reducer.allReducer);
+  const { skiplogin, userLogin , isPledgeActive,isMiningEnable} = useSelector(reducer => reducer.allReducer);
   const insets = useSafeAreaInsets();
+  const [pladgeData, setPladgeData] = useState(null);
+
+  //console.log("isPledgeActive",isPledgeActive,isMiningEnable  )
+
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    getPladge()
+  }, [])
+
+
+  const getPladge = async () => {
+    try {
+      const response = await apiClient.get('/users/activepledge');
+
+      if (response?.data?.success) {
+        const pledgeData = response?.data?.data;
+        console.log('pledgeData', pledgeData);
+        setPladgeData(pledgeData);
+        dispatch(addTokenAndRate(pledgeData?.tokenBalance, pledgeData?.miningRate))
+        // dispatch(IsPledgeActive(pledgeData?.isPleadgeActive,pladgeData?.miningEnabled))
+      } else {
+        console.log('No Data', 'Response returned no data.');
+      }
+    } catch (error) {
+      console.log('API Error:', error);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -45,14 +75,19 @@ const MainDashBoard = ({ navigation }) => {
               style={styles.starIcon}
             />
             <View>
-              <Text style={styles.pointsText}>1,247.06</Text>
+              <Text style={styles.pointsText}>
+
+                {Number(pladgeData?.tokenBalance ?? 0).toLocaleString()}
+              </Text>
               <Text style={styles.pointsLabel}>GET Points</Text>
             </View>
           </View>
 
           <View style={styles.rateBox}>
             <Text style={styles.rateTitle}>Mining Rate</Text>
-            <Text style={styles.rateValue}>12.06 pts/hr</Text>
+            <Text style={styles.rateValue}>
+             + {pladgeData?.miningRate ?? 0} pts/hr
+            </Text>
           </View>
         </View>
       </View>
@@ -80,7 +115,14 @@ const MainDashBoard = ({ navigation }) => {
           </Text>
         </View>
 
-        <AirDropCard currentPoints={250} totalPoints={1500} />
+        <AirDropCard
+          currentPoints={pladgeData?.tokenBalance ?? 0}
+          totalPoints={1500}
+          pledgeIcon={pladgeData?.activePledge?.icon}
+          isPleadgeActive={pladgeData?.isPleadgeActive}
+          miningEndTime={pladgeData?.miningEndTime}
+          onPledgeSuccess={getPladge} 
+        />
 
         <ImpactSection title="Your Environmental Impact" data={impactData} />
       </ScrollView>

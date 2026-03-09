@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -7,14 +7,15 @@ import {
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
+  StatusBar,
 } from 'react-native';
 import Collapsible from 'react-native-collapsible';
 import apiClient from '../../utils/ApiClient';
 import Color from '../../Common/Color';
 import SafeFastImage from '../../utils/SafeFastImage';
-import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const FAQScreen = ({navigation}) => {
+const FAQScreen = ({ navigation }) => {
   const insets = useSafeAreaInsets();
   const [faqs, setFaqs] = useState([]);
   const [filteredFaqs, setFilteredFaqs] = useState([]);
@@ -58,7 +59,7 @@ const FAQScreen = ({navigation}) => {
     setActiveIndex(activeIndex === index ? null : index);
   };
 
-  const renderFAQ = ({item, index}) => {
+  const renderFAQ = ({ item, index }) => {
     const isActive = index === activeIndex;
 
     return (
@@ -86,8 +87,13 @@ const FAQScreen = ({navigation}) => {
   };
 
   return (
-    <SafeAreaView style={{flex: 1}} edges={['top', 'bottom']}>
-      <View style={[styles.container, {paddingBottom: insets.bottom + 10}]}>
+    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor={Color.WHITE}
+        translucent={false}
+      />
+      <View style={[styles.container, { paddingBottom: insets.bottom + 10 }]}>
         <View style={styles.headerRow}>
           <TouchableOpacity
             style={styles.menuBtn}
@@ -153,6 +159,11 @@ const FAQScreen = ({navigation}) => {
 export default FAQScreen;
 
 const styles = StyleSheet.create({
+
+  safeArea: {
+    flex: 1,
+    backgroundColor: Color.WHITE,
+  },
   container: {
     flex: 1,
     paddingHorizontal: 20,

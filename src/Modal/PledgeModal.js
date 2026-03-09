@@ -7,14 +7,15 @@ import {
   Text,
   Dimensions,
 } from 'react-native';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Color from '../Common/Color';
 import SafeFastImage from '../utils/SafeFastImage';
+import FastImage from 'react-native-fast-image';
 
-const {width} = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const scale = size => (width / 375) * size;
 
-const PledgeModal = ({visible, onClose}) => {
+const PledgeModal = ({ visible, onClose, pledgeIcon, onPledgePress }) => {
   const insets = useSafeAreaInsets();
 
   return (
@@ -28,23 +29,29 @@ const PledgeModal = ({visible, onClose}) => {
         <View
           style={[
             styles.container,
-            {paddingBottom: insets.bottom + scale(20)},
+            { paddingBottom: insets.bottom + scale(20) },
           ]}>
           <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
             <Text style={styles.closeText}>✕</Text>
           </TouchableOpacity>
 
-        <SafeFastImage
-  source={require('../assets/images/shower.png')}
-  style={styles.image}
-/>
+          <SafeFastImage
+            source={
+              pledgeIcon
+                ? { uri: pledgeIcon }
+                : require('../assets/images/Bus.png')
+            }
+            style={styles.image}
+            resizeMode={FastImage.resizeMode.cover}
+
+          />
           <Text style={styles.title}>
             I’ll take shorter showers to save water.
           </Text>
 
           <Text style={styles.subtitle}>- Green Token Earth</Text>
 
-          <TouchableOpacity style={styles.actionBtn}>
+          <TouchableOpacity style={styles.actionBtn} onPress={onPledgePress}>
             <Text style={styles.actionText}>Pledge & Act for the Planet</Text>
           </TouchableOpacity>
         </View>

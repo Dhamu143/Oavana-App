@@ -4,8 +4,11 @@ import Color from '../Common/Color';
 import ImpactSection from '../Components/ImpactSection';
 import { impactData } from '../utils/StaticJson';
 import SafeFastImage from '../utils/SafeFastImage';
+import { useSelector } from 'react-redux';
 
 const ProfileTab = () => {
+  const { tokenEarn, miningRate } = useSelector(reducer => reducer.allReducer);
+  //console.log("check store data",tokenEarn,miningRate)
   return (
     <ScrollView
       style={styles.container}
@@ -14,14 +17,14 @@ const ProfileTab = () => {
       <View style={styles.tokenCard}>
         <View>
           <Text style={styles.smallText}>Total Tokens Earned</Text>
-          <Text style={styles.valueText}>2,330</Text>
+          <Text style={styles.valueText}>{Number(tokenEarn ?? 0).toLocaleString()}</Text>
         </View>
 
         <View style={styles.divider} />
 
         <View>
           <Text style={styles.smallText}>Mining Rate</Text>
-          <Text style={styles.valueText}>+1 Points/hr</Text>
+          <Text style={styles.valueText}>+ {miningRate} Points/hr</Text>
         </View>
       </View>
 

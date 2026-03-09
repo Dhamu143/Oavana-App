@@ -18,3 +18,16 @@ export const AddRefCode = refCode => ({
   type: 'ADD_REF_CODE',
   refCode: refCode,
 });
+
+export const addTokenAndRate = (tokenEarn, miningRate) => ({
+  type: 'ADD_TOKEN_AND_RATE',
+  tokenEarn: tokenEarn,
+  miningRate: miningRate
+});
+
+
+export const IsPledgeActive = (isPledgeActive, isMiningEnable) => ({
+  type: 'CHECK_PLEDGE_ACTIVE',
+  isPledgeActive: isPledgeActive,
+  isMiningEnable: isMiningEnable
+});
