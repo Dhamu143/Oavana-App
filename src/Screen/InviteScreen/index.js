@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {
   View,
   Text,
@@ -11,28 +11,27 @@ import {
   Platform,
   Linking,
   Alert,
-  Share
+  Share,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import Color from '../../Common/Color';
 import SafeFastImage from '../../utils/SafeFastImage';
 import Contacts from 'react-native-contacts';
 import SkeletonLoader from '../../reuseable/SkeletonLoader';
 import AlertModal from '../../Modal/AlertModal';
 import apiClient from '../../utils/ApiClient';
-import { useDispatch, useSelector } from 'react-redux';
-import { AddRefCode } from '../../Redux/Action/action';
+import {useDispatch, useSelector} from 'react-redux';
+import {AddRefCode} from '../../Redux/Action/action';
 import Clipboard from '@react-native-clipboard/clipboard';
 
-
-const InviteScreen = ({ navigation }) => {
-  const { refCode, addUserName, addMobileNumber } = useSelector(
+const InviteScreen = ({navigation}) => {
+  const {refCode, addUserName, addMobileNumber} = useSelector(
     reducer => reducer.allReducer,
   );
 
   const insets = useSafeAreaInsets();
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -47,7 +46,6 @@ const InviteScreen = ({ navigation }) => {
   useEffect(() => {
     getUserInfo();
     requestContactsPermission();
-
   }, []);
 
   useEffect(() => {
@@ -60,18 +58,13 @@ const InviteScreen = ({ navigation }) => {
     try {
       const userData = await apiClient.get('/users/me');
 
-
-      const refcode = userData?.data?.data?.data?.refCode
+      const refcode = userData?.data?.data?.data?.refCode;
 
       if (userData.status === 200) {
         dispatch(AddRefCode(refcode));
-
       } else {
-
       }
-    } catch (error) {
-
-    }
+    } catch (error) {}
   };
 
   const requestContactsPermission = async () => {
@@ -98,8 +91,8 @@ const InviteScreen = ({ navigation }) => {
           'Permission Required',
           'Please allow contacts permission from settings.',
           [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Open Settings', onPress: () => Linking.openSettings() },
+            {text: 'Cancel', style: 'cancel'},
+            {text: 'Open Settings', onPress: () => Linking.openSettings()},
           ],
         );
       }
@@ -118,10 +111,10 @@ const InviteScreen = ({ navigation }) => {
         .map(contact => ({
           id: contact.recordID,
           name: contact.displayName || 'Unknown',
-          email:
-            contact.emailAddresses.length > 0
-              ? contact.emailAddresses[0].email
-              : 'No Email',
+          mobile_No:
+            contact.phoneNumbers.length > 0
+              ? contact.phoneNumbers[0].number
+              : 'N/A',
           image: require('../../assets/images/userProfile.png'),
         }))
         .sort((a, b) => a.name.localeCompare(b.name));
@@ -134,12 +127,12 @@ const InviteScreen = ({ navigation }) => {
     }
   }, []);
 
-  const renderItem = ({ item }) => (
+  const renderItem = ({item}) => (
     <View style={styles.contactRow}>
       <SafeFastImage source={item.image} style={styles.avatar} />
       <View style={styles.contactInfo}>
-        <Text style={styles.contactName}>{item.name}</Text>
-        <Text style={styles.contactEmail}>{item.email}</Text>
+        <Text style={styles.contactName}>{item?.name}</Text>
+        <Text style={styles.contactEmail}>{item?.mobile_No}</Text>
       </View>
     </View>
   );
@@ -187,7 +180,7 @@ const InviteScreen = ({ navigation }) => {
       });
 
       if (refCodeValue?.data?.success) {
-        dispatch(AddRefCode(username))
+        dispatch(AddRefCode(username));
         setModalMessage('Referral code successfully updated');
         setModalSuccess(true);
         setModalVisible(true);
@@ -211,28 +204,27 @@ const InviteScreen = ({ navigation }) => {
     }
   };
 
+  const handleShare = async () => {
+    const codeToUse = username || refCode;
 
-const handleShare = async () => {
-  const codeToUse = username || refCode;
+    if (!codeToUse) {
+      setModalMessage('Please generate the referral code first.');
+      setModalSuccess(false);
+      setModalVisible(true);
+      return;
+    }
 
-  if (!codeToUse) {
-    setModalMessage('Please generate the referral code first.');
-    setModalSuccess(false);
-    setModalVisible(true);
-    return;
-  }
+    if (refCode && username && refCode !== username) {
+      setModalMessage('Please save the referral code before sharing.');
+      setModalSuccess(false);
+      setModalVisible(true);
+      return;
+    }
 
-  if (refCode && username && refCode !== username) {
-    setModalMessage('Please save the referral code before sharing.');
-    setModalSuccess(false);
-    setModalVisible(true);
-    return;
-  }
-
-  try {
-    const messageBody = `${
-      addUserName || addMobileNumber
-    } invited you to join the green movement!
+    try {
+      const messageBody = `${
+        addUserName || addMobileNumber
+      } invited you to join the green movement!
 
 Use referral code "${codeToUse}" to start mining
 at a better rate and help make the planet greener.
@@ -240,22 +232,21 @@ at a better rate and help make the planet greener.
 Download now!
 https://greenearthtoken.com/get`;
 
-    await Share.share({
-      message: messageBody,
-    });
-
-  } catch (error) {
-    setModalMessage('Unable to share at the moment.');
-    setModalSuccess(false);
-    setModalVisible(true);
-  }
-};
+      await Share.share({
+        message: messageBody,
+      });
+    } catch (error) {
+      setModalMessage('Unable to share at the moment.');
+      setModalSuccess(false);
+      setModalVisible(true);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor={Color.WHITE} />
 
-      <View style={{ flex: 1 }}>
+      <View style={{flex: 1}}>
         <View style={styles.header}>
           <TouchableOpacity
             style={styles.menuBtn}
@@ -298,7 +289,6 @@ https://greenearthtoken.com/get`;
                   : require('../../assets/images/copy1.png')
               }
               style={styles.copyIcon}
-              // tintColor={Color.WHITE}
             />
           </TouchableOpacity>
         </View>
@@ -307,8 +297,7 @@ https://greenearthtoken.com/get`;
           <TouchableOpacity
             style={styles.saveBtn}
             onPress={handelClick}
-            disabled={saving}
-          >
+            disabled={saving}>
             <Text style={styles.saveText}>
               {saving ? 'Saving...' : 'Save Referral Code'}
             </Text>
@@ -318,14 +307,14 @@ https://greenearthtoken.com/get`;
         <Text style={styles.contactTitle}>Contacts</Text>
 
         <FlatList
-          data={loading ? Array.from({ length: 6 }) : contacts}
+          data={loading ? Array.from({length: 6}) : contacts}
           keyExtractor={(item, index) => (loading ? index.toString() : item.id)}
-          renderItem={({ item }) =>
-            loading ? <SkeletonLoader /> : renderItem({ item })
+          renderItem={({item}) =>
+            loading ? <SkeletonLoader /> : renderItem({item})
           }
           showsVerticalScrollIndicator={false}
-          style={{ flex: 1 }}
-          contentContainerStyle={{ paddingBottom: 20 }}
+          style={{flex: 1}}
+          contentContainerStyle={{paddingBottom: 20}}
         />
         <View style={styles.bottomFixed}>
           <TouchableOpacity style={styles.primaryBtn} onPress={handleShare}>
@@ -346,8 +335,6 @@ https://greenearthtoken.com/get`;
         onClose={() => setModalVisible(false)}
         onClick={() => {
           setModalVisible(false);
-
-
         }}
       />
     </SafeAreaView>
@@ -396,7 +383,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 16,
-    color: '#7A7A7A',
+    color: '#686767',
     marginTop: 6,
     marginBottom: 24,
     fontWeight: '400',
@@ -413,7 +400,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: '#BDBDBD',
     paddingBottom: 6,
-    marginBottom: 30,
+    marginBottom: 10,
   },
   input: {
     flex: 1,
@@ -428,7 +415,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   copyIcon: {
-   width: 42,
+    width: 42,
     height: 42,
   },
   contactTitle: {
@@ -440,12 +427,18 @@ const styles = StyleSheet.create({
   contactRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 10,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: Color.boredrColor,
+    borderRadius: 12,
   },
   avatar: {
     width: 40,
     height: 40,
     borderRadius: 20,
+    borderWidth: 1,
+    borderColor: Color.boredrColor,
   },
   contactInfo: {
     marginLeft: 12,
@@ -457,13 +450,10 @@ const styles = StyleSheet.create({
   },
   contactEmail: {
     fontSize: 13,
-    color: '#9E9E9E',
+    color: '#615f5f',
     marginTop: 3,
   },
-  bottomContainer: {
-    marginTop: 20,
-    marginBottom: 10,
-  },
+
   bottomFixed: {
     paddingBottom: 20,
     paddingTop: 10,
@@ -471,7 +461,7 @@ const styles = StyleSheet.create({
   },
   primaryBtn: {
     backgroundColor: Color.GREEN,
-    paddingVertical: 16,
+    paddingVertical: 14,
     borderRadius: 10,
     alignItems: 'center',
     marginBottom: 12,
@@ -483,7 +473,7 @@ const styles = StyleSheet.create({
   },
   secondaryBtn: {
     backgroundColor: '#E3E6EB',
-    paddingVertical: 16,
+    paddingVertical: 14,
     borderRadius: 10,
     alignItems: 'center',
   },
@@ -497,7 +487,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 8,
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   saveText: {
     color: Color.WHITE,

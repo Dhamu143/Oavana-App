@@ -1,5 +1,6 @@
 import React, {useEffect, useRef} from 'react';
 import {View, StyleSheet, Animated, Easing} from 'react-native';
+import Color from '../Common/Color';
 
 const SkeletonLoader = () => {
   const shimmerAnim = useRef(new Animated.Value(0)).current;
@@ -25,7 +26,7 @@ const SkeletonLoader = () => {
 
   const interpolateBackground = shimmerAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: ['#E5E5E5', '#F5F5F5'], 
+    outputRange: ['#E5E5E5', '#F5F5F5'],
   });
 
   return (
@@ -48,8 +49,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderRadius: 8,
     marginHorizontal: 12,
-    backgroundColor: '#FFFFFF', 
+    backgroundColor: '#FFFFFF',
     padding: 15,
+    borderWidth: 1,
+    borderColor: Color.boredrColor,
   },
   skeleton: {
     height: 20,

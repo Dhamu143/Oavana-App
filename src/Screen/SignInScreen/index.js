@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -11,6 +11,8 @@ import {
   Platform,
   ScrollView,
   ActivityIndicator,
+  Linking,
+  Alert,
 } from 'react-native';
 import Color from '../../Common/Color';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -46,6 +48,55 @@ const SignInScreen = ({navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [modalSuccess, setModalSuccess] = useState(false);
+
+  const extractTokenFromUrl = url => {
+    try {
+      const parsedUrl = new URL(url);
+      let token = parsedUrl.searchParams.get('token');
+      if (token) return token;
+      const hash = parsedUrl.hash;
+      if (hash) {
+        const match = hash.match(/token=([^&]+)/);
+        return match ? match[1] : null;
+      }
+
+      return null;
+    } catch (e) {
+      console.warn('Error parsing token from URL:', e);
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    const handleDeepLink = async event => {
+      try {
+        console.log('Deep link event:', event);
+        if (!event || !event.url) {
+          console.log('No event.url found');
+          return;
+        }
+        const token = extractTokenFromUrl(event.url);
+
+        console.log('Login With whatsapp Token', token);
+      } catch (err) {
+        console.error('Error in handleDeepLink:', err);
+      }
+    };
+
+    const subscription = Linking.addEventListener('url', handleDeepLink);
+    (async () => {
+      const initialUrl = await Linking.getInitialURL();
+      if (initialUrl) {
+        console.log('App launched with URL:', initialUrl);
+        const token = extractTokenFromUrl(initialUrl);
+        console.log('Initial token:', token);
+      }
+    })();
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
 
   const handelSkipLogin = () => {
     dispatch(SkipLogin(true));
@@ -88,6 +139,59 @@ const SignInScreen = ({navigation}) => {
       }
     } catch (err) {
       console.log('Apple login failed:', err);
+    }
+  };
+
+  // const handalWhatsappLogin = async () => {
+  //   const phoneNumber = '+15557720200';
+  //   const message = 'Login';
+  //   const url = `whatsapp://send?phone=${phoneNumber}&text=${encodeURIComponent(
+  //     message,
+  //   )}`;
+
+  //   const canOpen = await Linking.canOpenURL(url);
+  //   if (canOpen) {
+  //     await Linking.openURL(url);
+  //   } else {
+  //     Alert.alert(
+  //       'WhatsApp Not Installed',
+  //       'Please install WhatsApp to continue.',
+  //     );
+  //   }
+  // };
+
+  const handalWhatsappLogin = async () => {
+    const phoneNumber = '+15557720200';
+    const message = 'Login';
+
+    const whatsappUrl = `whatsapp://send?phone=${phoneNumber}&text=${encodeURIComponent(
+      message,
+    )}`;
+    const whatsappBusinessUrl = `whatsapp-business://send?phone=${phoneNumber}&text=${encodeURIComponent(
+      message,
+    )}`;
+
+    try {
+      const canOpenWhatsapp = await Linking.canOpenURL(whatsappUrl);
+
+      if (canOpenWhatsapp) {
+        await Linking.openURL(whatsappUrl);
+        return;
+      }
+
+      const canOpenBusiness = await Linking.canOpenURL(whatsappBusinessUrl);
+
+      if (canOpenBusiness) {
+        await Linking.openURL(whatsappBusinessUrl);
+        return;
+      }
+
+      Alert.alert(
+        'WhatsApp Not Installed',
+        'Please install WhatsApp or WhatsApp Business to continue.',
+      );
+    } catch (error) {
+      console.log('WhatsApp open error:', error);
     }
   };
 
@@ -155,10 +259,6 @@ const SignInScreen = ({navigation}) => {
                     source={require('../../assets/images/Logo_icon.png')}
                     style={styles.logo}
                   />
-                  <SafeFastImage
-                    source={require('../../assets/images/Logo_icon.png')}
-                    style={styles.logo}
-                  />
 
                   <Text style={styles.title}>
                     Sign in to your{'\n'}
@@ -173,7 +273,18 @@ const SignInScreen = ({navigation}) => {
                 <View style={styles.card}>
                   <View style={styles.socialRow}>
                     {socialIcons.map((item, index) => (
-                      <TouchableOpacity key={index} style={styles.socialBtn}>
+                      <TouchableOpacity
+                        key={index}
+                        style={styles.socialBtn}
+                        onPress={() => {
+                          if (item.type === 'google') {
+                            console.log('Google login');
+                          } else if (item.type === 'apple') {
+                            handleAppleLogin();
+                          } else if (item.type === 'whatsapp') {
+                            handalWhatsappLogin();
+                          }
+                        }}>
                         <SafeFastImage
                           source={item.icon}
                           style={styles.socialIcon}
