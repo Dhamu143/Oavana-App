@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Linking } from 'react-native';
-import { DrawerContentScrollView } from '@react-navigation/drawer';
+import React, {useState} from 'react';
+import {View, Text, TouchableOpacity, StyleSheet, Linking} from 'react-native';
+import {DrawerContentScrollView} from '@react-navigation/drawer';
 import Color from '../../Common/Color';
 import DrawerItem from '../../Components/MenuItem';
-import { useNavigation } from '@react-navigation/native';
-import { useSelector } from 'react-redux';
+import {useNavigation} from '@react-navigation/native';
+import {useSelector} from 'react-redux';
 import AuthModal from '../../Modal/AuthModal';
 import AlertModal from '../../Modal/AlertModal';
 import SafeFastImage from '../../utils/SafeFastImage';
 
 const DrawerContent = props => {
-  const { skiplogin, userLogin } = useSelector(reducer => reducer.allReducer);
+  const {skiplogin, userLogin} = useSelector(reducer => reducer.allReducer);
   const navigation = useNavigation();
   const [showModal, setShowModal] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -26,11 +26,8 @@ const DrawerContent = props => {
   };
 
   const handleLink = url => {
-    Linking.openURL(url).catch(err =>
-      console.log('Failed to open link:', err),
-    );
+    Linking.openURL(url).catch(err => console.log('Failed to open link:', err));
   };
-
 
   return (
     <DrawerContentScrollView
@@ -71,7 +68,7 @@ const DrawerContent = props => {
             title="FAQ's"
             icon={require('../../assets/images/help.png')}
             onPress={() => {
-              navigation.navigate("FAQScreen")
+              navigation.navigate('FAQScreen');
             }}
           />
 
@@ -96,7 +93,9 @@ const DrawerContent = props => {
           <DrawerItem
             title="E-Commerce"
             icon={require('../../assets/images/shopping.png')}
-            onPress={() => { }}
+            onPress={() => {
+              navigation.navigate('EcommerceHomeScreen');
+            }}
           />
 
           <DrawerItem
@@ -112,15 +111,17 @@ const DrawerContent = props => {
       <View style={styles.bottomSection}>
         <View style={styles.divider} />
 
-        <TouchableOpacity onPress={() => {
-          handleLink('https://greenearthtoken.com/terms-conditions')
-        }}>
+        <TouchableOpacity
+          onPress={() => {
+            handleLink('https://greenearthtoken.com/terms-conditions');
+          }}>
           <Text style={styles.bottomText}>Terms & Conditions</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => {
-          handleLink('https://greenearthtoken.com/privacy-policy')
-        }}>
+        <TouchableOpacity
+          onPress={() => {
+            handleLink('https://greenearthtoken.com/privacy-policy');
+          }}>
           <Text style={styles.bottomText}>Privacy Policy</Text>
         </TouchableOpacity>
 
@@ -129,21 +130,28 @@ const DrawerContent = props => {
         <Text style={styles.connectText}>Let's Connect</Text>
 
         <View style={styles.socialRow}>
-          <TouchableOpacity onPress={() => {
-            handleLink('https://www.facebook.com/greenearthtoken')
-          }}>
+          <TouchableOpacity
+            onPress={() => {
+              handleLink('https://www.facebook.com/greenearthtoken');
+            }}>
             <SafeFastImage
               source={require('../../assets/images/facebook.png')}
               style={styles.socialIcon}
             />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleLink('https://www.instagram.com/green.earth.token')}>
+          <TouchableOpacity
+            onPress={() =>
+              handleLink('https://www.instagram.com/green.earth.token')
+            }>
             <SafeFastImage
               source={require('../../assets/images/instagram.png')}
               style={styles.socialIcon}
             />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleLink('https://www.linkedin.com/company/green-earth-token')}>
+          <TouchableOpacity
+            onPress={() =>
+              handleLink('https://www.linkedin.com/company/green-earth-token')
+            }>
             <SafeFastImage
               source={require('../../assets/images/linkedin.png')}
               style={styles.socialIcon}

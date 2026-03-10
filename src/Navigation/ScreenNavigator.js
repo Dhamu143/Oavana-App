@@ -15,6 +15,9 @@ import SustainabilityCoursesScreen from '../Screen/SustainabilityCoursesScreen';
 import CampaignsScreen from '../Screen/CampaignsScreen';
 import SplashScreen from '../Screen/SplashScreen';
 import FAQScreen from '../Screen/FaqScreen';
+import EcommerceHomeScreen from '../Screen/EcommorceHomeScreen';
+import CategoryListScreen from '../Screen/Ecommerce/CategoryListScreen';
+import CategoryProductsScreen from '../Screen/Ecommerce/CategoryProductsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -123,14 +126,36 @@ function MyStack() {
           animation: 'slide_from_right',
         }}
       />
-         <Stack.Screen
+      <Stack.Screen
         name="FAQScreen"
         component={FAQScreen}
         options={{
           animation: 'slide_from_right',
         }}
       />
-      
+      <Stack.Screen
+        name="EcommerceHomeScreen"
+        component={EcommerceHomeScreen}
+        options={{
+          animation: 'slide_from_right',
+        }}
+      />
+
+      <Stack.Screen
+        name="CategoryListScreen"
+        component={CategoryListScreen}
+        options={{
+          animation: 'slide_from_right',
+        }}
+      />
+
+      <Stack.Screen
+        name="CategoryProductsScreen"
+        component={CategoryProductsScreen}
+        options={{
+          animation: 'slide_from_right',
+        }}
+      />
     </Stack.Navigator>
   );
 }
