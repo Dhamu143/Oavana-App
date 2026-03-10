@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -8,34 +8,35 @@ import {
   StatusBar,
   ScrollView,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import Color from '../../Common/Color';
 import ImpactSection from '../../Components/ImpactSection';
-import { impactData } from '../../utils/StaticJson';
+import {impactConfig} from '../../utils/StaticJson';
 import AirDropCard from '../../Components/AirDropCard';
-import { useDispatch, useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import SafeFastImage from '../../utils/SafeFastImage';
 import apiClient from '../../utils/ApiClient';
-import { addTokenAndRate, IsPledgeActive } from '../../Redux/Action/action';
+import {addTokenAndRate, IsPledgeActive} from '../../Redux/Action/action';
 
 const scale = size => {
-  const { width } = Dimensions.get('window');
+  const {width} = Dimensions.get('window');
   return (width / 375) * size;
 };
 
-const MainDashBoard = ({ navigation }) => {
-  const { skiplogin, userLogin , isPledgeActive,isMiningEnable} = useSelector(reducer => reducer.allReducer);
+const MainDashBoard = ({navigation}) => {
+  const {skiplogin, userLogin, isPledgeActive, isMiningEnable} = useSelector(
+    reducer => reducer.allReducer,
+  );
   const insets = useSafeAreaInsets();
   const [pladgeData, setPladgeData] = useState(null);
 
   //console.log("isPledgeActive",isPledgeActive,isMiningEnable  )
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    getPladge()
-  }, [])
-
+    getPladge();
+  }, []);
 
   const getPladge = async () => {
     try {
@@ -45,7 +46,9 @@ const MainDashBoard = ({ navigation }) => {
         const pledgeData = response?.data?.data;
         console.log('pledgeData', pledgeData);
         setPladgeData(pledgeData);
-        dispatch(addTokenAndRate(pledgeData?.tokenBalance, pledgeData?.miningRate))
+        dispatch(
+          addTokenAndRate(pledgeData?.tokenBalance, pledgeData?.miningRate),
+        );
         // dispatch(IsPledgeActive(pledgeData?.isPleadgeActive,pladgeData?.miningEnabled))
       } else {
         console.log('No Data', 'Response returned no data.');
@@ -54,6 +57,11 @@ const MainDashBoard = ({ navigation }) => {
       console.log('API Error:', error);
     }
   };
+
+  const impactData = impactConfig.map(item => ({
+    ...item,
+    value: pladgeData?.[item.key] ?? 0,
+  }));
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -76,7 +84,6 @@ const MainDashBoard = ({ navigation }) => {
             />
             <View>
               <Text style={styles.pointsText}>
-
                 {Number(pladgeData?.tokenBalance ?? 0).toLocaleString()}
               </Text>
               <Text style={styles.pointsLabel}>GET Points</Text>
@@ -86,7 +93,7 @@ const MainDashBoard = ({ navigation }) => {
           <View style={styles.rateBox}>
             <Text style={styles.rateTitle}>Mining Rate</Text>
             <Text style={styles.rateValue}>
-             + {pladgeData?.miningRate ?? 0} pts/hr
+              + {pladgeData?.miningRate ?? 0} pts/hr
             </Text>
           </View>
         </View>
@@ -106,7 +113,7 @@ const MainDashBoard = ({ navigation }) => {
 
           <Text style={styles.cardTitle}>
             Tap. Earn.{' '}
-            <Text style={{ color: Color.GREEN }}>Regenerate Earth.</Text>
+            <Text style={{color: Color.GREEN}}>Regenerate Earth.</Text>
           </Text>
 
           <Text style={styles.cardSubtitle}>
@@ -121,7 +128,7 @@ const MainDashBoard = ({ navigation }) => {
           pledgeIcon={pladgeData?.activePledge?.icon}
           isPleadgeActive={pladgeData?.isPleadgeActive}
           miningEndTime={pladgeData?.miningEndTime}
-          onPledgeSuccess={getPladge} 
+          onPledgeSuccess={getPladge}
         />
 
         <ImpactSection title="Your Environmental Impact" data={impactData} />

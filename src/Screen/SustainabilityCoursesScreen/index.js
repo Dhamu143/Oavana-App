@@ -1,4 +1,4 @@
-import React, {memo, useState} from 'react';
+import React, {memo, useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -14,98 +14,92 @@ import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import Color from '../../Common/Color';
 import FilterModal from '../../Modal/FilterModal';
 import SafeFastImage from '../../utils/SafeFastImage';
-
-const courses = [
-  {
-    id: '1',
-    title: 'Introduction to water and climate',
-    university: 'Delft University',
-    image: require('../../assets/images/Rectangle.png'),
-  },
-  {
-    id: '2',
-    title: 'Introduction to water and climate',
-    university: 'Delft University',
-    image: require('../../assets/images/Rectangle.png'),
-  },
-  {
-    id: '3',
-    title: 'Introduction to water and climate',
-    university: 'Delft University',
-    image: require('../../assets/images/Rectangle.png'),
-  },
-];
-
-const CourseCard = memo(({item}) => {
-  return (
-    <TouchableOpacity activeOpacity={0.8} style={styles.card}>
-       <SafeFastImage
-        source={item.image}
-        style={styles.cardImage}
-      />
-
-
-      <View style={styles.cardContent}>
-        <Text
-          style={styles.cardTitle}
-          numberOfLines={2}
-          allowFontScaling={false}>
-          {item.title}
-        </Text>
-
-        <Text style={styles.cardUniversity} allowFontScaling={false}>
-          {item.university}
-        </Text>
-
-        <View style={styles.row}>
-           <SafeFastImage
-            source={require('../../assets/images/level.png')}
-            style={styles.icon}
-            tintColor="#777"
-          />
-
-          <Text style={styles.rowText} allowFontScaling={false}>
-            Beginner
-          </Text>
-<SafeFastImage
-            source={require('../../assets/images/Time.png')}
-            style={[styles.icon, {marginLeft: 10}]}
-            tintColor="#777"
-          />
-
-          <Text style={styles.rowText} allowFontScaling={false}>
-            3 Weeks
-          </Text>
-        </View>
-
-        <Text style={styles.sector} allowFontScaling={false}>
-          Sector Focus: Water Management
-        </Text>
-
-        <View style={styles.row}>
-          <SafeFastImage
-            source={require('../../assets/images/onlineCertificate.png')}
-            style={styles.icon}
-            tintColor="#777"
-          />
-
-          <Text style={styles.rowText} allowFontScaling={false}>
-            Certificate :
-          </Text>
-
-         <SafeFastImage
-            source={require('../../assets/images/check.png')}
-            style={[styles.icon, {marginLeft: 5}]}
-          />
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
-});
+import apiClient from '../../utils/ApiClient';
+import CourseCard from '../../Components/CourseCard';
+import SkeletonCourseCard from '../../reuseable/SkeletonCourseCard';
 
 const SustainabilityCoursesScreen = ({navigation}) => {
   const [filterVisible, setFilterVisible] = useState(false);
+
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [filters, setFilters] = useState({});
   const insets = useSafeAreaInsets();
+
+  const popularCourses = courses.filter(item => item.isPopular);
+  const newCourses = courses.filter(item => !item.isPopular);
+
+  useEffect(() => {
+    getCourseData(1, true);
+  }, [filters]);
+
+  const getCourseData = async (pageNum = 1, reset = false) => {
+    try {
+      setLoading(true);
+      setError(false);
+
+      const params = {
+        page: pageNum,
+      };
+
+      if (filters?.level) params.level = filters.level;
+      if (filters?.durationUnit) params.durationUnit = filters.durationUnit;
+
+      if (filters?.courseType) {
+        params.pricingTier =
+          filters.courseType === 'Premium'
+            ? 'premium'
+            : filters.courseType === 'Free'
+            ? 'free'
+            : undefined;
+      }
+
+      if (filters?.minPrice !== null) params.minPrice = filters.minPrice;
+      if (filters?.maxPrice !== null) params.maxPrice = filters.maxPrice;
+
+      console.log('params', params);
+
+      const response = await apiClient.get('/course', {params});
+
+      const courseData = response?.data?.data?.data ?? [];
+
+      if (reset) {
+        setCourses(courseData);
+      } else {
+        setCourses(prev => [...prev, ...courseData]);
+      }
+
+      setHasMore(courseData.length > 0);
+      setPage(pageNum + 1);
+    } catch (error) {
+      console.log('Course API error', error);
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLoadMore = () => {
+    if (!loading && hasMore) {
+      getCourseData(page);
+    }
+  };
+  const renderSkeleton = () => {
+    return (
+      <FlatList
+        horizontal
+        data={[1, 2, 3]}
+        renderItem={() => <SkeletonCourseCard />}
+        keyExtractor={(item, index) => index.toString()}
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{paddingLeft: 20}}
+      />
+    );
+  };
 
   const renderItem = ({item}) => <CourseCard item={item} />;
 
@@ -129,17 +123,17 @@ const SustainabilityCoursesScreen = ({navigation}) => {
             style={styles.menuBtn}
             activeOpacity={0.7}
             onPress={() => navigation?.goBack()}>
-           <SafeFastImage
-      source={require('../../assets/images/back.png')}
-      style={styles.menuIcon}
-      tintColor="#777"
-    />
+            <SafeFastImage
+              source={require('../../assets/images/back.png')}
+              style={styles.menuIcon}
+              tintColor="#777"
+            />
           </TouchableOpacity>
 
-         <SafeFastImage
-    source={require('../../assets/images/Logo1.png')}
-    style={styles.logo}
-  />
+          <SafeFastImage
+            source={require('../../assets/images/Logo1.png')}
+            style={styles.logo}
+          />
         </View>
 
         <Text style={styles.title} allowFontScaling={false}>
@@ -153,10 +147,10 @@ const SustainabilityCoursesScreen = ({navigation}) => {
         <View style={styles.searchRow}>
           <View style={styles.searchBox}>
             <SafeFastImage
-    source={require('../../assets/images/search.png')}
-    style={styles.searchIcon}
-    tintColor="#777"
-  />
+              source={require('../../assets/images/search.png')}
+              style={styles.searchIcon}
+              tintColor="#777"
+            />
 
             <TextInput
               placeholder="Search courses"
@@ -171,55 +165,86 @@ const SustainabilityCoursesScreen = ({navigation}) => {
             activeOpacity={0.7}
             style={styles.filterBtn}
             onPress={() => setFilterVisible(true)}>
-           <SafeFastImage
-    source={require('../../assets/images/filter.png')}
-    style={styles.filterIcon}
-  />
+            <SafeFastImage
+              source={require('../../assets/images/filter.png')}
+              style={styles.filterIcon}
+            />
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.sectionTitle} allowFontScaling={false}>
-          Most Popular
-        </Text>
+        {error ? (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>Failed to load courses</Text>
 
-        <FlatList
-          horizontal
-          data={courses}
-          renderItem={renderItem}
-          keyExtractor={item => item.id}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{paddingLeft: 20}}
-          removeClippedSubviews={true}
-          initialNumToRender={3}
-          maxToRenderPerBatch={5}
-          windowSize={5}
-        />
+            <TouchableOpacity
+              onPress={() => {
+                setError(false);
+                getCourseData();
+              }}
+              style={styles.retryBtn}>
+              <Text style={styles.retryText}>Retry</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <>
+            {(loading || popularCourses.length > 0) && (
+              <>
+                <Text style={styles.sectionTitle}>Most Popular</Text>
 
-        <Text
-          style={[styles.sectionTitle, {marginTop: 10}]}
-          allowFontScaling={false}>
-          New Courses
-        </Text>
+                {loading ? (
+                  renderSkeleton()
+                ) : (
+                  <FlatList
+                    horizontal
+                    data={popularCourses}
+                    renderItem={renderItem}
+                    keyExtractor={item => item._id}
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={{paddingLeft: 20}}
+                    onEndReached={handleLoadMore}
+                    onEndReachedThreshold={0.2}
+                  />
+                )}
+              </>
+            )}
 
-        <FlatList
-          horizontal
-          data={courses}
-          renderItem={renderItem}
-          keyExtractor={item => item.id}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{
-            paddingLeft: 20,
-            paddingBottom: 20,
-          }}
-          removeClippedSubviews={true}
-          initialNumToRender={3}
-          maxToRenderPerBatch={5}
-          windowSize={5}
-        />
+            {(loading || newCourses.length > 0) && (
+              <>
+                <Text style={[styles.sectionTitle, {marginTop: 10}]}>
+                  New Courses
+                </Text>
+
+                {loading ? (
+                  renderSkeleton()
+                ) : (
+                  <FlatList
+                    horizontal
+                    data={newCourses}
+                    renderItem={renderItem}
+                    keyExtractor={item => item._id}
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={{paddingLeft: 20}}
+                    onEndReached={handleLoadMore}
+                    onEndReachedThreshold={0.2}
+                  />
+                )}
+              </>
+            )}
+          </>
+        )}
       </ScrollView>
       <FilterModal
         visible={filterVisible}
-        onClose={() => setFilterVisible(false)}
+        onClose={selectedFilters => {
+          setFilterVisible(false);
+
+          if (selectedFilters) {
+            setFilters(selectedFilters);
+            setPage(1);
+            setCourses([]); // important reset
+            getCourseData(1, true);
+          }
+        }}
       />
     </SafeAreaView>
   );
@@ -319,56 +344,26 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: Color.BLACK,
   },
-
-  card: {
-    width: 240,
-    backgroundColor: '#F8F8F8',
-    borderRadius: 14,
-    marginRight: 15,
-    overflow: 'hidden',
-  },
-
-  cardImage: {
-    width: '100%',
-    height: 130,
-  },
-
-  cardContent: {
-    padding: 12,
-  },
-
-  cardTitle: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: Color.BLACK,
-  },
-
-  cardUniversity: {
-    fontSize: 13,
-    color: '#777',
-    marginVertical: 4,
-  },
-
-  row: {
-    flexDirection: 'row',
+  errorContainer: {
     alignItems: 'center',
-    marginTop: 4,
+    marginTop: 40,
   },
 
-  icon: {
-    width: 14,
-    height: 14,
+  errorText: {
+    color: 'red',
+    fontSize: 16,
   },
 
-  rowText: {
-    fontSize: 12,
-    marginLeft: 4,
-    color: '#777',
+  retryBtn: {
+    marginTop: 10,
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    backgroundColor: '#007AFF',
+    borderRadius: 6,
   },
 
-  sector: {
-    fontSize: 12,
-    color: '#777',
-    marginTop: 4,
+  retryText: {
+    color: Color.WHITE,
+    fontWeight: '600',
   },
 });

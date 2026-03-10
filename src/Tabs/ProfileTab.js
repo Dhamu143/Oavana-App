@@ -1,28 +1,34 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import {View, Text, StyleSheet, ScrollView} from 'react-native';
 import Color from '../Common/Color';
 import ImpactSection from '../Components/ImpactSection';
-import { impactData } from '../utils/StaticJson';
+import {impactConfig} from '../utils/StaticJson';
 import SafeFastImage from '../utils/SafeFastImage';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 
-const ProfileTab = () => {
-  const { tokenEarn, miningRate } = useSelector(reducer => reducer.allReducer);
-  //console.log("check store data",tokenEarn,miningRate)
+const ProfileTab = ({user}) => {
+  const {tokenEarn, miningRate} = useSelector(reducer => reducer.allReducer);
+
+  const impactData = impactConfig.map(item => ({
+    ...item,
+    value: user?.[item.key] ?? 0,
+  }));
   return (
     <ScrollView
       style={styles.container}
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ paddingBottom: 70 }}>
+      contentContainerStyle={{paddingBottom: 70}}>
       <View style={styles.tokenCard}>
-        <View>
+        <View style={{flex: 1}}>
           <Text style={styles.smallText}>Total Tokens Earned</Text>
-          <Text style={styles.valueText}>{Number(tokenEarn ?? 0).toLocaleString()}</Text>
+          <Text style={styles.valueText}>
+            {Number(tokenEarn ?? 0).toLocaleString()}
+          </Text>
         </View>
 
         <View style={styles.divider} />
 
-        <View>
+        <View style={{flex: 1}}>
           <Text style={styles.smallText}>Mining Rate</Text>
           <Text style={styles.valueText}>+ {miningRate} Points/hr</Text>
         </View>
@@ -36,7 +42,6 @@ const ProfileTab = () => {
         <SafeFastImage
           source={require('../assets/images/shower.png')}
           style={styles.pledgeImage}
-
         />
 
         <Text style={styles.pledgeDescription}>
@@ -70,7 +75,6 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 12,
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     borderWidth: 1,
     borderColor: Color.boredrColor,
@@ -79,6 +83,7 @@ const styles = StyleSheet.create({
     width: 1,
     height: 40,
     backgroundColor: Color.boredrColor,
+    marginHorizontal: 20,
   },
   smallText: {
     fontSize: 14,

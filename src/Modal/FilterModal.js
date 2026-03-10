@@ -19,12 +19,12 @@ import SafeFastImage from '../utils/SafeFastImage';
 const FilterModal = ({visible, onClose}) => {
   const insets = useSafeAreaInsets();
 
-  const [courseType, setCourseType] = useState('All');
-  const [durationType, setDurationType] = useState('Hours');
-  const [levelType, setLevelType] = useState('Beginner');
+  const [courseType, setCourseType] = useState(null);
+  const [durationType, setDurationType] = useState(null);
+  const [levelType, setLevelType] = useState(null);
 
-  const [minPrice, setMinPrice] = useState(5);
-  const [maxPrice, setMaxPrice] = useState(125);
+  const [minPrice, setMinPrice] = useState(null);
+  const [maxPrice, setMaxPrice] = useState(null);
 
   const selectCourseType = useCallback(type => {
     setCourseType(type);
@@ -54,17 +54,17 @@ const FilterModal = ({visible, onClose}) => {
 
         <View style={styles.header}>
           <SafeFastImage
-  source={require('../assets/images/Logo1.png')}
-  style={styles.logo}
-/>
+            source={require('../assets/images/Logo1.png')}
+            style={styles.logo}
+          />
           <TouchableOpacity
             activeOpacity={0.7}
             style={styles.closeBtn}
             onPress={onClose}>
-          <SafeFastImage
-  source={require('../assets/images/close.png')}
-  style={styles.closeIcon}
-/>
+            <SafeFastImage
+              source={require('../assets/images/close.png')}
+              style={styles.closeIcon}
+            />
           </TouchableOpacity>
         </View>
 
@@ -77,13 +77,13 @@ const FilterModal = ({visible, onClose}) => {
           <View style={styles.content}>
             <Text style={styles.title}>Filter your search</Text>
 
-            <Text style={styles.label}>Course Type</Text>
+            <Text style={[styles.label, {marginBottom: 20}]}>Course Type</Text>
 
             <View style={styles.row}>
               <TypeButton
                 label="All"
-                selected={courseType === 'All'}
-                onPress={() => selectCourseType('All')}
+                selected={courseType === null}
+                onPress={() => selectCourseType(null)}
               />
 
               <TypeButton
@@ -99,16 +99,16 @@ const FilterModal = ({visible, onClose}) => {
               />
             </View>
 
-            <Text style={styles.label}>Price Range</Text>
+            {/* <Text style={styles.label}>Price Range</Text>
 
             <View style={styles.sliderWrapper}>
               <View style={styles.labelRow}>
                 <View style={styles.valueLabel}>
-                  <Text style={styles.valueText}>${minPrice}</Text>
+                  <Text style={styles.valueText}>${minPrice ?? 5}</Text>
                 </View>
 
                 <View style={styles.valueLabel}>
-                  <Text style={styles.valueText}>${maxPrice}</Text>
+                  <Text style={styles.valueText}>${maxPrice ?? 125}</Text>
                 </View>
               </View>
 
@@ -139,7 +139,7 @@ const FilterModal = ({visible, onClose}) => {
                   }}
                 />
               </View>
-            </View>
+            </View> */}
 
             <Text style={styles.label}>Duration</Text>
 
@@ -191,11 +191,39 @@ const FilterModal = ({visible, onClose}) => {
 
         <View
           style={[styles.bottomContainer, {paddingBottom: insets.bottom + 10}]}>
-          <TouchableOpacity activeOpacity={0.8} style={styles.applyBtn}>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            style={styles.applyBtn}
+            onPress={() =>
+              onClose({
+                courseType,
+                durationUnit: durationType,
+                level: levelType,
+                minPrice,
+                maxPrice,
+              })
+            }>
             <Text style={styles.applyText}>Apply filters and search</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity activeOpacity={0.8} style={styles.clearBtn}>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            style={styles.clearBtn}
+            onPress={() => {
+              setCourseType(null);
+              setDurationType(null);
+              setLevelType(null);
+              setMinPrice(null);
+              setMaxPrice(null);
+
+              onClose({
+                courseType: null,
+                durationUnit: null,
+                level: null,
+                minPrice: null,
+                maxPrice: null,
+              });
+            }}>
             <Text style={styles.clearText}>Clear filters</Text>
           </TouchableOpacity>
         </View>
@@ -246,7 +274,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: '700',
-    marginBottom: 10,
+
     color: Color.BLACK,
   },
 
@@ -260,7 +288,7 @@ const styles = StyleSheet.create({
   },
 
   label: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: '600',
     marginTop: 20,
     marginBottom: 10,
@@ -295,6 +323,7 @@ const styles = StyleSheet.create({
   applyText: {
     color: Color.WHITE,
     fontWeight: '600',
+    fontSize: 15,
   },
 
   clearBtn: {
@@ -306,7 +335,9 @@ const styles = StyleSheet.create({
   },
 
   clearText: {
-    fontWeight: '500',
+    fontWeight: '600',
+    color: Color.BLACK,
+    fontSize: 15,
   },
 
   sliderWrapper: {

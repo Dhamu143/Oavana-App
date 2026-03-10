@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react';
+import React, {memo, useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -9,10 +9,11 @@ import {
   StatusBar,
   Platform,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import Color from '../../Common/Color';
 import FilterModal from '../../Modal/FilterModal';
 import SafeFastImage from '../../utils/SafeFastImage';
+import apiClient from '../../utils/ApiClient';
 
 const courses = [
   {
@@ -38,13 +39,10 @@ const courses = [
   },
 ];
 
-const CourseCard = memo(({ item }) => {
+const CourseCard = memo(({item}) => {
   return (
     <TouchableOpacity activeOpacity={0.8} style={styles.card}>
-      <SafeFastImage
-        source={item.image}
-        style={styles.cardImage}
-      />
+      <SafeFastImage source={item.image} style={styles.cardImage} />
 
       <View style={styles.cardContent}>
         <Text
@@ -65,7 +63,6 @@ const CourseCard = memo(({ item }) => {
             tintColor="#777"
           />
 
-
           <Text style={styles.rowText} allowFontScaling={false}>
             3 Weeks
           </Text>
@@ -75,11 +72,25 @@ const CourseCard = memo(({ item }) => {
   );
 });
 
-const CampaignsScreen = ({ navigation }) => {
+const CampaignsScreen = ({navigation}) => {
   const [filterVisible, setFilterVisible] = useState(false);
   const insets = useSafeAreaInsets();
 
-  const renderItem = ({ item }) => <CourseCard item={item} />;
+  useEffect(() => {
+    getCourseData();
+  }, []);
+
+  const getCourseData = async () => {
+    try {
+      const response = await apiClient.get('/course');
+
+      console.log('Course Data', response);
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
+
+  const renderItem = ({item}) => <CourseCard item={item} />;
 
   return (
     <SafeAreaView edges={['top', 'left', 'right']} style={styles.container}>
@@ -132,7 +143,7 @@ const CampaignsScreen = ({ navigation }) => {
           renderItem={renderItem}
           keyExtractor={item => item.id}
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingLeft: 20 }}
+          contentContainerStyle={{paddingLeft: 20}}
           removeClippedSubviews={true}
           initialNumToRender={3}
           maxToRenderPerBatch={5}
@@ -140,7 +151,7 @@ const CampaignsScreen = ({ navigation }) => {
         />
 
         <Text
-          style={[styles.sectionTitle, { marginTop: 10 }]}
+          style={[styles.sectionTitle, {marginTop: 10}]}
           allowFontScaling={false}>
           New Courses
         </Text>

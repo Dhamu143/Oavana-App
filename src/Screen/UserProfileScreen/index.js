@@ -1,7 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import React, {useEffect, useState} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import Color from '../../Common/Color';
 import ProfileTab from '../../Tabs/ProfileTab';
 import AccountTab from '../../Tabs/AccountTab';
@@ -12,10 +18,11 @@ import apiClient from '../../utils/ApiClient';
 
 const Tab = createMaterialTopTabNavigator();
 
-const UserProfileScreen = ({ navigation }) => {
+const UserProfileScreen = ({navigation}) => {
   const [profileImage, setProfileImage] = useState(null);
   const [user, setUser] = useState(null);
-  const { selectImage, modalData, closeModal, loading, showModalMessage } = useImageUpload();
+  const {selectImage, modalData, closeModal, loading, showModalMessage} =
+    useImageUpload();
   useEffect(() => {
     getUserData();
   }, []);
@@ -25,23 +32,20 @@ const UserProfileScreen = ({ navigation }) => {
       const res = await apiClient.get('/users/me');
       const finalData = res?.data?.data?.data;
 
-      console.log("finalData", finalData)
+      console.log('finalData', finalData);
 
       setUser(finalData);
       setProfileImage(finalData?.profilePic);
-
     } catch (error) {
       console.log(error);
     }
   };
 
-  const updateUser = async (payload) => {
+  const updateUser = async payload => {
     try {
-
       const response = await apiClient.put('/users', payload);
 
       if (response?.data?.success) {
-
         setUser(prev => ({
           ...prev,
           ...payload,
@@ -51,7 +55,6 @@ const UserProfileScreen = ({ navigation }) => {
       }
 
       return false;
-
     } catch (error) {
       console.log(error);
       return false;
@@ -60,7 +63,6 @@ const UserProfileScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <View style={styles.container}>
-
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <SafeFastImage
@@ -71,16 +73,15 @@ const UserProfileScreen = ({ navigation }) => {
 
           <Text style={styles.headerTitle}>My Profile</Text>
 
-          <View style={{ width: 24 }} />
+          <View style={{width: 24}} />
         </View>
 
         <View style={styles.profileSection}>
           <View style={styles.imageWrapper}>
-
             <SafeFastImage
               source={
                 profileImage
-                  ? { uri: profileImage }
+                  ? {uri: profileImage}
                   : require('../../assets/images/userProfile.png')
               }
               style={styles.profileImage}
@@ -95,22 +96,23 @@ const UserProfileScreen = ({ navigation }) => {
             <TouchableOpacity
               style={styles.cameraIcon}
               onPress={() =>
-                selectImage(async (url) => {
-
+                selectImage(async url => {
                   if (!url) return;
 
                   setProfileImage(url);
 
                   const success = await updateUser({
-                    profilePic: url
+                    profilePic: url,
                   });
 
                   if (success) {
-                    showModalMessage('Profile Picture Updated Successfully', true);
+                    showModalMessage(
+                      'Profile Picture Updated Successfully',
+                      true,
+                    );
                   } else {
                     showModalMessage('Profile Update Failed', false);
                   }
-
                 })
               }>
               <SafeFastImage
@@ -119,12 +121,9 @@ const UserProfileScreen = ({ navigation }) => {
                 tintColor={Color.WHITE}
               />
             </TouchableOpacity>
-
           </View>
 
-          <Text style={styles.name}>
-            {user?.name || 'User'}
-          </Text>
+          <Text style={styles.name}>{user?.name || 'User'}</Text>
         </View>
 
         <Tab.Navigator
@@ -140,12 +139,11 @@ const UserProfileScreen = ({ navigation }) => {
             },
             tabBarPressColor: 'transparent',
           }}>
-
           <Tab.Screen
             name="Profile"
-            component={ProfileTab}
+            // component={ProfileTab}
             options={{
-              tabBarLabel: ({ focused }) => (
+              tabBarLabel: ({focused}) => (
                 <Text
                   style={{
                     fontSize: 15,
@@ -155,13 +153,14 @@ const UserProfileScreen = ({ navigation }) => {
                   Profile
                 </Text>
               ),
-            }}
-          />
+            }}>
+            {() => <ProfileTab user={user} />}
+          </Tab.Screen>
 
           <Tab.Screen
             name="Account"
             options={{
-              tabBarLabel: ({ focused }) => (
+              tabBarLabel: ({focused}) => (
                 <Text
                   style={{
                     fontSize: 15,
@@ -171,16 +170,9 @@ const UserProfileScreen = ({ navigation }) => {
                   Account
                 </Text>
               ),
-            }}
-          >
-            {() => (
-              <AccountTab
-                user={user}
-                updateUser={updateUser}
-              />
-            )}
+            }}>
+            {() => <AccountTab user={user} updateUser={updateUser} />}
           </Tab.Screen>
-
         </Tab.Navigator>
       </View>
       <AlertModal

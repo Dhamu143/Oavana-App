@@ -25,15 +25,15 @@ const styles = StyleSheet.create({
   radioRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 10,
+    marginVertical: 8,
   },
 
   radioOuter: {
     width: 20,
     height: 20,
     borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#777',
+    borderWidth: 2,
+    borderColor: Color.BLACK,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -51,7 +51,8 @@ const styles = StyleSheet.create({
 
   radioText: {
     marginLeft: 10,
-    fontSize: 14,
-    color: '#333',
+    fontSize: 15,
+    color: Color.BLACK,
+    fontWeight: '500',
   },
 });

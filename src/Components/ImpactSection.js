@@ -1,6 +1,6 @@
 import React from 'react';
 import {View, Text, StyleSheet, Dimensions} from 'react-native';
-import SafeFastImage from '../utils/SafeFastImage'; 
+import SafeFastImage from '../utils/SafeFastImage';
 import Color from '../Common/Color';
 
 const {width} = Dimensions.get('window');
@@ -20,22 +20,16 @@ const ImpactSection = ({title, data}) => {
           <View
             key={index}
             style={[styles.impactCard, {backgroundColor: item.cardBg}]}>
-            
             <View style={[styles.iconCircle, {backgroundColor: item.iconBg}]}>
-              
-             
-              <SafeFastImage
-                source={item.icon}
-                style={styles.impactIcon}
-              />
-
+              <SafeFastImage source={item.icon} style={styles.impactIcon} />
             </View>
 
             <View>
-              <Text style={styles.impactValue}>{item?.value}</Text>
+              <Text style={styles.impactValue}>
+                {Number(item?.value ?? 0).toLocaleString()}
+              </Text>
               <Text style={styles.impactLabel}>{item?.label}</Text>
             </View>
-
           </View>
         ))}
       </View>
@@ -71,7 +65,8 @@ const styles = StyleSheet.create({
   impactCard: {
     width: width > 600 ? '31%' : '48%',
     borderRadius: scale(14),
-    padding: scale(14),
+    paddingVertical: scale(14),
+    paddingHorizontal: scale(8),
     marginBottom: scale(14),
     flexDirection: 'row',
     alignItems: 'center',
@@ -83,7 +78,7 @@ const styles = StyleSheet.create({
     borderRadius: scale(21),
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: scale(10),
+    marginRight: scale(8),
   },
 
   impactIcon: {
@@ -99,7 +94,8 @@ const styles = StyleSheet.create({
 
   impactLabel: {
     fontSize: scale(12),
-    color: '#6B7280',
+    color: '#5e5f61',
     marginTop: scale(2),
+    fontWeight: '500',
   },
 });

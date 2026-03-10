@@ -14,6 +14,8 @@ apiClient.interceptors.request.use(
       const token = await AsyncStorage.getItem('authToken');
       const deviceId = await AsyncStorage.getItem('deviceId');
 
+      // console.log('token && deviceId', token, deviceId);
+
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
