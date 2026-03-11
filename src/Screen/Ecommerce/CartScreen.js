@@ -72,7 +72,7 @@ const CartScreen = ({navigation}) => {
             {item.name}
           </Text>
 
-          <Text style={styles.price}>GET {item.price}.00</Text>
+          <Text style={styles.price}>Oavana {item.price}.00</Text>
         </View>
 
         <Text style={styles.variantText}>

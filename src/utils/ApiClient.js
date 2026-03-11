@@ -24,7 +24,7 @@ apiClient.interceptors.request.use(
         config.headers['deviceid'] = deviceId;
       }
     } catch (error) {
-      console.log('Error fetching auth token or device ID:', error);
+      //   console.log('Error fetching auth token or device ID:', error);
     }
 
     return config;
@@ -37,7 +37,7 @@ apiClient.interceptors.response.use(
   async error => {
     if (error.response?.status === 401) {
       await AsyncStorage.removeItem('authToken');
-      console.log('Session expired, logging out...');
+      //   console.log('Session expired, logging out...');
     }
     return Promise.reject(error);
   },

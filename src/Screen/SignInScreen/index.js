@@ -62,7 +62,7 @@ const SignInScreen = ({navigation}) => {
 
       return null;
     } catch (e) {
-      console.warn('Error parsing token from URL:', e);
+      //  console.warn('Error parsing token from URL:', e);
       return null;
     }
   };
@@ -70,16 +70,16 @@ const SignInScreen = ({navigation}) => {
   useEffect(() => {
     const handleDeepLink = async event => {
       try {
-        console.log('Deep link event:', event);
+        //   console.log('Deep link event:', event);
         if (!event || !event.url) {
-          console.log('No event.url found');
+          //  console.log('No event.url found');
           return;
         }
         const token = extractTokenFromUrl(event.url);
 
-        console.log('Login With whatsapp Token', token);
+        // console.log('Login With whatsapp Token', token);
       } catch (err) {
-        console.error('Error in handleDeepLink:', err);
+        //console.error('Error in handleDeepLink:', err);
       }
     };
 
@@ -87,9 +87,9 @@ const SignInScreen = ({navigation}) => {
     (async () => {
       const initialUrl = await Linking.getInitialURL();
       if (initialUrl) {
-        console.log('App launched with URL:', initialUrl);
+        // console.log('App launched with URL:', initialUrl);
         const token = extractTokenFromUrl(initialUrl);
-        console.log('Initial token:', token);
+        //  console.log('Initial token:', token);
       }
     })();
 
@@ -126,7 +126,7 @@ const SignInScreen = ({navigation}) => {
       });
 
       if (!appleAuthRequestResponse.identityToken) {
-        console.log('Apple Sign-In failed - no identity token returned');
+        //   console.log('Apple Sign-In failed - no identity token returned');
         return;
       }
 
@@ -135,10 +135,10 @@ const SignInScreen = ({navigation}) => {
       );
 
       if (credentialState === AppleAuthCredentialState.AUTHORIZED) {
-        console.log('User is authorized');
+        // console.log('User is authorized');
       }
     } catch (err) {
-      console.log('Apple login failed:', err);
+      //   console.log('Apple login failed:', err);
     }
   };
 
@@ -191,7 +191,7 @@ const SignInScreen = ({navigation}) => {
         'Please install WhatsApp or WhatsApp Business to continue.',
       );
     } catch (error) {
-      console.log('WhatsApp open error:', error);
+      // console.log('WhatsApp open error:', error);
     }
   };
 
@@ -278,7 +278,7 @@ const SignInScreen = ({navigation}) => {
                         style={styles.socialBtn}
                         onPress={() => {
                           if (item.type === 'google') {
-                            console.log('Google login');
+                            //  console.log('Google login');
                           } else if (item.type === 'apple') {
                             handleAppleLogin();
                           } else if (item.type === 'whatsapp') {

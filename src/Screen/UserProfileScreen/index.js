@@ -32,12 +32,12 @@ const UserProfileScreen = ({navigation}) => {
       const res = await apiClient.get('/users/me');
       const finalData = res?.data?.data?.data;
 
-      console.log('finalData', finalData);
+      //  console.log('finalData', finalData);
 
       setUser(finalData);
       setProfileImage(finalData?.profilePic);
     } catch (error) {
-      console.log(error);
+      //  console.log(error);
     }
   };
 
@@ -56,7 +56,7 @@ const UserProfileScreen = ({navigation}) => {
 
       return false;
     } catch (error) {
-      console.log(error);
+      //  console.log(error);
       return false;
     }
   };

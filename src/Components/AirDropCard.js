@@ -86,7 +86,7 @@ const AirDropCard = ({
 
       if (response?.data?.success) {
         setTimeout(() => {
-          console.log('Click pladge response', response);
+          //  console.log('Click pladge response', response);
           onPledgeSuccess();
         }, 500);
         setModalMessage(response?.data?.message);
@@ -167,11 +167,19 @@ const AirDropCard = ({
                 Tap Earth to Pledge. Act for the Planet
               </Text>
             </View>
+            <View style={styles.earthWrapper}>
+              <SafeFastImage
+                source={require('../assets/images/backearth.png')}
+                style={styles.earthBg}
+                resizeMode={FastImage.resizeMode.contain}
+              />
 
-            <SafeFastImage
-              source={require('../assets/images/earth.png')}
-              style={styles.earthBg}
-            />
+              <SafeFastImage
+                source={require('../assets/images/earthRotet.gif')}
+                style={styles.rotatingEarth}
+                resizeMode={FastImage.resizeMode.contain}
+              />
+            </View>
           </TouchableOpacity>
         )}
 
@@ -399,5 +407,18 @@ const styles = StyleSheet.create({
     width: scale(80),
     height: scale(80),
     marginTop: scale(15),
+  },
+
+  earthWrapper: {
+    width: width * 0.5,
+    height: width * 0.4,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  rotatingEarth: {
+    position: 'absolute',
+    width: width * 0.35,
+    height: width * 0.35,
   },
 });

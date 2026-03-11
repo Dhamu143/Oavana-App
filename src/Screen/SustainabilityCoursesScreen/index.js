@@ -62,7 +62,7 @@ const SustainabilityCoursesScreen = ({navigation}) => {
       if (filters?.minPrice !== null) params.minPrice = filters.minPrice;
       if (filters?.maxPrice !== null) params.maxPrice = filters.maxPrice;
 
-      console.log('params', params);
+      //   console.log('params', params);
 
       const response = await apiClient.get('/course', {params});
 
@@ -77,7 +77,7 @@ const SustainabilityCoursesScreen = ({navigation}) => {
       setHasMore(courseData.length > 0);
       setPage(pageNum + 1);
     } catch (error) {
-      console.log('Course API error', error);
+      // console.log('Course API error', error);
       setError(true);
     } finally {
       setLoading(false);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -14,7 +14,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import Color from '../Common/Color';
-import { Formik } from 'formik';
+import {Formik} from 'formik';
 import * as Yup from 'yup';
 import AlertModal from '../Modal/AlertModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -27,7 +27,7 @@ import appleAuth, {
   AppleAuthCredentialState,
 } from '@invertase/react-native-apple-authentication';
 
-const { width } = Dimensions.get('window');
+const {width} = Dimensions.get('window');
 
 const SignUpSchema = Yup.object().shape({
   email: Yup.string().email('Enter valid email').required('Email is required'),
@@ -37,7 +37,7 @@ const SignUpSchema = Yup.object().shape({
     .required('Password is required'),
 });
 
-const SignUpContent = ({ onSwitch, onClose }) => {
+const SignUpContent = ({onSwitch, onClose}) => {
   const [secure, setSecure] = useState(true);
   const [loading, setLoading] = useState(false);
 
@@ -88,11 +88,10 @@ const SignUpContent = ({ onSwitch, onClose }) => {
         ],
       });
 
-      console.log('token123', appleAuthRequestResponse);
+      //  console.log('token123', appleAuthRequestResponse);
 
       if (appleAuthRequestResponse && appleAuthRequestResponse.identityToken) {
-        console.log('Getting token', appleAuthRequestResponse.identityToken);
-
+        // console.log('Getting token', appleAuthRequestResponse.identityToken);
         // try {
         //   const deviceId = await AsyncStorage.getItem('deviceId');
         //   const apiResponse = await apiClient.post('/auth/applesignin', {
@@ -107,14 +106,11 @@ const SignUpContent = ({ onSwitch, onClose }) => {
         //     );
         //   }
         //   dispatch(LoginSuceess(true));
-
-
-
         // } catch (error) {
         //   console.log('API call failed:', error?.response || error);
         // }
       } else {
-        console.log("Error", error)
+        //   console.log('Error', error);
       }
 
       const credentialState = await appleAuth.getCredentialStateForUser(
@@ -122,34 +118,33 @@ const SignUpContent = ({ onSwitch, onClose }) => {
       );
 
       if (credentialState === AppleAuthCredentialState.AUTHORIZED) {
-        console.log('User is authorized');
+        // console.log('User is authorized');
       } else {
       }
     } catch (err) {
-      console.log('Apple login failed:', err);
+      //  console.log('Apple login failed:', err);
     }
   };
 
   return (
     <Formik
-      initialValues={{ email: '', password: '' }}
+      initialValues={{email: '', password: ''}}
       validationSchema={SignUpSchema}
-      onSubmit={(values, { resetForm }) => handleSignUp(values, resetForm)}>
-      {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+      onSubmit={(values, {resetForm}) => handleSignUp(values, resetForm)}>
+      {({handleChange, handleBlur, handleSubmit, values, errors, touched}) => (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            style={{ width: '100%' }}>
+            style={{width: '100%'}}>
             <ScrollView
               showsVerticalScrollIndicator={false}
               keyboardShouldPersistTaps="handled"
-              contentContainerStyle={{ paddingBottom: 30 }}>
+              contentContainerStyle={{paddingBottom: 30}}>
               <TouchableOpacity style={styles.backBtn} onPress={onSwitch}>
                 <SafeFastImage
                   source={require('../assets/images/leftArrow.png')}
                   style={styles.backIcon}
                 />
-
               </TouchableOpacity>
 
               <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
@@ -227,7 +222,7 @@ const SignUpContent = ({ onSwitch, onClose }) => {
               )}
 
               <TouchableOpacity
-                style={[styles.primaryBtn, { opacity: loading ? 0.7 : 1 }]}
+                style={[styles.primaryBtn, {opacity: loading ? 0.7 : 1}]}
                 onPress={handleSubmit}
                 disabled={loading}>
                 {loading ? (
@@ -250,29 +245,23 @@ const SignUpContent = ({ onSwitch, onClose }) => {
                     style={styles.iconOnly}
                   />
                 </TouchableOpacity>
-                {
-                  Platform.OS === "ios" && (
-                    <TouchableOpacity style={styles.iconOnlyBtn}>
-                      <SafeFastImage
-                        source={require('../assets/images/apple.png')}
-                        style={styles.iconOnly}
-                      />
-                    </TouchableOpacity>
-                  )
-                }
+                {Platform.OS === 'ios' && (
+                  <TouchableOpacity style={styles.iconOnlyBtn}>
+                    <SafeFastImage
+                      source={require('../assets/images/apple.png')}
+                      style={styles.iconOnly}
+                    />
+                  </TouchableOpacity>
+                )}
 
-                {
-                  Platform.OS === "android" && (
-
-                    <TouchableOpacity style={styles.iconOnlyBtn}>
-                      <SafeFastImage
-                        source={require('../assets/images/whatsapp.png')}
-                        style={styles.iconOnly}
-                      />
-                    </TouchableOpacity>
-                  )
-                }
-
+                {Platform.OS === 'android' && (
+                  <TouchableOpacity style={styles.iconOnlyBtn}>
+                    <SafeFastImage
+                      source={require('../assets/images/whatsapp.png')}
+                      style={styles.iconOnly}
+                    />
+                  </TouchableOpacity>
+                )}
               </View>
             </ScrollView>
 

@@ -51,7 +51,7 @@ const CampaignsScreen = ({navigation}) => {
       setHasMore(campaignData.length > 0);
       setPage(pageNum + 1);
     } catch (error) {
-      console.log('Campaign API error', error);
+      //   console.log('Campaign API error', error);
     } finally {
       setLoading(false);
     }

@@ -7,24 +7,22 @@ import SafeFastImage from '../../utils/SafeFastImage';
 const SplashScreen = ({navigation}) => {
   const {skiplogin, userLogin} = useSelector(reducer => reducer.allReducer);
 
- useEffect(() => {
-  const timer = setTimeout(() => {
-    navigation.replace(
-      skiplogin || userLogin
-        ? 'MaindashboardDrawer'
-        : 'SignInScreen'
-    );
-  }, 1200);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      navigation.replace(
+        skiplogin || userLogin ? 'MaindashboardDrawer' : 'SignInScreen',
+      );
+    }, 1200);
 
-  return () => clearTimeout(timer);
-}, []);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={Color.WHITE} />
 
       <SafeFastImage
-        source={require('../../assets/images/Logo1.png')}
+        source={require('../../assets/images/OavanaLogo.png')}
         style={styles.logo}
       />
     </SafeAreaView>
@@ -39,8 +37,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logo: {
-    width: 100,
-    height: 100,
+    width: 370,
+    height: 370,
   },
 });
 

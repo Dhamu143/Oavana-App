@@ -44,17 +44,17 @@ const MainDashBoard = ({navigation}) => {
 
       if (response?.data?.success) {
         const pledgeData = response?.data?.data;
-        console.log('pledgeData', pledgeData);
+        //   console.log('pledgeData', pledgeData);
         setPladgeData(pledgeData);
         dispatch(
           addTokenAndRate(pledgeData?.tokenBalance, pledgeData?.miningRate),
         );
         // dispatch(IsPledgeActive(pledgeData?.isPleadgeActive,pladgeData?.miningEnabled))
       } else {
-        console.log('No Data', 'Response returned no data.');
+        //  console.log('No Data', 'Response returned no data.');
       }
     } catch (error) {
-      console.log('API Error:', error);
+      //  console.log('API Error:', error);
     }
   };
 
@@ -86,7 +86,7 @@ const MainDashBoard = ({navigation}) => {
               <Text style={styles.pointsText}>
                 {Number(pladgeData?.tokenBalance ?? 0).toLocaleString()}
               </Text>
-              <Text style={styles.pointsLabel}>GET Points</Text>
+              <Text style={styles.pointsLabel}>Oavana Points</Text>
             </View>
           </View>
 
