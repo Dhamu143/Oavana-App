@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   View,
   Text,
@@ -14,13 +14,17 @@ import SafeFastImage from '../utils/SafeFastImage';
 import FastImage from 'react-native-fast-image';
 import apiClient from '../utils/ApiClient';
 
-const { width } = Dimensions.get('window');
+const {width} = Dimensions.get('window');
 const scale = size => (width / 375) * size;
 
-const AirDropCard = ({ currentPoints = 0, totalPoints = 1500, pledgeIcon, isPleadgeActive,
-  miningEndTime, onPledgeSuccess }) => {
-
-
+const AirDropCard = ({
+  currentPoints = 0,
+  totalPoints = 1500,
+  pledgeIcon,
+  isPleadgeActive,
+  miningEndTime,
+  onPledgeSuccess,
+}) => {
   const progressAnim = useRef(new Animated.Value(0)).current;
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -41,7 +45,6 @@ const AirDropCard = ({ currentPoints = 0, totalPoints = 1500, pledgeIcon, isPlea
     }).start();
   }, [currentPoints]);
 
-
   useEffect(() => {
     if (!isPleadgeActive || !miningEndTime) return;
 
@@ -53,7 +56,7 @@ const AirDropCard = ({ currentPoints = 0, totalPoints = 1500, pledgeIcon, isPlea
 
       if (diff <= 0) {
         clearInterval(interval);
-        setRemainingTime("00:00:00");
+        setRemainingTime('00:00:00');
         return;
       }
 
@@ -77,16 +80,15 @@ const AirDropCard = ({ currentPoints = 0, totalPoints = 1500, pledgeIcon, isPlea
     outputRange: ['0%', '100%'],
   });
 
-
   const handelPlegeClick = async () => {
     try {
       const response = await apiClient.post('/users/acceptpledge');
 
       if (response?.data?.success) {
         setTimeout(() => {
-           console.log("Click pladge response", response)
-          onPledgeSuccess()
-        }, 500)
+          console.log('Click pladge response', response);
+          onPledgeSuccess();
+        }, 500);
         setModalMessage(response?.data?.message);
         setModalSuccess(true);
       } else {
@@ -112,55 +114,50 @@ const AirDropCard = ({ currentPoints = 0, totalPoints = 1500, pledgeIcon, isPlea
   return (
     <>
       <View style={styles.card}>
-
         <View style={styles.topSection}>
           <View style={styles.quoteRow}>
             <SafeFastImage
               source={
                 pledgeIcon
-                  ? { uri: pledgeIcon }
+                  ? {uri: pledgeIcon}
                   : require('../assets/images/Bus.png')
               }
               style={styles.busImage}
               resizeMode={FastImage.resizeMode.cover}
             />
 
-            <View style={{ flex: 1 }}>
+            <View style={{flex: 1}}>
               <Text style={styles.quoteText}>
                 "I'll unplug charger and electronics when not in use to save
                 energy"
               </Text>
-              <Text style={styles.quoteAuthor}>- Green Token Earth</Text>
+              <Text style={styles.quoteAuthor}>- Oavana</Text>
             </View>
           </View>
         </View>
 
-
-
         {isPleadgeActive ? (
           <View style={styles.miningContainer}>
-
             <View style={styles.miningBadge}>
               <View style={styles.greenDot} />
               <Text style={styles.miningText}>Mining active</Text>
             </View>
 
             <Text style={styles.timerText}>
-              Time remaining: <Text style={styles.time}>{remainingTime}</Text> until you can restart
+              Time remaining: <Text style={styles.time}>{remainingTime}</Text>{' '}
+              until you can restart
             </Text>
 
             <SafeFastImage
               source={require('../assets/images/hourglass.png')}
               style={styles.timerImage}
             />
-
           </View>
         ) : (
           <TouchableOpacity
             activeOpacity={0.9}
             style={styles.earthSection}
             onPress={() => setModalVisible(true)}>
-
             <View style={styles.button}>
               <SafeFastImage
                 source={require('../assets/images/tap.png')}
@@ -178,7 +175,6 @@ const AirDropCard = ({ currentPoints = 0, totalPoints = 1500, pledgeIcon, isPlea
           </TouchableOpacity>
         )}
 
-
         <View style={styles.progressSection}>
           <View style={styles.progressHeader}>
             <View>
@@ -195,12 +191,12 @@ const AirDropCard = ({ currentPoints = 0, totalPoints = 1500, pledgeIcon, isPlea
 
           <View style={styles.progressBar}>
             <Animated.View
-              style={[styles.progressFill, { width: progressWidth }]}
+              style={[styles.progressFill, {width: progressWidth}]}
             />
           </View>
 
           <Text style={styles.bottomText}>
-            <Text style={{ fontWeight: '700' }}>
+            <Text style={{fontWeight: '700'}}>
               {totalPoints - currentPoints} points
             </Text>{' '}
             until your next reward drop.
@@ -208,14 +204,12 @@ const AirDropCard = ({ currentPoints = 0, totalPoints = 1500, pledgeIcon, isPlea
         </View>
       </View>
 
-
       <PledgeModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
         pledgeIcon={pledgeIcon}
         onPledgePress={handelPlegeClick}
       />
-
 
       <AlertModal
         visible={alertVisible}

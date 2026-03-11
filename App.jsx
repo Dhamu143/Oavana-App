@@ -1,15 +1,18 @@
 import React, {useEffect} from 'react';
+
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {Provider} from 'react-redux';
 import {PersistGate} from 'redux-persist/integration/react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {enableFreeze} from 'react-native-screens';
 import store, {persistor} from './src/Redux/Store/store';
 import {navigationRef} from './src/Navigation/NavigationService';
 import MyStack from './src/Navigation/ScreenNavigator';
 import DeviceInfo from 'react-native-device-info';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+enableFreeze(true);
 const RootStack = createNativeStackNavigator();
 
 function App() {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -6,16 +6,17 @@ import {
   TextInput,
   TouchableOpacity,
   FlatList,
-  ActivityIndicator,
   StatusBar,
 } from 'react-native';
 import Collapsible from 'react-native-collapsible';
 import apiClient from '../../utils/ApiClient';
 import Color from '../../Common/Color';
 import SafeFastImage from '../../utils/SafeFastImage';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
+import AppHeader from '../../Components/AppHeader';
+import SkeletonFAQ from '../../reuseable/SkeletonFAQ';
 
-const FAQScreen = ({ navigation }) => {
+const FAQScreen = ({navigation}) => {
   const insets = useSafeAreaInsets();
   const [faqs, setFaqs] = useState([]);
   const [filteredFaqs, setFilteredFaqs] = useState([]);
@@ -36,7 +37,7 @@ const FAQScreen = ({ navigation }) => {
           setFilteredFaqs(faqData);
         }
       } catch (error) {
-        console.log('FAQ ERROR', error);
+        // console.log('FAQ ERROR', error);
       } finally {
         setLoading(false);
       }
@@ -59,7 +60,7 @@ const FAQScreen = ({ navigation }) => {
     setActiveIndex(activeIndex === index ? null : index);
   };
 
-  const renderFAQ = ({ item, index }) => {
+  const renderFAQ = ({item, index}) => {
     const isActive = index === activeIndex;
 
     return (
@@ -93,27 +94,8 @@ const FAQScreen = ({ navigation }) => {
         backgroundColor={Color.WHITE}
         translucent={false}
       />
-      <View style={[styles.container, { paddingBottom: insets.bottom + 10 }]}>
-        <View style={styles.headerRow}>
-          <TouchableOpacity
-            style={styles.menuBtn}
-            onPress={() => {
-              navigation.goBack();
-            }}>
-            <SafeFastImage
-              source={require('../../assets/images/leftArrow.png')}
-              style={styles.menuIcon}
-            />
-          </TouchableOpacity>
-
-          <View style={styles.toggleContainer}>
-            <SafeFastImage
-              source={require('../../assets/images/Logo1.png')}
-              style={styles.toggleIcon}
-            />
-          </View>
-        </View>
-
+      <View style={[styles.container, {paddingBottom: insets.bottom + 10}]}>
+        <AppHeader navigation={navigation} />
         <Text style={styles.title}>Frequently Asked Questions</Text>
 
         <Text style={styles.subtitle}>
@@ -129,10 +111,7 @@ const FAQScreen = ({ navigation }) => {
         />
 
         {loading ? (
-          <View style={styles.loaderContainer}>
-            <ActivityIndicator size="large" color={Color.GREEN} />
-            <Text style={styles.loaderText}>Fetching FAQs...</Text>
-          </View>
+          <SkeletonFAQ />
         ) : (
           <FlatList
             data={filteredFaqs}
@@ -159,7 +138,6 @@ const FAQScreen = ({ navigation }) => {
 export default FAQScreen;
 
 const styles = StyleSheet.create({
-
   safeArea: {
     flex: 1,
     backgroundColor: Color.WHITE,
@@ -170,35 +148,6 @@ const styles = StyleSheet.create({
     backgroundColor: Color.WHITE,
   },
 
-  headerRow: {
-    height: 50,
-    justifyContent: 'center',
-  },
-
-  menuBtn: {
-    position: 'absolute',
-    left: 0,
-    width: 40,
-    height: 40,
-    borderRadius: 8,
-    backgroundColor: '#E5E7EB',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  menuIcon: {
-    width: 18,
-    height: 18,
-  },
-
-  toggleContainer: {
-    alignSelf: 'center',
-  },
-
-  toggleIcon: {
-    width: 70,
-    height: 35,
-  },
   title: {
     fontSize: 22,
     fontWeight: '700',
@@ -264,18 +213,5 @@ const styles = StyleSheet.create({
   contactText: {
     color: Color.WHITE,
     fontWeight: '600',
-  },
-
-  loaderContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 40,
-  },
-
-  loaderText: {
-    marginTop: 10,
-    fontSize: 14,
-    color: Color.BLACK,
   },
 });

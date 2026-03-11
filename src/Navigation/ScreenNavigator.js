@@ -18,6 +18,9 @@ import FAQScreen from '../Screen/FaqScreen';
 import EcommerceHomeScreen from '../Screen/EcommorceHomeScreen';
 import CategoryListScreen from '../Screen/Ecommerce/CategoryListScreen';
 import CategoryProductsScreen from '../Screen/Ecommerce/CategoryProductsScreen';
+import ProductDetailsScreen from '../Screen/Ecommerce/ProductDetailsScreen';
+import CartScreen from '../Screen/Ecommerce/CartScreen';
+import CheckoutScreen from '../Screen/Ecommerce/CheckoutScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -25,7 +28,10 @@ function MyStack() {
   return (
     <Stack.Navigator
       initialRouteName="SplashScreen"
-      screenOptions={{headerShown: false}}>
+      screenOptions={{
+        headerShown: false,
+        detachInactiveScreens: true,
+      }}>
       <Stack.Screen
         name="SplashScreen"
         component={SplashScreen}
@@ -152,6 +158,30 @@ function MyStack() {
       <Stack.Screen
         name="CategoryProductsScreen"
         component={CategoryProductsScreen}
+        options={{
+          animation: 'slide_from_right',
+        }}
+      />
+
+      <Stack.Screen
+        name="ProductDetailsScreen"
+        component={ProductDetailsScreen}
+        options={{
+          animation: 'slide_from_right',
+        }}
+      />
+
+      <Stack.Screen
+        name="CartScreen"
+        component={CartScreen}
+        options={{
+          animation: 'slide_from_right',
+        }}
+      />
+
+      <Stack.Screen
+        name="CheckoutScreen"
+        component={CheckoutScreen}
         options={{
           animation: 'slide_from_right',
         }}

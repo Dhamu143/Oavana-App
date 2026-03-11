@@ -10,48 +10,49 @@ import {
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import Color from '../Common/Color';
 import SafeFastImage from '../utils/SafeFastImage';
-import FastImage from 'react-native-fast-image';
 
 const {width} = Dimensions.get('window');
-const scale = size => (width / 375) * size;
 
-const PledgeModal = ({visible, onClose, pledgeIcon, onPledgePress}) => {
+const OrderPlaceModal = ({visible, type, onClose, onConfirm, onReturnHome}) => {
   const insets = useSafeAreaInsets();
+
+  const isSuccess = type === 'success';
 
   return (
     <Modal
       visible={visible}
       transparent
-      animationType="slide"
+      animationType="fade"
       statusBarTranslucent
       onRequestClose={onClose}>
       <View style={styles.overlay}>
-        <View
-          style={[
-            styles.container,
-            {paddingBottom: insets.bottom + scale(20)},
-          ]}>
+        <View style={[styles.container, {paddingBottom: insets.bottom + 20}]}>
           <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
             <Text style={styles.closeText}>✕</Text>
           </TouchableOpacity>
 
           <SafeFastImage
             source={
-              pledgeIcon
-                ? {uri: pledgeIcon}
-                : require('../assets/images/Bus.png')
+              isSuccess
+                ? require('../assets/images/order-success.png')
+                : require('../assets/images/order-confirm.png')
             }
             style={styles.image}
-            resizeMode={FastImage.resizeMode.cover}
+            resizeMode="contain"
           />
+
           <Text style={styles.title}>
-            I’ll take shorter showers to save water.
+            {isSuccess
+              ? 'Your order has been placed successfully.'
+              : 'Are you sure you want to place order?'}
           </Text>
 
-          <Text style={styles.subtitle}>- Oavana</Text>
-
-          <TouchableOpacity style={styles.actionBtn} onPress={onPledgePress}>
-            <Text style={styles.actionText}>Pledge & Act for the Planet</Text>
+          <TouchableOpacity
+            style={styles.actionBtn}
+            onPress={isSuccess ? onReturnHome : onConfirm}>
+            <Text style={styles.actionText}>
+              {isSuccess ? 'Return to mainpage' : 'Confirm'}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -59,20 +60,21 @@ const PledgeModal = ({visible, onClose, pledgeIcon, onPledgePress}) => {
   );
 };
 
-export default PledgeModal;
+export default OrderPlaceModal;
+
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(0,0,0,0.45)',
     justifyContent: 'flex-end',
   },
 
   container: {
+    width: '100%',
     backgroundColor: Color.WHITE,
-    borderTopLeftRadius: scale(25),
-    borderTopRightRadius: scale(25),
-    paddingHorizontal: scale(20),
-    paddingTop: scale(20),
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
     alignItems: 'center',
   },
 
@@ -81,43 +83,37 @@ const styles = StyleSheet.create({
   },
 
   closeText: {
-    fontSize: scale(20),
+    fontSize: 20,
     fontWeight: '600',
     color: Color.BLACK,
   },
 
   image: {
-    width: width * 0.7,
-    height: width * 0.7,
-    marginVertical: scale(10),
+    width: width * 0.5,
+    height: width * 0.5,
+    marginVertical: 10,
   },
 
   title: {
-    fontSize: scale(16),
+    fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
+    marginTop: 10,
     color: Color.BLACK,
-    marginTop: scale(10),
-  },
-
-  subtitle: {
-    fontSize: scale(13),
-    color: '#6B7280',
-    marginTop: scale(6),
   },
 
   actionBtn: {
     width: '100%',
-    marginTop: scale(20),
+    marginTop: 25,
     backgroundColor: Color.GREEN,
-    paddingVertical: scale(14),
-    borderRadius: scale(12),
+    paddingVertical: 15,
+    borderRadius: 10,
     alignItems: 'center',
   },
 
   actionText: {
     color: Color.WHITE,
-    fontSize: scale(15),
+    fontSize: 16,
     fontWeight: '600',
   },
 });

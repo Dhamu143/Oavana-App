@@ -26,10 +26,9 @@ const ReferralCodeScreen = () => {
         <SafeFastImage
           source={require('../../assets/images/handshake.png')}
           style={styles.image}
-         
         />
 
-        <Text style={styles.title}>Welcome to Green Earth Token</Text>
+        <Text style={styles.title}>Welcome to rth Token</Text>
 
         <Text style={styles.subtitle}>
           Boost your rewards!{'\n'}

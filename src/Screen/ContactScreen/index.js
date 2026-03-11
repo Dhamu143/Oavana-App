@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -10,35 +10,30 @@ import {
   KeyboardAvoidingView,
   Platform,
   Linking,
-  ActivityIndicator
+  ActivityIndicator,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Formik } from 'formik';
+import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
+import {Formik} from 'formik';
 import * as Yup from 'yup';
 import Color from '../../Common/Color';
 import SafeFastImage from '../../utils/SafeFastImage';
 import apiClient from '../../utils/ApiClient';
 import AlertModal from '../../Modal/AlertModal';
+import AppHeader from '../../Components/AppHeader';
 
 const ContactSchema = Yup.object().shape({
-  username: Yup.string()
-    .min(2, 'Too short')
-    .required('User name is required'),
+  username: Yup.string().min(2, 'Too short').required('User name is required'),
 
-  email: Yup.string()
-    .email('Invalid email')
-    .required('Email is required'),
+  email: Yup.string().email('Invalid email').required('Email is required'),
 
-  subject: Yup.string()
-    .min(3, 'Too short')
-    .required('Subject is required'),
+  subject: Yup.string().min(3, 'Too short').required('Subject is required'),
 
   message: Yup.string()
     .min(5, 'Description too short')
     .required('Description is required'),
 });
 
-const ContactScreen = ({ navigation }) => {
+const ContactScreen = ({navigation}) => {
   const insets = useSafeAreaInsets();
   const [focused, setFocused] = useState(null);
 
@@ -47,8 +42,7 @@ const ContactScreen = ({ navigation }) => {
   const [modalSuccess, setModalSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
-
-  const handleSubmitForm = async (values, { resetForm }) => {
+  const handleSubmitForm = async (values, {resetForm}) => {
     try {
       setLoading(true);
 
@@ -87,43 +81,24 @@ const ContactScreen = ({ navigation }) => {
     }
   };
 
-
   const handleLink = url => {
-    Linking.openURL(url).catch(err =>
-      console.log('Failed to open link:', err),
-    );
+    Linking.openURL(url).catch(err => console.log('Failed to open link:', err));
   };
-
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor={Color.WHITE} />
 
       <KeyboardAvoidingView
-        style={{ flex: 1 }}
+        style={{flex: 1}}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={[
             styles.scrollContainer,
-            { paddingBottom: insets.bottom + 20 },
+            {paddingBottom: insets.bottom + 20},
           ]}>
-
-          <View style={styles.header}>
-            <TouchableOpacity
-              style={styles.menuBtn}
-              onPress={() => navigation.goBack()}>
-              <SafeFastImage
-                source={require('../../assets/images/leftArrow.png')}
-                style={styles.menuIcon}
-              />
-            </TouchableOpacity>
-
-            <SafeFastImage
-              source={require('../../assets/images/Logo1.png')}
-              style={styles.logoIcon}
-            />
-          </View>
+          <AppHeader navigation={navigation} />
 
           <Formik
             initialValues={{
@@ -143,10 +118,8 @@ const ContactScreen = ({ navigation }) => {
               touched,
             }) => (
               <View style={styles.formContainer}>
-
                 <Text style={styles.title}>Contact Us</Text>
                 <Text style={styles.subtitle}>We love to hear from you.</Text>
-
 
                 <View style={styles.fieldContainer}>
                   <Text style={styles.label}>User Name</Text>
@@ -171,7 +144,6 @@ const ContactScreen = ({ navigation }) => {
                     <Text style={styles.errorText}>{errors.username}</Text>
                   )}
                 </View>
-
 
                 <View style={styles.fieldContainer}>
                   <Text style={styles.label}>Email Address</Text>
@@ -198,7 +170,6 @@ const ContactScreen = ({ navigation }) => {
                   )}
                 </View>
 
-
                 <View style={styles.fieldContainer}>
                   <Text style={styles.label}>Subject</Text>
 
@@ -223,7 +194,6 @@ const ContactScreen = ({ navigation }) => {
                   )}
                 </View>
 
-
                 <View style={styles.fieldContainer}>
                   <Text style={styles.label}>Description</Text>
 
@@ -239,9 +209,7 @@ const ContactScreen = ({ navigation }) => {
                       styles.textArea,
                       {
                         borderBottomColor:
-                          focused === 'description'
-                            ? Color.GREEN
-                            : '#ababab',
+                          focused === 'description' ? Color.GREEN : '#ababab',
                       },
                     ]}
                     onFocus={() => setFocused('description')}
@@ -252,49 +220,57 @@ const ContactScreen = ({ navigation }) => {
                   )}
                 </View>
 
-
                 <TouchableOpacity
                   style={styles.sendBtn}
                   onPress={handleSubmit}
-                  disabled={loading}
-                >
+                  disabled={loading}>
                   {loading ? (
                     <ActivityIndicator size="small" color={Color.WHITE} />
                   ) : (
                     <Text style={styles.sendText}>Send Message</Text>
                   )}
                 </TouchableOpacity>
-
               </View>
             )}
           </Formik>
-
 
           <View style={styles.socialSection}>
             <Text style={styles.connectText}>Let’s Connect</Text>
 
             <View style={styles.iconRow}>
-              <TouchableOpacity onPress={() => handleLink('https://www.facebook.com/greenearthtoken')}>
+              <TouchableOpacity
+                onPress={() =>
+                  handleLink('https://www.facebook.com/greenearthtoken')
+                }>
                 <SafeFastImage
                   source={require('../../assets/images/facebook.png')}
                   style={styles.socialIcon}
                 />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleLink('https://www.instagram.com/green.earth.token')}>
+              <TouchableOpacity
+                onPress={() =>
+                  handleLink('https://www.instagram.com/green.earth.token')
+                }>
                 <SafeFastImage
                   source={require('../../assets/images/instagram.png')}
                   style={styles.socialIcon}
                 />
               </TouchableOpacity>
 
-              <TouchableOpacity onPress={() => handleLink('https://www.linkedin.com/company/green-earth-token')}>
+              <TouchableOpacity
+                onPress={() =>
+                  handleLink(
+                    'https://www.linkedin.com/company/green-earth-token',
+                  )
+                }>
                 <SafeFastImage
                   source={require('../../assets/images/linkedin.png')}
                   style={styles.socialIcon}
                 />
               </TouchableOpacity>
 
-              <TouchableOpacity onPress={() => handleLink('https://x.com/TokenEarth2025')}>
+              <TouchableOpacity
+                onPress={() => handleLink('https://x.com/TokenEarth2025')}>
                 <SafeFastImage
                   source={require('../../assets/images/twitter.png')}
                   style={styles.socialIcon}
@@ -302,7 +278,6 @@ const ContactScreen = ({ navigation }) => {
               </TouchableOpacity>
             </View>
           </View>
-
         </ScrollView>
       </KeyboardAvoidingView>
       <AlertModal
@@ -330,34 +305,6 @@ const styles = StyleSheet.create({
 
   scrollContainer: {
     flexGrow: 1,
-  },
-
-  header: {
-    height: 60,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 15,
-  },
-
-  menuBtn: {
-    position: 'absolute',
-    left: 0,
-    width: 44,
-    height: 44,
-    backgroundColor: '#F2F2F2',
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  menuIcon: {
-    width: 20,
-    height: 20,
-  },
-
-  logoIcon: {
-    width: 65,
-    height: 40,
   },
 
   formContainer: {

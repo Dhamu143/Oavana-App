@@ -23,6 +23,7 @@ import apiClient from '../../utils/ApiClient';
 import {useDispatch, useSelector} from 'react-redux';
 import {AddRefCode} from '../../Redux/Action/action';
 import Clipboard from '@react-native-clipboard/clipboard';
+import AppHeader from '../../Components/AppHeader';
 
 const InviteScreen = ({navigation}) => {
   const {refCode, addUserName, addMobileNumber} = useSelector(
@@ -247,24 +248,7 @@ https://greenearthtoken.com/get`;
       <StatusBar barStyle="dark-content" backgroundColor={Color.WHITE} />
 
       <View style={{flex: 1}}>
-        <View style={styles.header}>
-          <TouchableOpacity
-            style={styles.menuBtn}
-            onPress={() => navigation.goBack()}>
-            <SafeFastImage
-              source={require('../../assets/images/leftArrow.png')}
-              style={styles.menuIcon}
-            />
-          </TouchableOpacity>
-
-          <View style={styles.logoContainer}>
-            <SafeFastImage
-              source={require('../../assets/images/Logo1.png')}
-              style={styles.logoIcon}
-            />
-          </View>
-        </View>
-
+        <AppHeader navigation={navigation} />
         <Text style={styles.title}>Invite</Text>
         <Text style={styles.subtitle}>
           Create a unique code to start referring.
@@ -349,33 +333,7 @@ const styles = StyleSheet.create({
     backgroundColor: Color.WHITE,
     paddingHorizontal: 20,
   },
-  header: {
-    height: 60,
-    justifyContent: 'center',
-  },
-  logoContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  logoIcon: {
-    width: 60,
-    height: 40,
-  },
-  menuBtn: {
-    position: 'absolute',
-    left: 0,
-    width: 44,
-    height: 44,
-    backgroundColor: '#E9EAEC',
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  menuIcon: {
-    width: 20,
-    height: 20,
-    resizeMode: 'contain',
-  },
+
   title: {
     fontSize: 28,
     fontWeight: '700',

@@ -182,9 +182,9 @@ const FilterModal = ({visible, onClose}) => {
             />
 
             <RadioItem
-              label="Advance"
-              selected={levelType === 'Advance'}
-              onPress={() => selectLevel('Advance')}
+              label="Advanced"
+              selected={levelType === 'Advanced'}
+              onPress={() => selectLevel('Advanced')}
             />
           </View>
         </ScrollView>

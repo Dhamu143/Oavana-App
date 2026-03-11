@@ -17,6 +17,7 @@ import SafeFastImage from '../../utils/SafeFastImage';
 import apiClient from '../../utils/ApiClient';
 import CourseCard from '../../Components/CourseCard';
 import SkeletonCourseCard from '../../reuseable/SkeletonCourseCard';
+import AppHeader from '../../Components/AppHeader';
 
 const SustainabilityCoursesScreen = ({navigation}) => {
   const [filterVisible, setFilterVisible] = useState(false);
@@ -118,22 +119,8 @@ const SustainabilityCoursesScreen = ({navigation}) => {
         contentContainerStyle={{
           paddingBottom: insets.bottom + 20,
         }}>
-        <View style={styles.header}>
-          <TouchableOpacity
-            style={styles.menuBtn}
-            activeOpacity={0.7}
-            onPress={() => navigation?.goBack()}>
-            <SafeFastImage
-              source={require('../../assets/images/back.png')}
-              style={styles.menuIcon}
-              tintColor="#777"
-            />
-          </TouchableOpacity>
-
-          <SafeFastImage
-            source={require('../../assets/images/Logo1.png')}
-            style={styles.logo}
-          />
+        <View style={{marginHorizontal: 15}}>
+          <AppHeader navigation={navigation} />
         </View>
 
         <Text style={styles.title} allowFontScaling={false}>
@@ -256,31 +243,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Color.WHITE,
-  },
-
-  header: {
-    height: 60,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginHorizontal: 20,
-  },
-
-  menuBtn: {
-    position: 'absolute',
-    left: 0,
-    backgroundColor: '#F2F2F2',
-    padding: 10,
-    borderRadius: 10,
-  },
-
-  menuIcon: {
-    width: 20,
-    height: 20,
-  },
-
-  logo: {
-    width: 70,
-    height: 40,
   },
 
   title: {

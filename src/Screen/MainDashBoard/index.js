@@ -108,7 +108,7 @@ const MainDashBoard = ({navigation}) => {
               source={require('../../assets/images/star.png')}
               style={styles.badgeIcon}
             />
-            <Text style={styles.badgeText}>Green Token Earth</Text>
+            <Text style={styles.badgeText}>Oavana</Text>
           </View>
 
           <Text style={styles.cardTitle}>

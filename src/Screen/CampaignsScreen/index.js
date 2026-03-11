@@ -11,86 +11,72 @@ import {
 } from 'react-native';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import Color from '../../Common/Color';
-import FilterModal from '../../Modal/FilterModal';
 import SafeFastImage from '../../utils/SafeFastImage';
 import apiClient from '../../utils/ApiClient';
-
-const courses = [
-  {
-    id: '1',
-    title: 'Introduction to water and climate',
-    university:
-      'A global movement replacing trees with bamboo for a sustainable future.',
-    image: require('../../assets/images/Rectangle.png'),
-  },
-  {
-    id: '2',
-    title: 'Introduction to water and climate',
-    university:
-      'A global movement replacing trees with bamboo for a sustainable future.',
-    image: require('../../assets/images/Rectangle.png'),
-  },
-  {
-    id: '3',
-    title: 'Introduction to water and climate',
-    university:
-      'A global movement replacing trees with bamboo for a sustainable future.',
-    image: require('../../assets/images/Rectangle.png'),
-  },
-];
-
-const CourseCard = memo(({item}) => {
-  return (
-    <TouchableOpacity activeOpacity={0.8} style={styles.card}>
-      <SafeFastImage source={item.image} style={styles.cardImage} />
-
-      <View style={styles.cardContent}>
-        <Text
-          style={styles.cardTitle}
-          numberOfLines={2}
-          allowFontScaling={false}>
-          {item.title}
-        </Text>
-
-        <Text style={styles.cardUniversity} allowFontScaling={false}>
-          {item.university}
-        </Text>
-
-        <View style={styles.row}>
-          <SafeFastImage
-            source={require('../../assets/images/Time.png')}
-            style={styles.icon}
-            tintColor="#777"
-          />
-
-          <Text style={styles.rowText} allowFontScaling={false}>
-            3 Weeks
-          </Text>
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
-});
+import SkeletonCourseCard from '../../reuseable/SkeletonCourseCard';
+import CampaignCard from '../../Components/CampaignCard';
+import AppHeader from '../../Components/AppHeader';
 
 const CampaignsScreen = ({navigation}) => {
-  const [filterVisible, setFilterVisible] = useState(false);
   const insets = useSafeAreaInsets();
 
+  const [campaigns, setCampaigns] = useState([]);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [hasMore, setHasMore] = useState(true);
+
+  const popularCampaigns = campaigns.filter(item => item.isPopular);
+  const newCampaigns = campaigns.filter(item => !item.isPopular);
+
   useEffect(() => {
-    getCourseData();
+    getCampaignData(1, true);
   }, []);
 
-  const getCourseData = async () => {
+  const getCampaignData = async (pageNum = 1, reset = false) => {
     try {
-      const response = await apiClient.get('/course');
+      setLoading(true);
 
-      console.log('Course Data', response);
+      const response = await apiClient.get('/campaign', {
+        params: {page: pageNum},
+      });
+
+      const campaignData = response?.data?.data?.data ?? [];
+
+      if (reset) {
+        setCampaigns(campaignData);
+      } else {
+        setCampaigns(prev => [...prev, ...campaignData]);
+      }
+
+      setHasMore(campaignData.length > 0);
+      setPage(pageNum + 1);
     } catch (error) {
-      console.log('error', error);
+      console.log('Campaign API error', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const renderItem = ({item}) => <CourseCard item={item} />;
+  const handleLoadMore = () => {
+    if (!loading && hasMore) {
+      getCampaignData(page);
+    }
+  };
+
+  const renderItem = ({item}) => <CampaignCard item={item} />;
+
+  const renderSkeleton = () => {
+    return (
+      <FlatList
+        horizontal
+        data={[1, 2, 3]}
+        renderItem={() => <SkeletonCourseCard />}
+        keyExtractor={(item, index) => index.toString()}
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{paddingLeft: 20}}
+      />
+    );
+  };
 
   return (
     <SafeAreaView edges={['top', 'left', 'right']} style={styles.container}>
@@ -103,114 +89,75 @@ const CampaignsScreen = ({navigation}) => {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
         contentContainerStyle={{
           paddingBottom: insets.bottom + 20,
         }}>
-        <View style={styles.header}>
-          <TouchableOpacity
-            style={styles.menuBtn}
-            activeOpacity={0.7}
-            onPress={() => navigation?.goBack()}>
-            <SafeFastImage
-              source={require('../../assets/images/back.png')}
-              style={styles.menuIcon}
-              tintColor="#777"
-            />
-          </TouchableOpacity>
-
-          <SafeFastImage
-            source={require('../../assets/images/Logo1.png')}
-            style={styles.logo}
-          />
+        <View style={{marginHorizontal: 15}}>
+          <AppHeader navigation={navigation} />
         </View>
 
-        <Text style={styles.title} allowFontScaling={false}>
-          Campaigns
-        </Text>
+        <Text style={styles.title}>Campaigns</Text>
 
-        <Text style={styles.subtitle} allowFontScaling={false}>
+        <Text style={styles.subtitle}>
           Some information here as a subheading.
         </Text>
 
-        <Text style={styles.sectionTitle} allowFontScaling={false}>
-          Most Popular
-        </Text>
+        {(loading || popularCampaigns.length > 0) && (
+          <>
+            <Text style={styles.sectionTitle}>Most Popular</Text>
 
-        <FlatList
-          horizontal
-          data={courses}
-          renderItem={renderItem}
-          keyExtractor={item => item.id}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{paddingLeft: 20}}
-          removeClippedSubviews={true}
-          initialNumToRender={3}
-          maxToRenderPerBatch={5}
-          windowSize={5}
-        />
+            {loading ? (
+              renderSkeleton()
+            ) : (
+              <FlatList
+                horizontal
+                data={popularCampaigns}
+                renderItem={renderItem}
+                keyExtractor={item => item._id}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{paddingLeft: 20}}
+                onEndReached={handleLoadMore}
+                onEndReachedThreshold={0.3}
+              />
+            )}
+          </>
+        )}
 
-        <Text
-          style={[styles.sectionTitle, {marginTop: 10}]}
-          allowFontScaling={false}>
-          New Courses
-        </Text>
+        {(loading || newCampaigns.length > 0) && (
+          <>
+            <Text style={[styles.sectionTitle, {marginTop: 10}]}>
+              New Campaigns
+            </Text>
 
-        <FlatList
-          horizontal
-          data={courses}
-          renderItem={renderItem}
-          keyExtractor={item => item.id}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{
-            paddingLeft: 20,
-            paddingBottom: 20,
-          }}
-          removeClippedSubviews={true}
-          initialNumToRender={3}
-          maxToRenderPerBatch={5}
-          windowSize={5}
-        />
+            {loading ? (
+              renderSkeleton()
+            ) : (
+              <FlatList
+                horizontal
+                data={newCampaigns}
+                renderItem={renderItem}
+                keyExtractor={item => item._id}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{
+                  paddingLeft: 20,
+                  paddingBottom: 20,
+                }}
+                onEndReached={handleLoadMore}
+                onEndReachedThreshold={0.3}
+              />
+            )}
+          </>
+        )}
       </ScrollView>
-      <FilterModal
-        visible={filterVisible}
-        onClose={() => setFilterVisible(false)}
-      />
     </SafeAreaView>
   );
 };
 
 export default CampaignsScreen;
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Color.WHITE,
-  },
-
-  header: {
-    height: 80,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginHorizontal: 20,
-  },
-
-  menuBtn: {
-    position: 'absolute',
-    left: 0,
-    backgroundColor: '#F2F2F2',
-    padding: 10,
-    borderRadius: 10,
-  },
-
-  menuIcon: {
-    width: 20,
-    height: 20,
-  },
-
-  logo: {
-    width: 70,
-    height: 40,
   },
 
   title: {
@@ -223,7 +170,7 @@ const styles = StyleSheet.create({
 
   subtitle: {
     fontSize: 14,
-    color: '#777',
+    color: '#4f4f4f',
     marginHorizontal: 20,
     marginBottom: 15,
   },
@@ -234,51 +181,5 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginBottom: 10,
     color: Color.BLACK,
-  },
-
-  card: {
-    width: 240,
-    backgroundColor: '#F8F8F8',
-    borderRadius: 14,
-    marginRight: 15,
-    overflow: 'hidden',
-  },
-
-  cardImage: {
-    width: '100%',
-    height: 130,
-  },
-
-  cardContent: {
-    padding: 12,
-  },
-
-  cardTitle: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: Color.BLACK,
-  },
-
-  cardUniversity: {
-    fontSize: 13,
-    color: '#777',
-    marginVertical: 4,
-  },
-
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 4,
-  },
-
-  icon: {
-    width: 14,
-    height: 14,
-  },
-
-  rowText: {
-    fontSize: 12,
-    marginLeft: 4,
-    color: '#777',
   },
 });

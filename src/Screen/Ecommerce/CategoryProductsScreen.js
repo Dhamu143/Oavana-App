@@ -7,46 +7,41 @@ import {
   TouchableOpacity,
   StatusBar,
 } from 'react-native';
-
 import {SafeAreaView} from 'react-native-safe-area-context';
 import SafeFastImage from '../../utils/SafeFastImage';
 import {products} from '../../data/ecommerceData';
 import ProductCard from '../../Components/ProductCard';
 import Color from '../../Common/Color';
+import AppHeader from '../../Components/AppHeader';
 
 const CategoryProductsScreen = ({route, navigation}) => {
   const {category} = route.params;
 
   const renderProduct = ({item}) => {
-    return <ProductCard item={item} />;
+    return (
+      <ProductCard
+        item={item}
+        onPress={() =>
+          navigation.navigate('ProductDetailsScreen', {product: item})
+        }
+      />
+    );
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={Color.WHITE} />
 
-      <View style={styles.topHeader}>
-        <TouchableOpacity
-          style={styles.menuBtn}
-          onPress={() => navigation.goBack()}>
-          <SafeFastImage
-            source={require('../../assets/images/leftArrow.png')}
-            style={styles.menuIcon}
-          />
-        </TouchableOpacity>
-
-        <View style={styles.logoWrapper}>
-          <SafeFastImage
-            source={require('../../assets/images/Logo1.png')}
-            style={styles.logo}
-          />
-        </View>
-      </View>
+      <AppHeader navigation={navigation} />
 
       <View style={styles.header}>
         <Text style={styles.title}>{category.name}</Text>
 
-        <TouchableOpacity style={styles.headerCartBtn}>
+        <TouchableOpacity
+          style={styles.headerCartBtn}
+          onPress={() => {
+            navigation.navigate('CartScreen');
+          }}>
           <SafeFastImage
             source={require('../../assets/images/addtocart.png')}
             style={styles.iconWhite}
@@ -74,40 +69,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Color.WHITE,
     paddingHorizontal: 16,
-  },
-
-  topHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: 20,
-    marginBottom: 10,
-  },
-
-  menuBtn: {
-    width: 44,
-    height: 44,
-    backgroundColor: '#F1F1F1',
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  menuIcon: {
-    width: 18,
-    height: 18,
-  },
-
-  logoWrapper: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-  },
-
-  logo: {
-    width: 50,
-    height: 50,
   },
 
   header: {

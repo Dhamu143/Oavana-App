@@ -12,9 +12,9 @@ import SafeFastImage from '../utils/SafeFastImage';
 
 const {width} = Dimensions.get('window');
 
-const ProductCard = ({item, onAddToCart}) => {
+const ProductCard = ({item, onAddToCart, onPress}) => {
   return (
-    <View style={styles.productCard}>
+    <TouchableOpacity style={styles.productCard} onPress={onPress}>
       <SafeFastImage
         source={item?.image}
         style={styles.productImage}
@@ -37,7 +37,7 @@ const ProductCard = ({item, onAddToCart}) => {
 
         <Text style={styles.price}>{item?.price}</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 

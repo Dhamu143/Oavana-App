@@ -35,7 +35,7 @@ const CourseCard = ({item}) => {
           <SafeFastImage
             source={require('../assets/images/level.png')}
             style={styles.icon}
-            tintColor="#777"
+            tintColor="#4f4f4f"
           />
 
           <Text style={styles.rowText}>{item?.level}</Text>
@@ -43,7 +43,7 @@ const CourseCard = ({item}) => {
           <SafeFastImage
             source={require('../assets/images/Time.png')}
             style={[styles.icon, {marginLeft: 10}]}
-            tintColor="#777"
+            tintColor="#4f4f4f"
           />
 
           <Text style={styles.rowText}>
@@ -57,7 +57,7 @@ const CourseCard = ({item}) => {
           <SafeFastImage
             source={require('../assets/images/onlineCertificate.png')}
             style={styles.icon}
-            tintColor="#777"
+            tintColor="#4f4f4f"
           />
 
           <Text style={styles.rowText}>Certificate :</Text>
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
 
   cardUniversity: {
     fontSize: 13,
-    color: '#777',
+    color: '#4f4f4f',
     marginVertical: 4,
   },
 
@@ -113,19 +113,19 @@ const styles = StyleSheet.create({
   },
 
   icon: {
-    width: 14,
-    height: 14,
+    width: 18,
+    height: 18,
   },
 
   rowText: {
     fontSize: 12,
     marginLeft: 4,
-    color: '#777',
+    color: '#4f4f4f',
   },
 
   sector: {
     fontSize: 12,
-    color: '#777',
+    color: '#4f4f4f',
     marginTop: 4,
   },
 });

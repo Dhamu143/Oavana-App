@@ -11,6 +11,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import SafeFastImage from '../../utils/SafeFastImage';
 import {categories} from '../../data/ecommerceData';
 import Color from '../../Common/Color';
+import AppHeader from '../../Components/AppHeader';
 
 const CategoryListScreen = ({navigation}) => {
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -33,23 +34,7 @@ const CategoryListScreen = ({navigation}) => {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={Color.WHITE} />
 
-      <View style={styles.topHeader}>
-        <TouchableOpacity
-          style={styles.menuBtn}
-          onPress={() => navigation.goBack()}>
-          <SafeFastImage
-            source={require('../../assets/images/leftArrow.png')}
-            style={styles.menuIcon}
-          />
-        </TouchableOpacity>
-
-        <View style={styles.logoWrapper}>
-          <SafeFastImage
-            source={require('../../assets/images/Logo1.png')}
-            style={styles.logo}
-          />
-        </View>
-      </View>
+      <AppHeader navigation={navigation} />
 
       <View style={styles.header}>
         <Text style={styles.title}>Shop by categories</Text>
@@ -80,40 +65,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Color.WHITE,
     paddingHorizontal: 16,
-  },
-
-  topHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: 20,
-    marginBottom: 10,
-  },
-
-  menuBtn: {
-    width: 44,
-    height: 44,
-    backgroundColor: '#F1F1F1',
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  menuIcon: {
-    width: 18,
-    height: 18,
-  },
-
-  logoWrapper: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-  },
-
-  logo: {
-    width: 50,
-    height: 50,
   },
 
   header: {
