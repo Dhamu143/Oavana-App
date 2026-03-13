@@ -93,9 +93,9 @@ const styles = StyleSheet.create({
   },
 
   impactLabel: {
-    fontSize: scale(12),
-    color: '#5e5f61',
+    fontSize: scale(11.5),
+    color: '#505152',
     marginTop: scale(2),
-    fontWeight: '500',
+    fontWeight: '700',
   },
 });

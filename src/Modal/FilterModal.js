@@ -13,8 +13,8 @@ import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import Color from '../Common/Color';
 import RadioItem from '../Components/RadioItem';
 import TypeButton from '../Components/TypeButton';
-import RangeSlider from 'rn-range-slider';
 import SafeFastImage from '../utils/SafeFastImage';
+import PriceRangeSlider from '../Components/PriceRangeSlider';
 
 const FilterModal = ({visible, onClose}) => {
   const insets = useSafeAreaInsets();
@@ -54,7 +54,7 @@ const FilterModal = ({visible, onClose}) => {
 
         <View style={styles.header}>
           <SafeFastImage
-            source={require('../assets/images/Logo1.png')}
+            source={require('../assets/images/AppLogo.png')}
             style={styles.logo}
           />
           <TouchableOpacity
@@ -99,47 +99,16 @@ const FilterModal = ({visible, onClose}) => {
               />
             </View>
 
-            {/* <Text style={styles.label}>Price Range</Text>
+            <Text style={styles.label}>Price Range</Text>
 
-            <View style={styles.sliderWrapper}>
-              <View style={styles.labelRow}>
-                <View style={styles.valueLabel}>
-                  <Text style={styles.valueText}>${minPrice ?? 5}</Text>
-                </View>
-
-                <View style={styles.valueLabel}>
-                  <Text style={styles.valueText}>${maxPrice ?? 125}</Text>
-                </View>
-              </View>
-
-              <View
-                style={{width: '100%', height: 5, justifyContent: 'center'}}>
-                <RangeSlider
-                  style={{flex: 1}}
-                  min={5}
-                  max={125}
-                  step={5}
-                  low={minPrice}
-                  high={maxPrice}
-                  floatingLabel
-                  renderThumb={() => <View style={styles.thumb} />}
-                  renderRail={() => <View style={styles.rail} />}
-                  renderRailSelected={() => (
-                    <View style={styles.railSelected} />
-                  )}
-                  renderLabel={value => (
-                    <View style={styles.labelContainer}>
-                      <Text style={styles.labelText}>${value}</Text>
-                    </View>
-                  )}
-                  renderNotch={() => <View style={styles.notch} />}
-                  onValueChanged={(low, high) => {
-                    setMinPrice(low);
-                    setMaxPrice(high);
-                  }}
-                />
-              </View>
-            </View> */}
+            <PriceRangeSlider
+              min={5}
+              max={125}
+              onChange={(low, high) => {
+                setMinPrice(low);
+                setMaxPrice(high);
+              }}
+            />
 
             <Text style={styles.label}>Duration</Text>
 
@@ -247,8 +216,8 @@ const styles = StyleSheet.create({
   },
 
   logo: {
-    width: 70,
-    height: 40,
+    width: 80,
+    height: 55,
   },
 
   closeBtn: {

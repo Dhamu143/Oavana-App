@@ -21,10 +21,12 @@ const AirDropCard = ({
   currentPoints = 0,
   totalPoints = 1500,
   pledgeIcon,
+  pledgeText,
   isPleadgeActive,
   miningEndTime,
   onPledgeSuccess,
 }) => {
+  const apiCalledRef = useRef(false);
   const progressAnim = useRef(new Animated.Value(0)).current;
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -45,18 +47,53 @@ const AirDropCard = ({
     }).start();
   }, [currentPoints]);
 
+  // useEffect(() => {
+  //   if (!isPleadgeActive || !miningEndTime) return;
+
+  //   const interval = setInterval(() => {
+  //     const now = new Date().getTime();
+  //     const end = new Date(miningEndTime).getTime();
+
+  //     const diff = end - now;
+
+  //     if (diff <= 0) {
+  //       clearInterval(interval);
+  //       setRemainingTime('00:00:00');
+  //       return;
+  //     }
+
+  //     const hours = Math.floor(diff / (1000 * 60 * 60));
+  //     const minutes = Math.floor((diff / (1000 * 60)) % 60);
+  //     const seconds = Math.floor((diff / 1000) % 60);
+
+  //     const formatted =
+  //       `${String(hours).padStart(2, '0')}:` +
+  //       `${String(minutes).padStart(2, '0')}:` +
+  //       `${String(seconds).padStart(2, '0')}`;
+
+  //     setRemainingTime(formatted);
+  //   }, 1000);
+
+  //   return () => clearInterval(interval);
+  // }, [isPleadgeActive, miningEndTime]);
+
   useEffect(() => {
     if (!isPleadgeActive || !miningEndTime) return;
 
-    const interval = setInterval(() => {
+    const interval = setInterval(async () => {
       const now = new Date().getTime();
       const end = new Date(miningEndTime).getTime();
-
       const diff = end - now;
 
       if (diff <= 0) {
         clearInterval(interval);
         setRemainingTime('00:00:00');
+
+        if (!apiCalledRef.current) {
+          apiCalledRef.current = true;
+          onPledgeSuccess();
+        }
+
         return;
       }
 
@@ -128,10 +165,10 @@ const AirDropCard = ({
 
             <View style={{flex: 1}}>
               <Text style={styles.quoteText}>
-                "I'll unplug charger and electronics when not in use to save
-                energy"
+                {pledgeText ||
+                  "I'll unplug charger and electronics when not in use to save energy"}
               </Text>
-              <Text style={styles.quoteAuthor}>- Oavana</Text>
+              <Text style={styles.quoteAuthor}>- OaVana</Text>
             </View>
           </View>
         </View>

@@ -72,7 +72,7 @@ const CartScreen = ({navigation}) => {
             {item.name}
           </Text>
 
-          <Text style={styles.price}>Oavana {item.price}.00</Text>
+          <Text style={styles.price}>OaVana {item.price}.00</Text>
         </View>
 
         <Text style={styles.variantText}>
@@ -250,8 +250,8 @@ const styles = StyleSheet.create({
   },
 
   qtyBtn: {
-    width: 30,
-    height: 30,
+    width: 24,
+    height: 24,
     backgroundColor: Color.GREEN,
     borderRadius: 16,
     justifyContent: 'center',
@@ -265,8 +265,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   qtyIcon: {
-    width: 10,
-    height: 10,
+    width: 8,
+    height: 8,
   },
 
   summaryContainer: {

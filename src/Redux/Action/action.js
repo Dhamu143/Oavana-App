@@ -9,6 +9,11 @@ export const SkipLogin = skiplogin => ({
   skiplogin: skiplogin,
 });
 
+export const OnboardingScreenCheck = checkOnboardingScreen => ({
+  type: 'CHECK_ONBOARDING_SCREEN',
+  checkOnboardingScreen: checkOnboardingScreen,
+});
+
 export const LoginSuceess = userLogin => ({
   type: 'ADD_USER_LOGIN',
   userLogin: userLogin,
@@ -22,12 +27,11 @@ export const AddRefCode = refCode => ({
 export const addTokenAndRate = (tokenEarn, miningRate) => ({
   type: 'ADD_TOKEN_AND_RATE',
   tokenEarn: tokenEarn,
-  miningRate: miningRate
+  miningRate: miningRate,
 });
-
 
 export const IsPledgeActive = (isPledgeActive, isMiningEnable) => ({
   type: 'CHECK_PLEDGE_ACTIVE',
   isPledgeActive: isPledgeActive,
-  isMiningEnable: isMiningEnable
+  isMiningEnable: isMiningEnable,
 });

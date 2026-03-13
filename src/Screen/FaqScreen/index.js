@@ -24,6 +24,9 @@ const FAQScreen = ({navigation}) => {
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
 
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('All');
+
   useEffect(() => {
     const fetchFAQs = async () => {
       try {
@@ -33,11 +36,24 @@ const FAQScreen = ({navigation}) => {
 
         if (response?.data?.success) {
           const faqData = response?.data?.data || [];
+
           setFaqs(faqData);
           setFilteredFaqs(faqData);
+
+          // Extract unique categories
+          const uniqueCategories = [
+            'All',
+            ...new Set(
+              faqData
+                .map(item => item.category)
+                .filter(cat => cat && cat.trim() !== ''),
+            ),
+          ];
+
+          setCategories(uniqueCategories);
         }
       } catch (error) {
-        // console.log('FAQ ERROR', error);
+        console.log('FAQ ERROR', error);
       } finally {
         setLoading(false);
       }
@@ -45,6 +61,17 @@ const FAQScreen = ({navigation}) => {
 
     fetchFAQs();
   }, []);
+
+  const handleCategorySelect = category => {
+    setSelectedCategory(category);
+
+    if (category === 'All') {
+      setFilteredFaqs(faqs);
+    } else {
+      const filtered = faqs.filter(item => item.category === category);
+      setFilteredFaqs(filtered);
+    }
+  };
 
   const handleSearch = text => {
     setSearch(text);
@@ -109,6 +136,32 @@ const FAQScreen = ({navigation}) => {
           style={styles.searchInput}
           placeholderTextColor={Color.Placeholder}
         />
+        <View style={{marginBottom: 5}}>
+          <Text style={styles.categoryTitle}>Category</Text>
+          <FlatList
+            data={categories}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item, index) => index.toString()}
+            style={{marginBottom: 15}}
+            renderItem={({item}) => (
+              <TouchableOpacity
+                style={[
+                  styles.categoryBtn,
+                  selectedCategory === item && styles.categoryActive,
+                ]}
+                onPress={() => handleCategorySelect(item)}>
+                <Text
+                  style={[
+                    styles.categoryText,
+                    selectedCategory === item && styles.categoryActiveText,
+                  ]}>
+                  {item}
+                </Text>
+              </TouchableOpacity>
+            )}
+          />
+        </View>
 
         {loading ? (
           <SkeletonFAQ />
@@ -166,7 +219,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: Color.boredrColor,
     paddingVertical: 8,
-    marginBottom: 15,
+    marginBottom: 5,
   },
 
   faqContainer: {
@@ -192,7 +245,7 @@ const styles = StyleSheet.create({
 
   answerText: {
     marginTop: 8,
-    color: '#666',
+    color: Color.Placeholder,
     fontSize: 13,
     lineHeight: 18,
   },
@@ -213,5 +266,34 @@ const styles = StyleSheet.create({
   contactText: {
     color: Color.WHITE,
     fontWeight: '600',
+  },
+
+  categoryBtn: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+    backgroundColor: '#E5E5E5',
+    marginRight: 10,
+  },
+
+  categoryActive: {
+    backgroundColor: Color.GREEN,
+  },
+
+  categoryText: {
+    fontSize: 13,
+    color: '#333',
+  },
+
+  categoryActiveText: {
+    color: Color.WHITE,
+    fontWeight: '600',
+  },
+
+  categoryTitle: {
+    fontSize: 18,
+    fontWeight: '500',
+    color: Color.BLACK,
+    marginBottom: 10,
   },
 });

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -10,13 +10,38 @@ import {
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import SafeFastImage from '../../utils/SafeFastImage';
-import {categories, products} from '../../data/ecommerceData';
+import {products} from '../../data/ecommerceData';
 import Color from '../../Common/Color';
 import ProductCard from '../../Components/ProductCard';
 import AppHeader from '../../Components/AppHeader';
+import apiClient from '../../utils/ApiClient';
+import SkeletonCategoryLoader from '../../reuseable/SkeletonCategoryLoader';
 
 const EcommerceHomeScreen = ({navigation}) => {
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [categoryList, setCategoryList] = useState([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+
+  useEffect(() => {
+    getProductCategories();
+  }, []);
+
+  const getProductCategories = async () => {
+    setLoadingCategories(true);
+
+    try {
+      const response = await apiClient.get('/category');
+
+      if (response?.data?.success) {
+        setCategoryList(response.data.data);
+      }
+    } catch (error) {
+      console.log('Category Error:', error?.response || error?.message);
+    } finally {
+      setLoadingCategories(false);
+    }
+  };
+
   const renderCategory = ({item}) => {
     const isSelected = selectedCategory === item.id;
 
@@ -47,6 +72,7 @@ const EcommerceHomeScreen = ({navigation}) => {
       </TouchableOpacity>
     );
   };
+
   const renderProduct = ({item}) => {
     return (
       <ProductCard
@@ -101,21 +127,34 @@ const EcommerceHomeScreen = ({navigation}) => {
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Categories</Text>
 
-          <TouchableOpacity
-            onPress={() => navigation.navigate('CategoryListScreen')}>
-            <Text style={styles.seeAll}>See All</Text>
-          </TouchableOpacity>
+          {!loadingCategories && (
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate('CategoryListScreen', {
+                  categories: categoryList,
+                  selectedCategory: selectedCategory,
+                })
+              }>
+              <Text style={styles.seeAll}>See All</Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         <FlatList
-          data={categories}
-          renderItem={renderCategory}
+          data={loadingCategories ? [1, 2, 3, 4, 5, 6] : categoryList}
+          renderItem={({item}) =>
+            loadingCategories ? (
+              <SkeletonCategoryLoader />
+            ) : (
+              renderCategory({item})
+            )
+          }
           horizontal
-          keyExtractor={item => item.id}
+          keyExtractor={(item, index) => index.toString()}
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{
-            paddingVertical: 10,
-            paddingRight: 20,
+            paddingBottom: 5,
+            // paddingRight: 20,
           }}
         />
       </View>

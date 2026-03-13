@@ -5,12 +5,18 @@ import {useSelector} from 'react-redux';
 import SafeFastImage from '../../utils/SafeFastImage';
 
 const SplashScreen = ({navigation}) => {
-  const {skiplogin, userLogin} = useSelector(reducer => reducer.allReducer);
+  const {skiplogin, userLogin, checkOnboardingScreen} = useSelector(
+    reducer => reducer.allReducer,
+  );
 
   useEffect(() => {
     const timer = setTimeout(() => {
       navigation.replace(
-        skiplogin || userLogin ? 'MaindashboardDrawer' : 'SignInScreen',
+        skiplogin || userLogin
+          ? 'MaindashboardDrawer'
+          : checkOnboardingScreen
+          ? 'SignInScreen'
+          : 'OnboardingScreen',
       );
     }, 1200);
 

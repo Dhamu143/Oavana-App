@@ -5,6 +5,8 @@ import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
 import MainDashBoard from '../Screen/MainDashBoard';
 import Color from '../Common/Color';
 import SafeFastImage from '../utils/SafeFastImage';
+import MyTeamsScreen from '../Screen/MyTeamsScreen';
+import NotificationUpdateScreen from '../Screen/NotificationUpdateScreen';
 
 const Tab = createBottomTabNavigator();
 const {width} = Dimensions.get('window');
@@ -15,11 +17,11 @@ const CustomIcon = ({icon, color, title, subtitle}) => {
   return (
     <View style={styles.tabItem}>
       <View style={[styles.iconContainer, {backgroundColor: color}]}>
-       <SafeFastImage
-  source={icon}
-  style={styles.icon}
-  tintColor={Color.WHITE}
-/>
+        <SafeFastImage
+          source={icon}
+          style={styles.icon}
+          tintColor={Color.WHITE}
+        />
       </View>
 
       <Text style={styles.title} numberOfLines={1}>
@@ -61,7 +63,7 @@ const TabScreens = () => {
 
           <Tab.Screen
             name="Team"
-            component={MainDashBoard}
+            component={MyTeamsScreen}
             options={{
               tabBarIcon: () => (
                 <CustomIcon
@@ -76,13 +78,13 @@ const TabScreens = () => {
 
           <Tab.Screen
             name="Notifications"
-            component={MainDashBoard}
+            component={NotificationUpdateScreen}
             options={{
               tabBarIcon: () => (
                 <CustomIcon
                   icon={require('../assets/images/notification.png')}
                   color="#4973FF"
-                  title="Alerts"
+                  title="Notification"
                   subtitle="Updates"
                 />
               ),

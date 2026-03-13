@@ -41,7 +41,6 @@
     "react-redux": "^9.2.0",
     "redux": "^5.0.1",
     "redux-persist": "^6.0.0",
-    "rn-range-slider": "^2.2.2",
     "yup": "^1.7.1"
   },
   "devDependencies": {

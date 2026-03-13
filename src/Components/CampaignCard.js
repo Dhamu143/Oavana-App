@@ -1,11 +1,19 @@
-import React, {memo} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import React, {memo, useCallback} from 'react';
+import {View, Text, StyleSheet, TouchableOpacity, Linking} from 'react-native';
 import SafeFastImage from '../utils/SafeFastImage';
 import Color from '../Common/Color';
 
 const CampaignCard = ({item}) => {
+  const openCampaign = useCallback(() => {
+    if (item?.link) {
+      Linking.openURL(item.link);
+    }
+  }, [item]);
   return (
-    <TouchableOpacity activeOpacity={0.8} style={styles.card}>
+    <TouchableOpacity
+      activeOpacity={0.8}
+      style={styles.card}
+      onPress={openCampaign}>
       <SafeFastImage
         source={require('../assets/images/Rectangle.png')}
         style={styles.cardImage}

@@ -30,8 +30,6 @@ const MainDashBoard = ({navigation}) => {
   const insets = useSafeAreaInsets();
   const [pladgeData, setPladgeData] = useState(null);
 
-  //console.log("isPledgeActive",isPledgeActive,isMiningEnable  )
-
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -42,20 +40,18 @@ const MainDashBoard = ({navigation}) => {
     try {
       const response = await apiClient.get('/users/activepledge');
 
+      //  console.log('pledge response', response);
+
       if (response?.data?.success) {
         const pledgeData = response?.data?.data;
-        //   console.log('pledgeData', pledgeData);
+
         setPladgeData(pledgeData);
         dispatch(
           addTokenAndRate(pledgeData?.tokenBalance, pledgeData?.miningRate),
         );
-        // dispatch(IsPledgeActive(pledgeData?.isPleadgeActive,pladgeData?.miningEnabled))
       } else {
-        //  console.log('No Data', 'Response returned no data.');
       }
-    } catch (error) {
-      //  console.log('API Error:', error);
-    }
+    } catch (error) {}
   };
 
   const impactData = impactConfig.map(item => ({
@@ -84,16 +80,27 @@ const MainDashBoard = ({navigation}) => {
             />
             <View>
               <Text style={styles.pointsText}>
-                {Number(pladgeData?.tokenBalance ?? 0).toLocaleString()}
+                {Number(pladgeData?.tokenBalance ?? 0).toLocaleString(
+                  undefined,
+                  {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  },
+                )}
               </Text>
-              <Text style={styles.pointsLabel}>Oavana Points</Text>
+              <Text style={styles.pointsLabel}>OaVana Points</Text>
             </View>
           </View>
 
           <View style={styles.rateBox}>
             <Text style={styles.rateTitle}>Mining Rate</Text>
             <Text style={styles.rateValue}>
-              + {pladgeData?.miningRate ?? 0} pts/hr
+              +{' '}
+              {Number(pladgeData?.miningRate ?? 0).toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}{' '}
+              pts/hr
             </Text>
           </View>
         </View>
@@ -108,7 +115,7 @@ const MainDashBoard = ({navigation}) => {
               source={require('../../assets/images/star.png')}
               style={styles.badgeIcon}
             />
-            <Text style={styles.badgeText}>Oavana</Text>
+            <Text style={styles.badgeText}>OaVana</Text>
           </View>
 
           <Text style={styles.cardTitle}>
@@ -126,6 +133,7 @@ const MainDashBoard = ({navigation}) => {
           currentPoints={pladgeData?.tokenBalance ?? 0}
           totalPoints={1500}
           pledgeIcon={pladgeData?.activePledge?.icon}
+          pledgeText={pladgeData?.text}
           isPleadgeActive={pladgeData?.isPleadgeActive}
           miningEndTime={pladgeData?.miningEndTime}
           onPledgeSuccess={getPladge}

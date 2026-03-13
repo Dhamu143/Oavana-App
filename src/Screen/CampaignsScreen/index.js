@@ -1,13 +1,13 @@
-import React, {memo, useEffect, useState} from 'react';
+import React, {useEffect, useState, useMemo} from 'react';
 import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   ScrollView,
   FlatList,
   StatusBar,
   Platform,
+  TextInput,
 } from 'react-native';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import Color from '../../Common/Color';
@@ -22,36 +22,68 @@ const CampaignsScreen = ({navigation}) => {
 
   const [campaigns, setCampaigns] = useState([]);
   const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [search, setSearch] = useState('');
 
-  const popularCampaigns = campaigns.filter(item => item.isPopular);
-  const newCampaigns = campaigns.filter(item => !item.isPopular);
+  const popularCampaigns = useMemo(
+    () => campaigns.filter(item => item.isPopular),
+    [campaigns],
+  );
+
+  const newCampaigns = useMemo(
+    () => campaigns.filter(item => !item.isPopular),
+    [campaigns],
+  );
 
   useEffect(() => {
-    getCampaignData(1, true);
+    fetchCampaigns({pageNumber: 1, reset: true});
   }, []);
 
-  const getCampaignData = async (pageNum = 1, reset = false) => {
+  useEffect(() => {
+    const delay = setTimeout(() => {
+      if (search.length >= 3 || search.length === 0) {
+        setPage(1);
+
+        fetchCampaigns({
+          pageNumber: 1,
+          searchText: search,
+          reset: true,
+        });
+      }
+    }, 500);
+
+    return () => clearTimeout(delay);
+  }, [search]);
+
+  const fetchCampaigns = async ({
+    pageNumber = 1,
+    searchText = '',
+    reset = false,
+  }) => {
+    if (loading) return;
+
     try {
       setLoading(true);
 
-      const response = await apiClient.get('/campaign', {
-        params: {page: pageNum},
-      });
+      const params = {
+        page: pageNumber,
+        ...(searchText.length >= 3 ? {search: searchText} : {}),
+      };
 
-      const campaignData = response?.data?.data?.data ?? [];
+      const response = await apiClient.get('/campaign', {params});
 
-      if (reset) {
-        setCampaigns(campaignData);
-      } else {
-        setCampaigns(prev => [...prev, ...campaignData]);
-      }
+      const data = response?.data?.data?.data ?? [];
 
-      setHasMore(campaignData.length > 0);
-      setPage(pageNum + 1);
+      console.log('campaignData', data);
+
+      setCampaigns(prev => (reset ? data : [...prev, ...data]));
+
+      setHasMore(data.length > 0);
+      setPage(pageNumber + 1);
     } catch (error) {
-      //   console.log('Campaign API error', error);
+      console.log('Campaign Error', error);
     } finally {
       setLoading(false);
     }
@@ -59,8 +91,21 @@ const CampaignsScreen = ({navigation}) => {
 
   const handleLoadMore = () => {
     if (!loading && hasMore) {
-      getCampaignData(page);
+      fetchCampaigns({
+        pageNumber: page,
+        searchText: search,
+      });
     }
+  };
+
+  const onRefresh = () => {
+    setRefreshing(true);
+
+    fetchCampaigns({
+      pageNumber: 1,
+      searchText: search,
+      reset: true,
+    }).finally(() => setRefreshing(false));
   };
 
   const renderItem = ({item}) => <CampaignCard item={item} />;
@@ -102,11 +147,31 @@ const CampaignsScreen = ({navigation}) => {
           Some information here as a subheading.
         </Text>
 
-        {(loading || popularCampaigns.length > 0) && (
+        <View style={styles.searchRow}>
+          <View style={styles.searchBox}>
+            <SafeFastImage
+              source={require('../../assets/images/search.png')}
+              style={styles.searchIcon}
+              tintColor="#777"
+            />
+
+            <TextInput
+              placeholder="Search campaigns"
+              placeholderTextColor="#999"
+              style={styles.input}
+              value={search}
+              onChangeText={setSearch}
+              returnKeyType="search"
+            />
+          </View>
+        </View>
+
+        {(popularCampaigns.length > 0 ||
+          (loading && campaigns.length === 0)) && (
           <>
             <Text style={styles.sectionTitle}>Most Popular</Text>
 
-            {loading ? (
+            {loading && campaigns.length === 0 ? (
               renderSkeleton()
             ) : (
               <FlatList
@@ -122,14 +187,13 @@ const CampaignsScreen = ({navigation}) => {
             )}
           </>
         )}
-
-        {(loading || newCampaigns.length > 0) && (
+        {(newCampaigns.length > 0 || (loading && campaigns.length === 0)) && (
           <>
             <Text style={[styles.sectionTitle, {marginTop: 10}]}>
               New Campaigns
             </Text>
 
-            {loading ? (
+            {loading && campaigns.length === 0 ? (
               renderSkeleton()
             ) : (
               <FlatList
@@ -144,6 +208,8 @@ const CampaignsScreen = ({navigation}) => {
                 }}
                 onEndReached={handleLoadMore}
                 onEndReachedThreshold={0.3}
+                refreshing={refreshing}
+                onRefresh={onRefresh}
               />
             )}
           </>
@@ -154,6 +220,7 @@ const CampaignsScreen = ({navigation}) => {
 };
 
 export default CampaignsScreen;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -181,5 +248,32 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginBottom: 10,
     color: Color.BLACK,
+  },
+
+  searchRow: {
+    flexDirection: 'row',
+    marginHorizontal: 20,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+
+  searchBox: {
+    flex: 1,
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderColor: Color.boredrColor,
+    alignItems: 'center',
+  },
+
+  searchIcon: {
+    width: 18,
+    height: 18,
+    marginRight: 8,
+  },
+
+  input: {
+    flex: 1,
+    fontSize: 15,
+    paddingVertical: Platform.OS === 'ios' ? 10 : 6,
   },
 });

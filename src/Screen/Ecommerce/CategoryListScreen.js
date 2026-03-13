@@ -9,12 +9,13 @@ import {
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import SafeFastImage from '../../utils/SafeFastImage';
-import {categories} from '../../data/ecommerceData';
 import Color from '../../Common/Color';
 import AppHeader from '../../Components/AppHeader';
 
-const CategoryListScreen = ({navigation}) => {
-  const [selectedCategory, setSelectedCategory] = useState(null);
+const CategoryListScreen = ({navigation, route}) => {
+  const {categories, selectedCategory: selectedFromHome} = route.params;
+
+  const [selectedCategory, setSelectedCategory] = useState(selectedFromHome);
 
   const renderCategory = ({item}) => {
     const isSelected = selectedCategory === item.id;
@@ -22,7 +23,13 @@ const CategoryListScreen = ({navigation}) => {
     return (
       <TouchableOpacity
         style={[styles.categoryCard, isSelected && styles.selectedCard]}
-        onPress={() => setSelectedCategory(item?.id)}>
+        onPress={() => {
+          setSelectedCategory(item?.id);
+
+          navigation.navigate('CategoryProductsScreen', {
+            category: item,
+          });
+        }}>
         <SafeFastImage source={item.image} style={styles.categoryImage} />
 
         <Text style={styles.categoryName}>{item?.name}</Text>

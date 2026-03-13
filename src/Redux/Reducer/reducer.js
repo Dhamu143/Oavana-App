@@ -5,7 +5,8 @@ const initialState = {
   tokenEarn: 0,
   miningRate: 0,
   isPledgeActive: false,
-  isMiningEnable:false
+  isMiningEnable: false,
+  checkOnboardingScreen: false,
 };
 export const allReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -21,23 +22,28 @@ export const allReducer = (state = initialState, action) => {
         ...state,
         userLogin: action.userLogin,
       };
-    case "ADD_REF_CODE":
+    case 'ADD_REF_CODE':
       return {
         ...state,
-        refCode: action.refCode
-      }
-    case "ADD_TOKEN_AND_RATE":
+        refCode: action.refCode,
+      };
+    case 'ADD_TOKEN_AND_RATE':
       return {
         ...state,
         tokenEarn: action.tokenEarn,
-        miningRate: action.miningRate
-      }
-    case "CHECK_PLEDGE_ACTIVE":
+        miningRate: action.miningRate,
+      };
+    case 'CHECK_PLEDGE_ACTIVE':
       return {
         ...state,
         isPledgeActive: action.isPledgeActive,
-        isMiningEnable: action.isMiningEnable
-      }
+        isMiningEnable: action.isMiningEnable,
+      };
+    case 'CHECK_ONBOARDING_SCREEN':
+      return {
+        ...state,
+        checkOnboardingScreen: action.checkOnboardingScreen,
+      };
   }
   return state;
 };

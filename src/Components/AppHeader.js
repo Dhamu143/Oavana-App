@@ -15,7 +15,7 @@ const AppHeader = ({navigation}) => {
       </TouchableOpacity>
 
       <SafeFastImage
-        source={require('../assets/images/Logo1.png')}
+        source={require('../assets/images/AppLogo.png')}
         style={styles.logo}
       />
     </View>
@@ -34,8 +34,8 @@ const styles = StyleSheet.create({
   menuBtn: {
     position: 'absolute',
     left: 0,
-    backgroundColor: '#F2F2F2',
-    padding: 10,
+    backgroundColor: '#edeff1',
+    padding: 14,
     borderRadius: 10,
   },
   menuIcon: {
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
   },
 
   logo: {
-    width: 70,
-    height: 40,
+    width: 60,
+    height: 50,
   },
 });

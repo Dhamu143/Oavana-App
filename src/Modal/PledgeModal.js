@@ -48,7 +48,7 @@ const PledgeModal = ({visible, onClose, pledgeIcon, onPledgePress}) => {
             I’ll take shorter showers to save water.
           </Text>
 
-          <Text style={styles.subtitle}>- Oavana</Text>
+          <Text style={styles.subtitle}>- OaVana</Text>
 
           <TouchableOpacity style={styles.actionBtn} onPress={onPledgePress}>
             <Text style={styles.actionText}>Pledge & Act for the Planet</Text>

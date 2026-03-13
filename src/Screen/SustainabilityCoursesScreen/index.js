@@ -1,4 +1,4 @@
-import React, {memo, useEffect, useState} from 'react';
+import React, {useEffect, useState, useMemo, useCallback} from 'react';
 import {
   View,
   Text,
@@ -20,89 +20,111 @@ import SkeletonCourseCard from '../../reuseable/SkeletonCourseCard';
 import AppHeader from '../../Components/AppHeader';
 
 const SustainabilityCoursesScreen = ({navigation}) => {
-  const [filterVisible, setFilterVisible] = useState(false);
+  const insets = useSafeAreaInsets();
 
+  const [filterVisible, setFilterVisible] = useState(false);
   const [courses, setCourses] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
 
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [filters, setFilters] = useState({});
-  const insets = useSafeAreaInsets();
 
-  const popularCourses = courses.filter(item => item.isPopular);
-  const newCourses = courses.filter(item => !item.isPopular);
+  const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
+
+  const [error, setError] = useState(false);
+
+  const [filters, setFilters] = useState({});
+  const [search, setSearch] = useState('');
+
+  const popularCourses = useMemo(
+    () => courses.filter(item => item.isPopular),
+    [courses],
+  );
+
+  const newCourses = useMemo(
+    () => courses.filter(item => !item.isPopular),
+    [courses],
+  );
+
+  const fetchCourses = useCallback(
+    async ({pageNumber = 1, reset = false} = {}) => {
+      if (loading) return;
+
+      try {
+        setLoading(true);
+        setError(false);
+
+        const params = {page: pageNumber};
+
+        if (search.length >= 3) params.search = search;
+
+        if (filters?.level) params.level = filters.level;
+        if (filters?.durationUnit) params.durationUnit = filters.durationUnit;
+
+        if (filters?.courseType) {
+          params.pricingTier =
+            filters.courseType === 'Premium'
+              ? 'premium'
+              : filters.courseType === 'Free'
+              ? 'free'
+              : undefined;
+        }
+
+        if (filters?.minPrice !== null) params.minPrice = filters.minPrice;
+        if (filters?.maxPrice !== null) params.maxPrice = filters.maxPrice;
+
+        const res = await apiClient.get('/course', {params});
+
+        const data = res?.data?.data?.data ?? [];
+
+        setCourses(prev => (reset ? data : [...prev, ...data]));
+
+        setHasMore(data.length > 0);
+        setPage(pageNumber + 1);
+      } catch (err) {
+        setError(true);
+      } finally {
+        setLoading(false);
+        setInitialLoading(false);
+      }
+    },
+    [search, filters, loading],
+  );
 
   useEffect(() => {
-    getCourseData(1, true);
+    setPage(1);
+    fetchCourses({pageNumber: 1, reset: true});
   }, [filters]);
 
-  const getCourseData = async (pageNum = 1, reset = false) => {
-    try {
-      setLoading(true);
-      setError(false);
-
-      const params = {
-        page: pageNum,
-      };
-
-      if (filters?.level) params.level = filters.level;
-      if (filters?.durationUnit) params.durationUnit = filters.durationUnit;
-
-      if (filters?.courseType) {
-        params.pricingTier =
-          filters.courseType === 'Premium'
-            ? 'premium'
-            : filters.courseType === 'Free'
-            ? 'free'
-            : undefined;
+  useEffect(() => {
+    const delay = setTimeout(() => {
+      if (search.length >= 3 || search.length === 0) {
+        setPage(1);
+        fetchCourses({pageNumber: 1, reset: true});
       }
+    }, 500);
 
-      if (filters?.minPrice !== null) params.minPrice = filters.minPrice;
-      if (filters?.maxPrice !== null) params.maxPrice = filters.maxPrice;
-
-      //   console.log('params', params);
-
-      const response = await apiClient.get('/course', {params});
-
-      const courseData = response?.data?.data?.data ?? [];
-
-      if (reset) {
-        setCourses(courseData);
-      } else {
-        setCourses(prev => [...prev, ...courseData]);
-      }
-
-      setHasMore(courseData.length > 0);
-      setPage(pageNum + 1);
-    } catch (error) {
-      // console.log('Course API error', error);
-      setError(true);
-    } finally {
-      setLoading(false);
-    }
-  };
+    return () => clearTimeout(delay);
+  }, [search]);
 
   const handleLoadMore = () => {
     if (!loading && hasMore) {
-      getCourseData(page);
+      fetchCourses({pageNumber: page});
     }
-  };
-  const renderSkeleton = () => {
-    return (
-      <FlatList
-        horizontal
-        data={[1, 2, 3]}
-        renderItem={() => <SkeletonCourseCard />}
-        keyExtractor={(item, index) => index.toString()}
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{paddingLeft: 20}}
-      />
-    );
   };
 
   const renderItem = ({item}) => <CourseCard item={item} />;
+
+  const renderSkeleton = () => (
+    <FlatList
+      horizontal
+      data={[1, 2, 3]}
+      renderItem={() => <SkeletonCourseCard />}
+      keyExtractor={(item, index) => index.toString()}
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={{paddingLeft: 20}}
+    />
+  );
 
   return (
     <SafeAreaView edges={['top', 'left', 'right']} style={styles.container}>
@@ -116,18 +138,14 @@ const SustainabilityCoursesScreen = ({navigation}) => {
       <ScrollView
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{
-          paddingBottom: insets.bottom + 20,
-        }}>
+        contentContainerStyle={{paddingBottom: insets.bottom + 20}}>
         <View style={{marginHorizontal: 15}}>
           <AppHeader navigation={navigation} />
         </View>
 
-        <Text style={styles.title} allowFontScaling={false}>
-          Sustainability Courses
-        </Text>
+        <Text style={styles.title}>Sustainability Courses</Text>
 
-        <Text style={styles.subtitle} allowFontScaling={false}>
+        <Text style={styles.subtitle}>
           Some information here as a subheading.
         </Text>
 
@@ -143,13 +161,13 @@ const SustainabilityCoursesScreen = ({navigation}) => {
               placeholder="Search courses"
               placeholderTextColor="#999"
               style={styles.input}
-              allowFontScaling={false}
               returnKeyType="search"
+              value={search}
+              onChangeText={setSearch}
             />
           </View>
 
           <TouchableOpacity
-            activeOpacity={0.7}
             style={styles.filterBtn}
             onPress={() => setFilterVisible(true)}>
             <SafeFastImage
@@ -164,21 +182,18 @@ const SustainabilityCoursesScreen = ({navigation}) => {
             <Text style={styles.errorText}>Failed to load courses</Text>
 
             <TouchableOpacity
-              onPress={() => {
-                setError(false);
-                getCourseData();
-              }}
-              style={styles.retryBtn}>
+              style={styles.retryBtn}
+              onPress={() => fetchCourses({pageNumber: 1, reset: true})}>
               <Text style={styles.retryText}>Retry</Text>
             </TouchableOpacity>
           </View>
         ) : (
           <>
-            {(loading || popularCourses.length > 0) && (
+            {(popularCourses.length > 0 || initialLoading) && (
               <>
                 <Text style={styles.sectionTitle}>Most Popular</Text>
 
-                {loading ? (
+                {initialLoading ? (
                   renderSkeleton()
                 ) : (
                   <FlatList
@@ -195,13 +210,13 @@ const SustainabilityCoursesScreen = ({navigation}) => {
               </>
             )}
 
-            {(loading || newCourses.length > 0) && (
+            {(newCourses.length > 0 || initialLoading) && (
               <>
                 <Text style={[styles.sectionTitle, {marginTop: 10}]}>
                   New Courses
                 </Text>
 
-                {loading ? (
+                {initialLoading ? (
                   renderSkeleton()
                 ) : (
                   <FlatList
@@ -220,16 +235,16 @@ const SustainabilityCoursesScreen = ({navigation}) => {
           </>
         )}
       </ScrollView>
+
       <FilterModal
         visible={filterVisible}
         onClose={selectedFilters => {
           setFilterVisible(false);
 
           if (selectedFilters) {
-            setFilters(selectedFilters);
+            setCourses([]);
             setPage(1);
-            setCourses([]); // important reset
-            getCourseData(1, true);
+            setFilters(selectedFilters);
           }
         }}
       />

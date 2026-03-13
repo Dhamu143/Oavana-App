@@ -68,7 +68,7 @@ const ProductDetailsScreen = ({route, navigation}) => {
         contentContainerStyle={{paddingBottom: insets.bottom + 30}}>
         <Text style={styles.title}>{product.name}</Text>
 
-        <Text style={styles.price}>Oavana {product?.price}</Text>
+        <Text style={styles.price}>OaVana {product?.price}</Text>
 
         <FlatList
           data={images}

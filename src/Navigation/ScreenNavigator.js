@@ -21,6 +21,10 @@ import CategoryProductsScreen from '../Screen/Ecommerce/CategoryProductsScreen';
 import ProductDetailsScreen from '../Screen/Ecommerce/ProductDetailsScreen';
 import CartScreen from '../Screen/Ecommerce/CartScreen';
 import CheckoutScreen from '../Screen/Ecommerce/CheckoutScreen';
+import MyTeamsScreen from '../Screen/MyTeamsScreen';
+import CreateTeamScreen from '../Screen/CreateTeamScreen';
+import OnboardingScreen from '../Screen/OnboardingScreen';
+import NotificationUpdateScreen from '../Screen/NotificationUpdateScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -39,6 +43,14 @@ function MyStack() {
           animation: 'slide_from_right',
         }}
       />
+      <Stack.Screen
+        name="OnboardingScreen"
+        component={OnboardingScreen}
+        options={{
+          animation: 'slide_from_right',
+        }}
+      />
+
       <Stack.Screen
         name="SignInScreen"
         component={SignInScreen}
@@ -182,6 +194,29 @@ function MyStack() {
       <Stack.Screen
         name="CheckoutScreen"
         component={CheckoutScreen}
+        options={{
+          animation: 'slide_from_right',
+        }}
+      />
+
+      <Stack.Screen
+        name="MyTeamsScreen"
+        component={MyTeamsScreen}
+        options={{
+          animation: 'slide_from_right',
+        }}
+      />
+
+      <Stack.Screen
+        name="CreateTeamScreen"
+        component={CreateTeamScreen}
+        options={{
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen
+        name="NotificationUpdateScreen"
+        component={NotificationUpdateScreen}
         options={{
           animation: 'slide_from_right',
         }}

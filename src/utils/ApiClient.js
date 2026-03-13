@@ -1,8 +1,13 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+//http://192.168.1.200:3001/api
+
+//https://api.greenearthtoken.com/ap
+
 const apiClient = axios.create({
-  baseURL: 'https://api.greenearthtoken.com/api',
+  // baseURL: 'https://api.greenearthtoken.com/api',
+  baseURL: 'http://192.168.1.200:3001/api',
   headers: {
     'Content-Type': 'application/json',
   },
